@@ -25,15 +25,12 @@
   --body:"Alegreya",Georgia,"Times New Roman",serif;
   color-scheme:light;
 }
-body{
-  color:var(--fg);font:17px/1.4 var(--body);
-  background-color:var(--bg);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 15% 0%,rgba(255,250,235,.55),transparent 70%),
-    radial-gradient(ellipse 70% 60% at 100% 100%,rgba(140,95,40,.16),transparent 70%),
-    radial-gradient(ellipse 50% 40% at 0% 70%,rgba(140,95,40,.10),transparent 70%);
-  background-attachment:fixed;
-}
+html{background:var(--bg)}
+body{color:var(--fg);font:17px/1.4 var(--body);background:var(--bg)}
+/* légère patine du parchemin, fixée à l'écran entier et loin de l'en-tête pour ne pas créer de cadre */
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 90% 55% at 100% 100%,rgba(140,95,40,.13),transparent 70%),
+             radial-gradient(ellipse 60% 40% at 0% 85%,rgba(140,95,40,.08),transparent 70%)}
 *{box-sizing:border-box}
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
 main{display:flex;flex-direction:column;gap:18px}
