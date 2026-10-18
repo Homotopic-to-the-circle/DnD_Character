@@ -147,6 +147,9 @@ ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;di
 .obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
 .obj-ed input{padding:4px 6px}
 .obj-ed .lien-in{grid-column:1/-1;font-size:.8rem;color:var(--muted)}
+.res-ed{flex-wrap:nowrap;justify-content:end}.res-ed input{width:4.5rem;text-align:center}
+.capa-ed{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}.capa-ed .lien-ed{min-width:0}
+.grat{display:inline-flex;align-items:center;gap:6px;margin-left:10px;vertical-align:middle}.grat .muted{font-size:.8rem}.grat .boxes{gap:2px 4px}.grat .box{width:15px;height:15px;margin:2px}
 .lien-ed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:6px;align-items:center;font-size:1rem}
 .lien-ed input{font-size:.8rem;padding:4px 6px}
 a.ext{text-decoration:none;color:inherit;border-bottom:1px dotted var(--accent)}
@@ -174,7 +177,7 @@ a.ext{text-decoration:none;color:inherit;border-bottom:1px dotted var(--accent)}
 
 <script>
 const EXEMPLE = {"v":1,"date":"2026-10-18T03:38:28.265Z","id":{"nom":"Character Name","historique":"Acolyte","classe":"Guerrier","sousClasse":"","espece":"Humain","niveau":"1","xp":"0","alignement":"Loyal bon","taille":"..."},"combat":{"ca":"14","pvMax":"11","dv":"1d10","maitrise":"+2","init":"+2","vitesse":"9 m","percPassive":"10"},"car":[{"n":"FOR","val":15,"mod":"+2","jds":"+4","jdsM":true},{"n":"DEX","val":14,"mod":"+2","jds":"+2","jdsM":false},{"n":"CON","val":13,"mod":"+1","jds":"+3","jdsM":true},{"n":"INT","val":9,"mod":"-1","jds":"-1","jdsM":false},{"n":"SAG","val":11,"mod":"+0","jds":"+0","jdsM":false},{"n":"CHA","val":13,"mod":"+1","jds":"+1","jdsM":false}],"ski":[{"id":0,"nom":"Acrobaties","val":"+4","m":true},{"id":1,"nom":"Dressage","val":"+0","m":false},{"id":2,"nom":"Arcanes","val":"-1","m":false},{"id":3,"nom":"Athlétisme","val":"+4","m":true},{"id":4,"nom":"Intimidation","val":"+1","m":false},{"id":5,"nom":"Histoire","val":"-1","m":false},{"id":6,"nom":"Intuition","val":"+2","m":true},{"id":7,"nom":"Persuasion","val":"+1","m":false},{"id":8,"nom":"Investigation","val":"-1","m":false},{"id":9,"nom":"Médecine","val":"+0","m":false},{"id":10,"nom":"Nature","val":"-1","m":false},{"id":11,"nom":"Perception","val":"+0","m":false},{"id":12,"nom":"Représentation","val":"+1","m":false},{"id":13,"nom":"Tromperie","val":"+1","m":false},{"id":14,"nom":"Religion","val":"+1","m":true},{"id":15,"nom":"Discrétion","val":"+2","m":false},{"id":16,"nom":"Escamotage","val":"+2","m":false},{"id":17,"nom":"Survie","val":"+0","m":false}],"armes":[{"nom":"Cimeterre","att":"+4","deg":"1d6+2 tranchant","note":"enchaînement"},{"nom":"Épée courte","att":"+4","deg":"1d6+2 perforant","note":"distraction"},{"nom":"Arc long","att":"+6","deg":"1d8+2 perforant","note":"lente"}],"capa":[{"nom":"Style de combat (Archerie)"},{"nom":"Second souffle","max":2},{"nom":"Bottes d'armes","max":3}],"traits":["Ingénieux","Compétent ✔","Polyvalent (Bagarreur de tavernes)"],"dons":["Bagarreur de tavernes","Initié à la magie (Clerc)"],"maitrises":{"armures":{"L":true,"I":true,"Lo":true,"B":true},"armes":"Armes simples, armes martiales","outils":"Matériel de calligraphe","langues":"Commun, Draconique, Halfelin"},"magie":{"carac":"","mod":"","dd":"","att":"","slots":["","","","","","","","",""]},"sorts":[{"niv":0,"nom":"Assistance","url":"https://www.aidedd.org/spell/fr/assistance","inc":"Action","portee":"Contact","C":true,"R":false,"M":false,"note":""},{"niv":0,"nom":"Mot de radiance","url":"https://www.aidedd.org/spell/fr/mot-de-radiance","inc":"Action","portee":"Perso","C":false,"R":false,"M":true,"note":""},{"niv":1,"nom":"Bénédiction","url":"https://www.aidedd.org/spell/fr/benediction","inc":"Action","portee":"9 m","C":true,"R":false,"M":true,"note":""}],"equipement":"Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d'exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe","harmo":[],"pieces":{"pc":"0","pa":"0","pe":"0","po":"19","pp":"0"},"histoire":"...","choix":{"l":"fr","class1":"5","level1":"1","voie1":"","class2":"1","level2":"0","voie2":"","species":"1","lineage":"","back":"1","align":"0","car[0]":"15","car[1]":"14","car[2]":"13","car[3]":"8","car[4]":"10","car[5]":"12","bCar[0]":"","bCar[1]":"","bCar[2]":"","bCar[3]":"+1","bCar[4]":"+1","bCar[5]":"+1","feats":"Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,","invoc":",,,,,,,,,","manoeuv":",,,,,,,,","choice":",,,,,,,,,,,,,,,,,,,,","option0":",0,,,,,,,,,,,,,,,,,,,","option1":",Assistance,,,,,,,,,,,,,,,,,,,","option2":",Mot de radiance,,,,,,,,,,,,,,,,,,,","option3":",Bénédiction,,,,,,,,,,,,,,,,,,,","option4":",,,,,,,,,,,,,,,,,,,,","option5":",,,,,,,,,,,,,,,,,,,,","option6":",,,,,,,,,,,,,,,,,,,,","ritual":",,,,,,","customNames":",,","customTrait":",,,,,,,,,,,,,,,,,,,,","skillE":"0","skillB":"6,14","skillC":"0,3,0,0","lang":"1,7,0,0,0,0,0","tool":",,Matériel de calligraphe,,,,","hp":"0,10,,,,,,,,,,,,,,,,,,,","armor":"Armure de cuir clouté,Sans bouclier","weapons":"Cimeterre,1,Épée courte,1,Arc long,1","sort1_0":",,,,,,,,,,,,,,","sort1_1":",,,,,,,,,,,,,,","sort1_2":",,,,,,,,,,,,,,","sort1_3":",,,,,,,,,,,,,,","sort1_4":",,,,,,,,,,,,,,","sort1_5":",,,,,,,,,,,,,,","sort1_6":",,,,,,,,,,,,,,","sort1_7":",,,,,,,,,,,,,,","sort1_8":",,,,,,,,,,,,,,","sort1_9":",,,,,,,,,,,,,,","sort2_0":",,,,,,,,,,,,,,","sort2_1":",,,,,,,,,,,,,,","sort2_2":",,,,,,,,,,,,,,","sort2_3":",,,,,,,,,,,,,,","sort2_4":",,,,,,,,,,,,,,","sort2_5":",,,,,,,,,,,,,,","sort2_6":",,,,,,,,,,,,,,","sort2_7":",,,,,,,,,,,,,,","sort2_8":",,,,,,,,,,,,,,","sort2_9":",,,,,,,,,,,,,,"},"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<creator>\n<version>0.8<\/version>\n<confLang>1<\/confLang>\n<name>Character Name<\/name>\n<class1>5<\/class1>\n<level1>1<\/level1>\n<voie1><\/voie1>\n<class2>1<\/class2>\n<level2>0<\/level2>\n<voie2><\/voie2>\n<className>Guerrier<\/className>\n<subClassName><\/subClassName>\n<XP>0<\/XP>\n<species>1<\/species>\n<speciesName>Humain<\/speciesName>\n<lineage><\/lineage>\n<back>1<\/back>\n<backName>Acolyte<\/backName>\n<lang>1,7,0,0,0,0,0<\/lang>\n<align>0<\/align>\n<size>...<\/size>\n<str>15<\/str><dex>14<\/dex><con>13<\/con>\n<int>8<\/int><wis>10<\/wis><cha>12<\/cha>\n<bstr><\/bstr><bdex><\/bdex><bcon><\/bcon>\n<bint>+1<\/bint><bwis>+1<\/bwis><bcha>+1<\/bcha>\n<feats>Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,<\/feats>\n<invoc>,,,,,,,,,<\/invoc>\n<manoeuv>,,,,,,,,<\/manoeuv>\n<choice>,,,,,,,,,,,,,,,,,,,,<\/choice>\n<option0>,0,,,,,,,,,,,,,,,,,,,<\/option0>\n<option1>,Assistance,,,,,,,,,,,,,,,,,,,<\/option1>\n<option2>,Mot de radiance,,,,,,,,,,,,,,,,,,,<\/option2>\n<option3>,Bénédiction,,,,,,,,,,,,,,,,,,,<\/option3>\n<option4>,,,,,,,,,,,,,,,,,,,,<\/option4>\n<option5>,,,,,,,,,,,,,,,,,,,,<\/option5>\n<option6>,,,,,,,,,,,,,,,,,,,,<\/option6>\n<option7>RFU<\/option7>\n<option8>RFU<\/option8>\n<option9>RFU<\/option9>\n<ritual>,,,,,,<\/ritual>\n<customNames>,,<\/customNames>\n<customTrait>,,,,,,,,,,,,,,,,,,,,<\/customTrait>\n<skillE>0<\/skillE>\n<skillC>0,3,0,0<\/skillC>\n<skillB>6,14<\/skillB>\n<armor>Armure de cuir clouté,Sans bouclier<\/armor>\n<weapons>Cimeterre,1,Épée courte,1,Arc long,1<\/weapons>\n<tool>,,Matériel de calligraphe,,,,<\/tool>\n<cantNam1><\/cantNam1><cantBon1><\/cantBon1><cantDmg1><\/cantDmg1><cantNot1><\/cantNot1>\n<cantNam2><\/cantNam2><cantBon2><\/cantBon2><cantDmg2><\/cantDmg2><cantNot2><\/cantNot2>\n<cantNam3><\/cantNam3><cantBon3><\/cantBon3><cantDmg3><\/cantDmg3><cantNot3><\/cantNot3>\n<hp>0,10,,,,,,,,,,,,,,,,,,,<\/hp>\n<spells0>,,,,,,,,,,,,,,<\/spells0>\n<spells1>,,,,,,,,,,,,,,<\/spells1>\n<spells2>,,,,,,,,,,,,,,<\/spells2>\n<spells3>,,,,,,,,,,,,,,<\/spells3>\n<spells4>,,,,,,,,,,,,,,<\/spells4>\n<spells5>,,,,,,,,,,,,,,<\/spells5>\n<spells6>,,,,,,,,,,,,,,<\/spells6>\n<spells7>,,,,,,,,,,,,,,<\/spells7>\n<spells8>,,,,,,,,,,,,,,<\/spells8>\n<spells9>,,,,,,,,,,,,,,<\/spells9>\n<spells10>,,,,,,,,,,,,,,<\/spells10>\n<spells11>,,,,,,,,,,,,,,<\/spells11>\n<spells12>,,,,,,,,,,,,,,<\/spells12>\n<spells13>,,,,,,,,,,,,,,<\/spells13>\n<spells14>,,,,,,,,,,,,,,<\/spells14>\n<spells15>,,,,,,,,,,,,,,<\/spells15>\n<spells16>,,,,,,,,,,,,,,<\/spells16>\n<spells17>,,,,,,,,,,,,,,<\/spells17>\n<spells18>,,,,,,,,,,,,,,<\/spells18>\n<spells19>,,,,,,,,,,,,,,<\/spells19>\n<spellNote0><\/spellNote0>\n<spellNote1><\/spellNote1>\n<spellNote2><\/spellNote2>\n<spellNote3><\/spellNote3>\n<spellNote4><\/spellNote4>\n<spellNote5><\/spellNote5>\n<spellNote6><\/spellNote6>\n<spellNote7><\/spellNote7>\n<spellNote8><\/spellNote8>\n<spellNote9><\/spellNote9>\n<spellNote10><\/spellNote10>\n<spellNote11><\/spellNote11>\n<spellNote12><\/spellNote12>\n<spellNote13><\/spellNote13>\n<spellNote14><\/spellNote14>\n<spellNote15><\/spellNote15>\n<spellNote16><\/spellNote16>\n<spellNote17><\/spellNote17>\n<spellNote18><\/spellNote18>\n<spellNote19><\/spellNote19>\n<spellNote20><\/spellNote20>\n<spellNote21><\/spellNote21>\n<spellNote22><\/spellNote22>\n<spellNote23><\/spellNote23>\n<spellNote24><\/spellNote24>\n<spellNote25><\/spellNote25>\n<spellNote26><\/spellNote26>\n<spellNote27><\/spellNote27>\n<spellNote28><\/spellNote28>\n<spellNote29><\/spellNote29>\n<spellNote30><\/spellNote30>\n<spellNote31><\/spellNote31>\n<spellNote32><\/spellNote32>\n<spellNote33><\/spellNote33>\n<spellNote34><\/spellNote34>\n<spellNote35><\/spellNote35>\n<spellNote36><\/spellNote36>\n<spellNote37><\/spellNote37>\n<spellNote38><\/spellNote38>\n<spellNote39><\/spellNote39>\n<spellNote40><\/spellNote40>\n<spellNote41><\/spellNote41>\n<spellNote42><\/spellNote42>\n<spellNote43><\/spellNote43>\n<spellNote44><\/spellNote44>\n<spellNote45><\/spellNote45>\n<spellNote46><\/spellNote46>\n<spellNote47><\/spellNote47>\n<spellNote48><\/spellNote48>\n<spellNote49><\/spellNote49>\n<spellNote50><\/spellNote50>\n<spellNote51><\/spellNote51>\n<spellNote52><\/spellNote52>\n<spellNote53><\/spellNote53>\n<spellNote54><\/spellNote54>\n<spellNote55><\/spellNote55>\n<spellNote56><\/spellNote56>\n<spellNote57><\/spellNote57>\n<spellNote58><\/spellNote58>\n<spellNote59><\/spellNote59>\n<spellNote60><\/spellNote60>\n<spellNote61><\/spellNote61>\n<spellNote62><\/spellNote62>\n<spellNote63><\/spellNote63>\n<spellNote64><\/spellNote64>\n<spellNote65><\/spellNote65>\n<spellNote66><\/spellNote66>\n<spellNote67><\/spellNote67>\n<spellNote68><\/spellNote68>\n<spellNote69><\/spellNote69>\n<spellNote70><\/spellNote70>\n<spellNote71><\/spellNote71>\n<spellNote72><\/spellNote72>\n<spellNote73><\/spellNote73>\n<spellNote74><\/spellNote74>\n<br />\n<b>Warning<\/b>:  Undefined array key \"myAppearance\" in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<br />\n<b>Deprecated<\/b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<appearance><\/appearance>\n<backstory>...<\/backstory>\n<equipment>Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d&#039;exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe<\/equipment>\n<attun1><\/attun1>\n<attun2><\/attun2>\n<attun3><\/attun3>\n<cp>0<\/cp>\n<sp>0<\/sp>\n<ep>0<\/ep>\n<gp>19<\/gp>\n<pp>0<\/pp>\n<\/creator>"};
-const VERSION='18.10.2026 à 14:15';
+const VERSION='18.10.2026 à 14:51';
 const KEY='dnd55.v1';
 const ONGLETS=[['combat','Combat'],['carac','Caracs'],['sorts','Sorts'],['sac','Sac'],['fiche','Fiche']];
 const ETATS=['À terre','Agrippé','Assourdi','Aveuglé','Charmé','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Neutralisé','Paralysé','Pétrifié'];
@@ -210,7 +213,7 @@ function lireObjet(x){
 }
 function lireObjets(s){return String(s||'').split(/[,\n]+/).map(x=>x.trim()).filter(Boolean).map(lireObjet)}
 const texteObjets=e=>(e.objets||[]).filter(o=>o.nom).map(o=>(num(o.qte)>1?o.qte+' ':'')+o.nom).join(', ');
-function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=e.conc||'';e.liens=e.liens||{};if(!e.objets)e.objets=lireObjets(e.equipement);
+function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=e.conc||'';e.liens=e.liens||{};e.resOv=e.resOv||{};if(!e.objets)e.objets=lireObjets(e.equipement);
   e.objets=e.objets.map(o=>num(o.qte)===1&&/\(\d+/.test(o.nom)?lireObjet(o.nom):o);e.objets.forEach(o=>{if(num(o.qte)!==1)o.compte=true});return p}
 function creer(d,nom){
   const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -244,18 +247,108 @@ function importer(t){
 }
 Object.values(db.persos).forEach(migrer);
 
-/* ---------- ressources ---------- */
-function ressources(p){
-  const d=D(p),e=p.etat,r=[];
-  d.capa.filter(c=>c.max).forEach(c=>r.push({k:'c:'+c.nom,nom:c.nom,max:c.max}));
-  r.push({k:'dv',nom:'Dés de vie ('+d.combat.dv+')',max:Math.max(1,num(d.id.niveau))});
-  e.ressPerso.forEach((x,i)=>r.push({k:'p:'+x.nom,nom:x.nom,max:x.max,perso:i}));
-  return r;
+/* ---------- ressources ----------
+   Ordre de confiance :
+   1. tableaux fixes des règles 2024 (classe, sous-classe, trait d'espèce, don), calculés avec niveau, maîtrise et caractéristiques ;
+   2. texte AideDD sans ambiguïté : « N/Repos … », « (N pts) », « (N pv) » ;
+   3. réglages du joueur en mode Modifier (maximum corrigé, ressource masquée, capacité mise en cases). */
+const norm=s=>slug(String(s||'').replace(/\(.*$/,''));
+const RES_CLASSE={
+  'Barbare':[{n:'Rage',m:c=>c.niv>=17?6:c.niv>=12?5:c.niv>=6?4:c.niv>=3?3:2}],
+  'Barde':[{n:'Inspiration bardique',m:c=>Math.max(1,c.mod.CHA)}],
+  'Clerc':[{n:'Conduit divin',m:c=>c.niv>=18?4:c.niv>=6?3:c.niv>=2?2:0}],
+  'Druide':[{n:'Forme sauvage',m:c=>c.niv>=17?4:c.niv>=6?3:c.niv>=2?2:0}],
+  'Ensorceleur':[{n:'Réserve arcanique',a:['Points de sorcellerie'],m:c=>c.niv>=2?c.niv:0},{n:'Sorcellerie innée',m:()=>2}],
+  'Guerrier':[{n:'Second souffle',m:c=>c.niv>=10?4:c.niv>=4?3:2},{n:'Fougue',m:c=>c.niv>=17?2:c.niv>=2?1:0},{n:'Inflexible',a:['Indomptable'],m:c=>c.niv>=17?3:c.niv>=13?2:c.niv>=9?1:0}],
+  'Magicien':[{n:'Restauration magique',a:['Restauration arcanique'],m:()=>1}],
+  'Moine':[{n:'Points de crédo',a:['Credo du moine'],m:c=>c.niv>=2?c.niv:0},{n:'Métabolisme surnaturel',m:c=>c.niv>=2?1:0}],
+  'Occultiste':[{n:'Rouerie magique',m:c=>c.niv>=2?1:0}],
+  'Paladin':[{n:'Imposition des mains',m:c=>5*c.niv,pv:1},{n:'Conduit divin',m:c=>c.niv>=11?3:c.niv>=3?2:0}],
+  'Rôdeur':[{n:'Ennemi juré',m:c=>c.niv>=17?6:c.niv>=13?5:c.niv>=9?4:c.niv>=5?3:2}],
+  'Roublard':[{n:'Coup de chance',m:c=>c.niv>=20?1:0}]
+};
+const RES_SOUSCLASSE={
+  'Maître de guerre':[{n:'Dés de supériorité',a:['Supériorité martiale'],m:c=>c.niv>=15?6:c.niv>=7?5:c.niv>=3?4:0}],
+  'Collège de la Séduction':[{n:'Magie envoûtante',m:c=>c.niv>=3?1:0},{n:'Mante de majesté',m:c=>c.niv>=6?1:0}],
+  'Berserker':[{n:'Présence intimidante',m:c=>c.niv>=14?1:0}]
+};
+const RES_TRAIT={
+  'Souffle':c=>c.pb,'Vol draconique':c=>c.niv>=5?1:0,'Ascendance gigante':c=>c.pb,'Forme de géant':c=>c.niv>=5?1:0,
+  "Poussée d'adrénaline":c=>c.pb,'Acharnement':()=>1,'Connaissance de la pierre':c=>c.pb
+};
+const RES_DON={
+  'Chanceux':{n:'Points de chance',m:c=>c.pb},'Tueur de mages':{n:'Esprit préservé',m:()=>1},
+  'Chef cuisinier':{n:'Friandises',m:c=>c.pb},'Magie rituelle':{n:'Rituel rapide',m:()=>1}
+};
+/* capacités AideDD qui ne sont jamais des ressources (évite les doublons) */
+const PAS_RESSOURCE=new Set(['sorts']);
+function contexte(d){
+  const mod={};d.car.forEach(c=>mod[c.n]=num(c.mod));
+  return{niv:Math.max(1,num(d.id.niveau)),pb:Math.max(2,num(d.combat.maitrise)),mod};
 }
-function cases(k,max,cls=''){
+/* nombre d'utilisations écrit par AideDD, ou null s'il n'y en a pas de sûr */
+function usagesTexte(nom){
+  const t=String(nom).match(/\((.*)\)/);if(!t)return null;
+  let m;
+  for(const seg of t[1].split(/[;,]/)){
+    if(/\/\s*Repos/i.test(seg)){
+      const s=seg.replace(/\d*d\d+/gi,' ').replace(/\d+\s*\+/g,' ').replace(/\+\s*\d+/g,' ');
+      const n=s.split(/\/\s*Repos/i)[0].match(/(\d+)\s*$/)||s.split(/\/\s*Repos/i)[0].match(/(\d+)/);
+      if(n&&+n[1]>0)return{max:+n[1]};
+    }
+    if((m=seg.match(/^\s*(\d+)\s+(?:[A-Za-zÀ-ÿ]+\s+)?pts\s*$/i))&&+m[1]>=2)return{max:+m[1]};
+  }
+  if((m=t[1].match(/^\s*(\d+)\s*pv\s*$/i)))return{max:+m[1],pv:1};
+  return null;
+}
+function ressourcesBrutes(d){
+  const c=contexte(d),r=[],vus=new Set();
+  const ajoute=(o)=>{const ks=[o.nom,...(o.a||[])].map(norm);if(ks.some(k=>vus.has(k))||!(o.max>0))return;ks.forEach(k=>vus.add(k));r.push(o)};
+  ajoute({k:'r:inspiration-heroique',nom:'Inspiration héroïque',max:1});
+  (RES_CLASSE[d.id.classe]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),pv:x.pv,lien:['capa',x.n]}));
+  (RES_SOUSCLASSE[d.id.sousClasse]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),lien:['capa',x.n]}));
+  d.traits.forEach(t=>{const n=propre(sansCoche(t)),f=RES_TRAIT[n];if(f)ajoute({k:'r:'+norm(n),nom:n,max:f(c),lien:['trait',n]})});
+  d.dons.forEach(t=>{const n=propre(t),f=RES_DON[n];if(f)ajoute({k:'r:'+norm(f.n),nom:f.n,max:f.m(c),lien:['don',n]})});
+  d.capa.forEach(x=>{const n=propre(sansCoche(x.nom));if(PAS_RESSOURCE.has(norm(n)))return;const u=usagesTexte(x.nom);
+    if(u)ajoute({k:'r:'+norm(n),nom:n,max:u.max,pv:u.pv,lien:['capa',x.nom]})});
+  return{r,vus};
+}
+function ressources(p){
+  const d=D(p),e=p.etat,ov=e.resOv||{},{r}=ressourcesBrutes(d),out=[];
+  r.forEach(x=>{const o=ov[x.k]||{};if(o.off)return;if(o.max!=null&&o.max!=='')x.max=num(o.max);if(x.max>0)out.push(x)});
+  out.push({k:'dv',nom:'Dés de vie ('+d.combat.dv+')',max:Math.max(1,num(d.id.niveau))});
+  e.ressPerso.forEach((x,i)=>out.push({k:'p:'+x.nom,nom:x.nom,max:x.max,perso:i}));
+  return out;
+}
+function ressourcesMasquees(p){const ov=p.etat.resOv||{};return ressourcesBrutes(D(p)).r.filter(x=>(ov[x.k]||{}).off)}
+/* capacités déjà affichées comme ressources : on ne les répète pas dans la liste des capacités */
+function capaEstRessource(d,nom){const{vus}=ressourcesBrutes(d);return vus.has(norm(propre(sansCoche(nom))))||PAS_RESSOURCE.has(norm(propre(nom)))}
+
+/* ---------- sorts gratuits (1 fois par repos long sans emplacement, ou bonus de maîtrise) ---------- */
+const LIGNAGES={
+  'Elfe':[{c:'Prestidigitation',s:['Détection de la magie','Foulée brumeuse']},{c:'Druidisme',s:['Grande foulée','Passage sans trace']},{c:'Lumières dansantes',s:['Lueurs féeriques','Ténèbres']}],
+  'Tieffelin':[{c:'Bouffée de poison',s:['Rayon empoisonné','Immobilisation de personne']},{c:'Contact glacial',s:['Simulacre de vie','Rayon affaiblissant']},{c:'Trait de feu',s:['Représailles infernales','Ténèbres']}],
+  'Gnome':[{c:'Illusion mineure',s:['Communication avec les animaux'],pb:1}]
+};
+function sortsGratuits(d){
+  const c=contexte(d),g={},ajoute=(nom,n)=>{if(nom&&!/^S\d+$/.test(nom)){const k=norm(nom);g[k]=(g[k]||0)+n}};
+  const noms=new Set(d.sorts.map(s=>norm(s.nom)));
+  const dons=String(d.choix&&d.choix.feats||'').split(','),o3=String(d.choix&&d.choix.option3||'').split(',');
+  dons.forEach((f,i)=>{f=f.trim();const choisi=(o3[i]||'').trim();
+    if(f==='Initié à la magie')ajoute(choisi,1);
+    if(f==='Affinité féerique'){ajoute('Foulée brumeuse',1);ajoute(choisi,1)}
+    if(f==='Affinité ombreuse'){ajoute('Invisibilité',1);ajoute(choisi,1)}
+    if(f==='Télépathe')ajoute('Détection des pensées',1)});
+  (LIGNAGES[d.id.espece]||[]).forEach(l=>{if(noms.has(norm(l.c))&&l.s.some(s=>noms.has(norm(s))))l.s.forEach(s=>ajoute(s,l.pb?c.pb:1))});
+  if(d.id.classe==='Paladin'){if(c.niv>=2)ajoute('Châtiment divin',1);if(c.niv>=5)ajoute('Appel de destrier',1)}
+  return g;
+}
+/* emplacements de pacte de l'Occultiste, écrits en texte par AideDD : « 2 spell slots of level 3 » */
+function pacte(d){for(const x of d.capa){const m=String(x.nom).match(/(\d+)\s+spell slots?\s+of\s+level\s+(\d)/i);if(m)return{n:+m[1],niv:+m[2]}}return null}
+function cases(k,max,cls='',compteur=false){
   const u=Math.min(P().etat.used[k]||0,max);let h='';
-  /* au-delà de 12 (réserves de points) : compteur « restants / max » au lieu des cases */
-  if(max>12)return `<div class="cpt"><button data-a="cpt" data-k="${esc(k)}" data-d="1" data-max="${max}" aria-label="Dépenser 1">−</button><b>${max-u}<span> / ${max}</span></b><button data-a="cpt" data-k="${esc(k)}" data-d="-1" data-max="${max}" aria-label="Récupérer 1">+</button></div>`;
+  /* au-delà de 12 (réserves de points) ou réserve de PV : compteur « restants / max » au lieu des cases */
+  if(max>12||compteur)return `<div class="cpt"><button data-a="cpt" data-k="${esc(k)}" data-d="1" data-max="${max}" aria-label="Dépenser 1">−</button><b>${max-u}<span> / ${max}</span></b><button data-a="cpt" data-k="${esc(k)}" data-d="-1" data-max="${max}" aria-label="Récupérer 1">+</button></div>`;
   for(let i=0;i<max;i++)h+=`<button class="box ${cls} ${i<u?'on':''}" data-a="case" data-k="${esc(k)}" data-i="${i}" data-max="${max}" aria-label="case ${i+1} sur ${max}"></button>`;
   /* jusqu'à 6 cases : une ligne ; de 7 à 12 : deux lignes équilibrées (10 → 5 + 5), centrées sur le nom */
   const ligne=max<=6?max:Math.ceil(max/2);
@@ -394,9 +487,18 @@ function ongCombat(p,d,e){
       <div class="full"><input data-f="armes.${i}.deg" value="${esc(a.deg)}" aria-label="Dégâts" placeholder="Dégâts"><input data-f="armes.${i}.note" value="${esc(a.note)}" aria-label="Notes" placeholder="Botte / notes"></div></div>`).join('')+`<button data-a="ajoutArme">+ Ajouter une arme</button>`
     :(e.armes.length?`<div class="armes">${e.armes.map(a=>`<div class="arme"><span class="nom">${a.nom?itemLien('arme',a.nom,undefined,a.deg):'Sans nom'}</span><span class="att">${esc(a.att)}</span>
       <span class="deg">${esc(a.deg)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</span></div>`).join('')}</div>`:'<p class="muted">Aucune arme. Ajoute-en avec Modifier.</p>');
-  const res=ressources(p).map(r=>`<div class="n">${!ed&&r.k.startsWith('c:')?itemLien('capa',r.nom):esc(sansCoche(r.nom))}${ed&&r.perso!=null?` <button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`:''}</div>${cases(r.k,r.max)}`).join('');
-  const autres=ed?d.capa.map(x=>itemLien('capa',x.nom)).join('')
-    :d.capa.filter(x=>!x.max).map(x=>`<li>${itemLien('capa',x.nom)}</li>`).join('');
+  const lienRes=r=>r.lien?itemLien(r.lien[0],r.lien[1],r.nom):esc(sansCoche(r.nom));
+  const res=ed
+    ?ressources(p).map(r=>r.k==='dv'?'':`<div class="n">${esc(sansCoche(r.nom))}</div><div class="row res-ed">${r.perso!=null
+        ?`<span class="muted">${r.max}</span><button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`
+        :`<input data-ovr="${esc(r.k)}" inputmode="numeric" value="${r.max}" aria-label="Maximum pour ${esc(r.nom)}"><button class="x" data-a="resOff" data-k="${esc(r.k)}" aria-label="Masquer ${esc(r.nom)}">✕</button>`}</div>`).join('')
+    :ressources(p).map(r=>`<div class="n">${lienRes(r)}</div>${cases(r.k,r.max,'',!!r.pv)}`).join('');
+  const masquees=ed?ressourcesMasquees(p).map(r=>`<button data-a="resOn" data-k="${esc(r.k)}">+ ${esc(r.nom)}</button>`).join(''):'';
+  const perso=new Set(e.ressPerso.map(x=>norm(x.nom)));
+  const capas=d.capa.filter(x=>!capaEstRessource(d,x.nom)&&!perso.has(norm(propre(sansCoche(x.nom)))));
+  const nomCapa=x=>x.nom+(x.max?' ('+x.max+')':'');
+  const autres=ed?capas.map(x=>`<div class="capa-ed">${itemLien('capa',x.nom,nomCapa(x))}<button data-a="capaRes" data-n="${esc(nomCapa(x))}" title="Afficher en cases">Cases</button></div>`).join('')
+    :capas.map(x=>`<li>${itemLien('capa',x.nom,nomCapa(x))}</li>`).join('');
   return `<section class="card pvcard">
       <div class="pvcol"><div class="lab">Points de vie</div>
         <div class="pv"><button data-a="pv" data-c="pv" data-d="-1" aria-label="Retirer 1 PV">−</button>
@@ -409,9 +511,10 @@ function ongCombat(p,d,e){
       <div class="mort"><span class="lab">Jets contre<br>la mort</span><div class="mort-g"><span class="lab">Succès</span>${cases('jm:s',3)}<span class="lab">Échecs</span>${cases('jm:e',3,'e')}</div></div></section>
     <div class="stats">${stats}</div>
     <section><h2>Armes et attaques</h2>${armes}</section>
-    <section><h2>Ressources</h2><div class="res">${res}</div>
-      ${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource (ex. Rage)" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}</section>
-    ${autres?`<section><h2>Capacités</h2>${ed?`<div class="lab">Liens vers AideDD (modifiables)</div>${autres}`:`<ul class="plain">${autres}</ul>`}</section>`:''}`;
+    <section><h2>Ressources</h2>${ed?'<div class="lab">Maximum de chaque ressource (modifiable)</div>':''}<div class="res">${res}</div>
+      ${masquees?`<div class="lab">Ressources masquées</div><div class="row">${masquees}</div>`:''}
+      ${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}</section>
+    ${autres?`<section><h2>Capacités</h2>${ed?`<div class="lab">Liens vers AideDD (modifiables) · « Cases » la transforme en ressource</div>${autres}`:`<ul class="plain">${autres}</ul>`}</section>`:''}`;
 }
 
 function ongCarac(p,d,e){
@@ -434,10 +537,12 @@ function ongSorts(p,d,e){
       <label class="lab">Attaque<input data-f="magie.att" value="${esc(v('att'))}" placeholder="+5"></label></div>`
     :`<div class="magie">${[['DD des sorts',v('dd')],['Attaque',v('att')],['Caractéristique',v('carac')]].map(([l,x])=>`<div class="stat"><b>${esc(x||'–')}</b><span class="lab">${l}</span></div>`).join('')}</div>`;
   let slots='';for(let l=1;l<=9;l++){const t=slotTot(p,l);if(t>0)slots+=`<div class="slot"><span>Niveau ${l}</span>${cases('s:'+l,t)}</div>`}
+  const pa=pacte(d);if(pa)slots+=`<div class="slot"><span>Pacte<br><span class="muted">niv ${pa.niv} · repos court</span></span>${cases('s:pacte',pa.n)}</div>`;
+  const grat=sortsGratuits(d),vusS=new Set();
   let reglage='';for(let l=1;l<=9;l++)reglage+=`<label>Niv ${l}<input data-f="slotsTot.${l}" data-num inputmode="numeric" value="${slotTot(p,l)||''}" placeholder="0"></label>`;
-  const niv={};d.sorts.forEach(s=>(niv[s.niv]=niv[s.niv]||[]).push(s));
+  const niv={};d.sorts.forEach(s=>{const k=s.niv+'|'+s.nom;if(vusS.has(k))return;vusS.add(k);(niv[s.niv]=niv[s.niv]||[]).push(s)});
   const liste=Object.keys(niv).sort((a,b)=>a-b).map(n=>`<section><h2>${n==0?'Sorts mineurs':'Niveau '+n}</h2>`+niv[n].map(s=>`<div class="sort">
-      <div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a>${s.C?'<span class="badge" title="Concentration">C</span>':''}${s.R?'<span class="badge" title="Rituel">R</span>':''}${s.M?'<span class="badge" title="Composante matérielle">M</span>':''}</div>
+      <div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a>${s.C?'<span class="badge" title="Concentration">C</span>':''}${s.R?'<span class="badge" title="Rituel">R</span>':''}${s.M?'<span class="badge" title="Composante matérielle">M</span>':''}${s.niv>0&&grat[norm(s.nom)]?`<span class="grat"><span class="muted">gratuit</span>${cases('g:'+norm(s.nom),grat[norm(s.nom)])}</span>`:''}</div>
       <div class="muted">${esc(s.inc)} · ${esc(s.portee)}${s.note?' · '+esc(s.note):''}</div></div>`).join('')+'</section>').join('');
   return `${magie}
     <section><h2>Emplacements de sort</h2>${slots||(ed?'':'<p class="muted">Aucun emplacement. Règle-les avec Modifier si ton personnage en a.</p>')}
@@ -526,6 +631,9 @@ document.addEventListener('click',ev=>{
     case 'supprObj':p.etat.objets.splice(num(b.dataset.i),1);break;
     case 'ajoutRes':{const n=document.getElementById('rnom').value.trim(),m=num(document.getElementById('rmax').value);
       if(!n||m<1)throw new Error('Indique un nom et un maximum (au moins 1).');p.etat.ressPerso.push({nom:n,max:Math.min(m,99)});break}
+    case 'resOff':{const ov=p.etat.resOv=p.etat.resOv||{};ov[b.dataset.k]={...(ov[b.dataset.k]||{}),off:true};break}
+    case 'resOn':{const ov=p.etat.resOv=p.etat.resOv||{};if(ov[b.dataset.k])delete ov[b.dataset.k].off;break}
+    case 'capaRes':{const n=b.dataset.n,m=String(n).match(/\((\d+)/);p.etat.ressPerso.push({nom:propre(sansCoche(n)),max:m?Math.min(99,+m[1]):1});flash={t:'« '+propre(sansCoche(n))+' » ajoutée aux ressources.'};break}
     case 'supprRes':p.etat.ressPerso.splice(num(b.dataset.i),1);break;
     case 'copierXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import. Relance le bookmarklet sur AideDD.");save();copier(x);return}
     case 'telXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import.");telecharger(x,nomFichier(p,'xml'),'application/xml');flash={t:'Si aucun fichier n’apparaît, utilise « Copier le XML ».'};break}
@@ -543,6 +651,7 @@ let avantSaisie=null;
 document.addEventListener('focusin',ev=>{const f=ev.target.dataset&&ev.target.dataset.f;if(f==='pv'||f==='pvTemp')avantSaisie=num(ev.target.value)});
 document.addEventListener('input',ev=>{
   const el=ev.target,p=P();
+  if(el.dataset&&el.dataset.ovr&&p){const ov=p.etat.resOv=p.etat.resOv||{},k=el.dataset.ovr;ov[k]={...(ov[k]||{}),max:el.value===''?'':Math.max(0,num(el.value))};save();return}
   if(el.dataset&&el.dataset.lien&&p){const k=el.dataset.lien,v=el.value.trim();if(v&&v!==lienAuto(k.split(':')[0],k.slice(k.indexOf(':')+1),D(p)))p.etat.liens[k]=v;else delete p.etat.liens[k];save();return}
   const f=el.dataset&&el.dataset.f;if(!f||!p)return;
   const path=f.split('.');let o=p.etat;
