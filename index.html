@@ -8,7 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Feuille de Perso">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>html,body{height:100%}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
 <title>Feuille de Perso</title>
@@ -50,7 +51,7 @@ a{color:var(--accent)}
 .lab{font-family:var(--disp);font-size:.85rem;letter-spacing:.04em;color:var(--muted)}
 /* en-tête */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-direction:column;gap:6px;padding-top:4px;padding-bottom:8px;border-bottom:3px double var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));margin-top:-12px;padding-top:16px!important;display:flex;flex-direction:column;gap:6px;padding-top:4px;padding-bottom:8px;border-bottom:3px double var(--line)}
 .top>.row{flex-wrap:nowrap}
 .top .titre{flex:1;min-width:0}
 .top .titre h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
