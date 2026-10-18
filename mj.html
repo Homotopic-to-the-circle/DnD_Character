@@ -207,6 +207,9 @@ a.ext{text-decoration:none;color:inherit}
 .dock .alerte.trouve{background:var(--card);border-color:var(--accent)}
 .etats-dock{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:6px 8px}
 .toast{cursor:pointer}
+.dock-haut{bottom:auto;top:8px;padding-bottom:0}
+.alerte.trouve button{border-color:var(--accent);color:var(--accent)}
+.dock-haut:empty,.dock:empty{display:none}
 .msg{background:var(--card);border-left:3px solid var(--conc);border-radius:2px;padding:8px 10px;font-size:.95rem}
 .msg.err{border-left-color:var(--accent);color:var(--accent)}
 @media (prefers-reduced-motion:no-preference){
@@ -259,6 +262,7 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
 .envoi-box .code-row{align-items:center}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;flex-direction:column;gap:6px;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
 .dock>*{pointer-events:auto;width:100%;max-width:608px;margin:0 auto;box-sizing:border-box;box-shadow:0 3px 12px rgba(42,28,18,.28);cursor:pointer}
+.dock-haut{bottom:auto;padding-bottom:0}.dock:empty{display:none}
 .code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
 </style>
 </head>
@@ -269,7 +273,7 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
    Tout passe par des fonctions Supabase protégées par le code MJ (gardé sur cet appareil uniquement). */
 const SUPA='https://mgcofajllvellwcudjxx.supabase.co',CLE_PUB='sb_publishable_WLlUZ1Aznum4Rz1qwab53Q_xisC28pj';
 const KEY='dnd55.mj';
-const VERSION='18.10.2026 à 23:20';
+const VERSION='18.10.2026 à 23:31';
 const TYPES=[['objet','Objet'],['arme','Arme'],['armure','Armure'],['magique','Objet magique'],['potion','Potion'],['parchemin','Parchemin'],['lettre','Lettre'],['carte','Carte'],['autre','Autre']];
 const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['campagne','Campagne']];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -300,11 +304,14 @@ async function action(fn,args,msg){
 /* messages courts : bandeau flottant en bas de l'écran, effacé après 4 s (6 s pour une erreur) ou au toucher */
 let toastT=null;
 function renderDock(){
-  let d=document.getElementById('dock');if(!d){d=document.createElement('div');d.id='dock';d.className='dock';document.body.appendChild(d)}
-  if(!flash)return;const err=flash.err;d.innerHTML=`<div class="msg toast ${err?'err':''}" role="status" data-toast>${esc(flash.t)}</div>`;flash=null;
+  let d=document.getElementById('dock');if(!d){d=document.createElement('div');d.id='dock';d.className='dock dock-haut';document.body.appendChild(d)}
+  placerHaut();if(!flash)return;const err=flash.err;d.innerHTML=`<div class="msg toast ${err?'err':''}" role="status" data-toast>${esc(flash.t)}</div>`;flash=null;
   clearTimeout(toastT);toastT=setTimeout(()=>{d.innerHTML=''},err?6000:4000);
 }
 document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('[data-toast]');if(t)t.remove()},true);
+/* juste sous l'en-tête (nom de campagne et onglets), sans le recouvrir */
+function placerHaut(){const h=document.getElementById('dock');if(!h)return;const t=document.querySelector('.top');h.style.top=t?(Math.max(0,t.getBoundingClientRect().bottom)+8)+'px':'calc(8px + env(safe-area-inset-top,0px))'}
+window.addEventListener('scroll',placerHaut,{passive:true});
 function msgHtml(){if(!flash)return'';const h=`<div class="msg ${flash.err?'err':''}" role="status">${esc(flash.t)}</div>`;flash=null;return h}
 const quand=t=>{if(!t)return'jamais';const m=Math.round((Date.now()-Date.parse(t))/60000);return m<1?'à l’instant':m<60?'il y a '+m+' min':m<1440?'il y a '+Math.round(m/60)+' h':new Date(t).toLocaleDateString('fr-CH')};
 
