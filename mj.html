@@ -38,21 +38,14 @@ h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
 .h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
 .err-t{color:var(--danger)}
-/* harmonisation : petite étoile rouge ; à l'éveil, elle tourne, luit d'or et une lueur balaie la ligne */
+/* harmonisation : petite étoile rouge à côté du nom */
 .harmo{display:inline-block;margin-left:6px;color:var(--accent);font-size:1rem;line-height:1}
-@media (prefers-reduced-motion:no-preference){
-  .harmo.eveil{animation:eveil 2.4s ease-out}
-  .objet.eveil{background:linear-gradient(100deg,transparent 35%,rgba(217,164,65,.4) 50%,transparent 65%) no-repeat;background-size:300% 100%;animation:lueur 2.4s ease-out}
-}
-@keyframes eveil{0%{transform:scale(.2) rotate(-120deg);opacity:0}35%{transform:scale(1.7) rotate(0);opacity:1;color:#b8862b;text-shadow:0 0 6px #e0b04a,0 0 16px #e0b04a}75%{transform:scale(1);text-shadow:0 0 8px #e0b04a}100%{transform:none;text-shadow:none}}
-@keyframes lueur{from{background-position:110% 0}to{background-position:-10% 0}}
-/* visionneuse plein écran pour les lettres et cartes envoyées en image (toucher l'image : zoom ×2,5) */
+/* visionneuse plein écran pour les lettres et cartes envoyées en image (zoom à deux doigts, glisser pour se déplacer) */
 .visionneuse{position:fixed;inset:0;z-index:50;background:#1d130b;display:flex;flex-direction:column}
 .vis-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;color:#f6ecd4;font-family:var(--disp);font-size:1.1rem}
 .vis-barre button{flex:none;color:#f6ecd4;border-color:#f6ecd4;height:36px;width:36px;padding:0}
-.vis-zone{flex:1;overflow:auto;display:grid}
-.vis-zone img{display:block;width:100%;height:auto;margin:auto;cursor:zoom-in}
-.vis-zone img.zoom{width:250%;max-width:none;cursor:zoom-out}
+.vis-zone{flex:1;overflow:hidden;display:flex;align-items:center;touch-action:none}
+.vis-zone img{display:block;width:100%;height:auto;transform-origin:0 0;will-change:transform}
 .code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
 /* pas de filet sous le dernier élément d'une liste */
 ul.plain li:last-child,.res>:nth-last-child(-n+2),.skill:nth-last-child(-n+2),
@@ -244,7 +237,12 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
 .ev:not(:has(~ .ev)){border-bottom:none}
 .ok{color:#3d6b2f}
 .fichier{display:block;cursor:pointer}.btn-like{display:flex;align-items:center;justify-content:center;height:34px;border:1px dashed var(--accent);border-radius:4px;color:var(--accent)}
-.case{display:flex;align-items:center;gap:8px;font-size:.95rem}.case input{width:18px;height:18px;accent-color:var(--accent)}
+.cases{display:flex;gap:18px;flex-wrap:nowrap}
+.case{display:flex;align-items:center;gap:9px;font-size:.98rem;cursor:pointer;position:relative}
+.case input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.losange{flex:none;width:13px;height:13px;border:2px solid var(--accent);transform:rotate(45deg);margin:0 3px}
+.case input:checked+.losange{background:var(--accent)}
+.case input:focus-visible+.losange{outline:2px solid var(--accent);outline-offset:3px}
 .cache-box{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px dashed var(--line);border-radius:3px}
 .cache-box input{height:34px;padding:0 8px}
 .ev{flex-direction:column}.ev-l1{display:flex;justify-content:space-between;gap:8px}.ev-btns{display:flex;flex-wrap:wrap;gap:6px;justify-content:end}
@@ -261,6 +259,7 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
    Tout passe par des fonctions Supabase protégées par le code MJ (gardé sur cet appareil uniquement). */
 const SUPA='https://mgcofajllvellwcudjxx.supabase.co',CLE_PUB='sb_publishable_WLlUZ1Aznum4Rz1qwab53Q_xisC28pj';
 const KEY='dnd55.mj';
+const VERSION='18.10.2026 à 18:47';
 const TYPES=[['objet','Objet'],['arme','Arme'],['armure','Armure'],['magique','Objet magique'],['potion','Potion'],['parchemin','Parchemin'],['lettre','Lettre'],['carte','Carte'],['autre','Autre']];
 const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['campagne','Campagne']];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -299,7 +298,6 @@ function render(){
   const tabs=ONGLETS.map(([k,l])=>`<button data-a="onglet" data-o="${k}" aria-current="${ui.onglet===k}">${l}</button>`).join('');
   const corps={joueurs:ongJoueurs,objets:ongObjets,envois:ongEnvois,campagne:ongCampagne}[ui.onglet]||ongJoueurs;
   app.innerHTML=`<header class="top"><div class="row"><div class="titre"><h1>${esc(etat.campagne.nom)}</h1></div>
-    <button data-a="rafraichir" aria-label="Rafraîchir" title="Rafraîchir">↻</button>
     <button data-a="edit" class="icone ${ui.edit?'on':''}" aria-pressed="${ui.edit}" aria-label="${ui.edit?'Terminer':'Modifier'}">${ui.edit
       ?'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
       :'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'}</button></div>
@@ -332,7 +330,8 @@ function ongJoueurs(){
 function formObjet(o,id){
   const v=k=>esc(o[k]??'');
   return `<div class="form" data-form="${id}">
-    <label class="full case"><input type="checkbox" data-k="cache" ${o.cache?'checked':''}> Objet mystérieux (révélé plus tard)</label>
+    <div class="full cases"><label class="case"><input type="checkbox" data-k="cache" ${o.cache?'checked':''}><span class="losange"></span>Mystérieux</label>
+      <label class="case"><input type="checkbox" data-k="harmo" ${o.harmo?'checked':''}><span class="losange"></span>Harmonisable</label></div>
     ${o.cache?`<div class="full cache-box"><div class="lab">Ce que le joueur voit d’abord</div>
       <input data-k="nom_cache" value="${v('nom_cache')}" placeholder="Nom visible (ex. Anneau d’argent gravé)">
       <textarea data-k="desc_cache" rows="2" placeholder="Description visible (facultatif)">${v('desc_cache')}</textarea>
@@ -351,7 +350,7 @@ function ongObjets(){
       :`<button class="btn-s" data-a="retirerO" data-id="${esc(o.id)}">Retirer</button>`}</div></div>`;
     const nom=o.lien?`<a class="ext nom" href="${esc(o.lien)}" target="_blank" rel="noopener">${esc(o.nom)}</a>`:`<span class="nom">${esc(o.nom)}</span>`;
     const ouvert=ui.envoi===o.id,ch=ui.choix;
-    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}${o.cache?' <span class="badge">?</span>':''}</span>
+    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}${o.cache?' <span class="badge" title="Mystérieux">?</span>':''}${o.harmo?' <span class="harmo-mj" title="Harmonisable">✦</span>':''}</span>
       <button class="btn-s ${ouvert?'on':''}" data-a="envoiOuvrir" data-id="${esc(o.id)}">Envoyer</button></div>
       ${o.cache?`<div class="d">Le joueur voit : « ${esc(o.nom_cache||'Objet mystérieux')} »</div>`:''}
       ${o.description?`<div class="d">${esc(o.description)}</div>`:''}
@@ -365,13 +364,13 @@ function ongObjets(){
 function ongEnvois(){
   const nomJ=id=>(etat.joueurs.find(j=>j.id===id)||{nom:'(joueur retiré)'}).nom;
   const l=etat.envois.map(e=>{
-    const vrai=e.secret&&e.secret.nom,nom=e.revele&&vrai?vrai:e.contenu.nom;
+    const vrai=e.o_cache?(e.o_nom||(e.secret&&e.secret.nom)):(e.secret&&e.secret.nom),nom=e.revele&&vrai?vrai:e.contenu.nom;
     const etiquette=[e.recu_le?'<span class="ok">reçu</span>':'<span class="muted">en attente</span>',e.harmonise?'<span class="harmo-mj">✦ harmonisé</span>':e.revele&&vrai?'<span class="muted">révélé</span>':''].filter(Boolean).join(' · ');
     const btn=(a,t,cls='')=>`<button class="btn-s ${cls}" data-a="${a}" data-id="${esc(e.id)}">${t}</button>`;
     return `<div class="ev"><div class="ev-l1"><span><b>${esc(nom)}</b>${num(e.contenu.qte)>1?' ×'+esc(e.contenu.qte):''} → ${esc(nomJ(e.joueur_id))}
-      ${vrai&&!e.revele?`<br><span class="muted">vu comme « ${esc(e.contenu.nom)} » · vrai nom : ${esc(vrai)}</span>`:''}
+      ${vrai&&!e.revele&&vrai!==e.contenu.nom?`<br><span class="muted">vrai nom : ${esc(vrai)}</span>`:''}
       <br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span><span>${etiquette}</span></div>
-      <div class="ev-btns">${vrai&&!e.revele?btn('reveler','Révéler'):''}${e.harmonise?btn('rompre','Rompre l’harmonisation'):btn('harmoniser','✦ Harmoniser')}</div></div>`}).join('');
+      ${(e.o_cache&&!e.revele)||e.o_harmo||e.harmonise?`<div class="ev-btns">${e.o_cache&&!e.revele?btn('reveler','Révéler'):''}${e.harmonise?btn('rompre','Rompre l’harmonisation'):e.o_harmo?btn('harmoniser','✦ Harmoniser'):''}</div>`:''}</div>`}).join('');
   return `<section><h2>Envois</h2>${l||'<p class="muted">Rien d’envoyé pour l’instant.</p>'}
     <p class="muted">« En attente » : le joueur n’a pas encore ouvert son app. L’objet arrivera dès qu’il l’ouvre.</p></section>`;
 }
@@ -380,7 +379,7 @@ function ongCampagne(){
       :`<div><b>${esc(etat.campagne.nom)}</b> · ${etat.joueurs.length} joueur(s) · ${etat.objets.length} objet(s)</div>`}</section>
     <section><h2>Export complet</h2><p class="muted">Toutes les fiches, le catalogue et les envois dans un seul fichier. À ranger sur ton kDrive de temps en temps.</p>
       <button data-a="exporter">Télécharger l’export</button></section>
-    <section><h2>Cet appareil</h2><button data-a="majApp">Mettre à jour l’application</button>${ui.confSortir?`<p>Oublier le code MJ sur cet appareil ?</p><div class="row"><button class="dgr" data-a="sortirOui">Oui, se déconnecter</button><button data-a="confNon">Annuler</button></div>`
+    <section><h2>Cet appareil</h2><p class="muted">Version du ${esc(VERSION)}.</p><button data-a="majApp">Mettre à jour l’application</button>${ui.confSortir?`<p>Oublier le code MJ sur cet appareil ?</p><div class="row"><button class="dgr" data-a="sortirOui">Oui, se déconnecter</button><button data-a="confNon">Annuler</button></div>`
       :`<button data-a="sortir">Se déconnecter</button>`}</section>`;
 }
 
@@ -392,7 +391,6 @@ document.addEventListener('click',async ev=>{
   switch(a){
     case 'onglet':{const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),j=ONGLETS.findIndex(o=>o[0]===b.dataset.o);anim=j>i?'in-g':j<i?'in-d':''}ui.onglet=b.dataset.o;ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);return;
     case 'edit':ui.edit=!ui.edit;ui.confRetirer=null;ui.envoi=null;render();return;
-    case 'rafraichir':await charger();flash=null;return;
     case 'initOui':ui.init=true;render();return;
     case 'initNon':ui.init=false;render();return;
     case 'entrer':{const c=document.getElementById('code').value;if(!c)return;code=c;
@@ -492,6 +490,7 @@ document.addEventListener('touchend',ev=>{
     try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);
   }
 },{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&code&&charge&&!ui.edit&&!ui.ajout)charger(true)});
 render();if(code)charger();
 </script>
 
