@@ -2,5 +2,52 @@
 
 Fiche de personnage D&D 5.5 (2024) en français, pour téléphone, alimentée par les exports du créateur de personnage AideDD.
 
-- Application : https://homotopic-to-the-circle.github.io/DnD_Character/
-- `bookmarklet-aidedd.txt` : à coller comme adresse d'un favori, puis à lancer sur la fiche finale AideDD pour exporter le personnage.
+Application : https://homotopic-to-the-circle.github.io/DnD_Character/
+
+## Exporter son personnage depuis AideDD
+
+On utilise un **favori spécial** (un « bookmarklet ») : au lieu d'ouvrir une page, il lit la fiche AideDD affichée et en fait un texte à coller dans l'application. On ne le crée qu'une fois.
+
+### 1. Créer le favori (une seule fois)
+
+1. Copie tout le code ci-dessous (bouton de copie en haut à droite du bloc, ou appui long → Tout sélectionner → Copier). Il fait une seule ligne très longue, et il doit commencer par `javascript:`.
+2. Ajoute n'importe quelle page en favori (celle-ci, par exemple).
+3. Ouvre la liste des favoris, puis **modifie** ce favori :
+   - **Nom** : `Export AideDD`
+   - **Adresse (URL)** : efface tout et colle le code.
+4. Enregistre.
+
+Où trouver « Modifier » :
+- **Firefox (Android)** : menu ⋮ → Favoris → ⋮ à côté du favori → Modifier.
+- **Chrome (Android)** : menu ⋮ → Favoris → ⋮ à côté du favori → Modifier.
+- **Safari (iPhone)** : icône livre → onglet Favoris → Modifier (en bas) → touche le favori.
+
+Si le navigateur retire `javascript:` au début en collant, retape-le à la main.
+
+```text
+javascript:(async()=>{try{const $=i=>document.getElementById(i),v=i=>{const e=$(i);return e?(('value' in e&&e.tagName!=='DIV')?e.value:e.textContent).trim():''},ck=i=>{const e=$(i);return e?!!e.checked:false},L=i=>{const e=$(i);if(!e)return[];return e.innerHTML.split(/<br\s*\/?>|\n/i).map(s=>{const d=document.createElement('div');d.innerHTML=s;return d.textContent.trim()}).filter(s=>s&&s!=='...')},T=i=>v(i).split('\n').map(s=>s.trim()).filter(s=>s&&s!=='...'),fl=i=>{const e=$(i);return!!(e&&e.querySelector('.bxf'))},f=document.forms.form1;if(!f||!$('myAC')){alert('Page AideDD non reconnue : ouvre la fiche finale (Termine !)');return}const car=['FOR','DEX','CON','INT','SAG','CHA'].map((n,i)=>({n,val:+v('myCar'+i),mod:v('myBonus'+i),jds:v('myJds'+i),jdsM:ck('myJdsProf'+i)})),ski=[];for(let i=0;i<18;i++){const e=$('mySki'+i);if(e)ski.push({id:i,nom:((e.nextSibling&&e.nextSibling.textContent)||'').trim(),val:e.value,m:ck('mySkiProf'+i)})}const armes=[];for(let i=1;i<=6;i++)if(v('wname'+i))armes.push({nom:v('wname'+i),att:v('wbonus'+i),deg:v('wdg'+i),note:v('wnote'+i)});const capa=L('myFeatures1').concat(L('myFeatures2')).map(l=>{const m=l.match(/^(.+?)\s*\((\d+)\)$/);return m?{nom:m[1],max:+m[2]}:{nom:l}}),sorts=[];for(let i=0;i<75;i++){const n=$('sortName'+i);if(!n)break;const nom=n.textContent.trim();if(!nom)continue;const a=n.querySelector('a');sorts.push({niv:+v('sortLvl'+i),nom,url:a?a.href:'',inc:v('sortCast'+i),portee:v('sortRang'+i),C:fl('sortCon'+i),R:fl('sortRit'+i),M:fl('sortMat'+i),note:v('spellNote'+i)})}const choix={};f.querySelectorAll('input[type=hidden]').forEach(e=>choix[e.name]=e.value);let xml='';try{const r=await fetch(f.action,{method:'POST',body:new URLSearchParams(new FormData(f))});xml=await r.text()}catch(e){}const xmlOk=xml.includes('<creator>'),d={v:1,date:new Date().toISOString(),id:{nom:v('myName'),historique:v('myBack'),classe:v('myClass'),sousClasse:v('mySubClass'),espece:v('mySpecies'),niveau:v('myLevel'),xp:v('myXP'),alignement:v('myAlign'),taille:v('mySize')},combat:{ca:v('myAC'),pvMax:v('myHP'),dv:v('myDice'),maitrise:v('myPB'),init:v('myInit'),vitesse:v('mySpeed'),percPassive:v('myPerc')},car,ski,armes,capa,traits:T('myTrait'),dons:T('myFeats'),maitrises:{armures:{L:ck('profL'),I:ck('profM'),Lo:ck('profH'),B:ck('profS')},armes:v('profWeapons'),outils:v('profTools'),langues:v('profLanguages')},magie:{carac:v('mySpellAbi'),mod:v('mySpellMod'),dd:v('mySpellDC'),att:v('mySpellAtt'),slots:[1,2,3,4,5,6,7,8,9].map(k=>v('slot'+k))},sorts,equipement:v('myEquip'),harmo:[1,2,3].map(k=>v('myAttun'+k)).filter(Boolean),pieces:{pc:v('myCP'),pa:v('mySP'),pe:v('myEP'),po:v('myGP'),pp:v('myPP')},histoire:v('myBackstory'),choix,xml:xmlOk?xml:''},s=JSON.stringify(d),o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:99999;background:white;color:black;padding:12px;font:15px sans-serif;display:flex;flex-direction:column;gap:8px';o.innerHTML=`<b>Export ${d.id.classe} niv ${d.id.niveau}</b><div>${sorts.length} sorts, ${armes.length} armes, ${capa.length} capacites, XML ${xmlOk?'OK':'MANQUANT'} (${Math.round(s.length/1024)} Ko)</div><textarea style="flex:1;font:11px monospace"></textarea><button>Copier</button><button>Telecharger</button><button>Fermer</button>`;document.body.appendChild(o);const ta=o.querySelector('textarea'),b=o.querySelectorAll('button');ta.value=s;b[0].onclick=async()=>{try{await navigator.clipboard.writeText(s);b[0].textContent='Copie OK'}catch(e){ta.focus();ta.select();document.execCommand('copy');b[0].textContent='Copie (selection)'}};b[1].onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'application/json'}));a.download=(d.id.nom||'perso')+'.json';document.body.appendChild(a);a.click();a.remove()};b[2].onclick=()=>o.remove()}catch(e){alert('Erreur bookmarklet : '+e.message)}})();
+```
+
+Le même code est aussi dans le fichier [`bookmarklet-aidedd.txt`](bookmarklet-aidedd.txt).
+
+### 2. Exporter le personnage
+
+1. Crée ton personnage sur https://www.aidedd.org/dnd-creator/ jusqu'au bout, et appuie sur **Terminé !** pour afficher la fiche finale.
+2. Lance le favori :
+   - **Firefox et Chrome (Android)** : touche la barre d'adresse, tape `Export AideDD`, puis touche le favori dans les suggestions (pas la recherche web).
+   - **Safari (iPhone)** : ouvre les favoris et touche `Export AideDD`.
+3. Un écran blanc s'affiche avec le résumé (sorts, armes, capacités, « XML OK »). Appuie sur **Copier**.
+4. Ouvre l'application, colle le texte dans **Importer**, puis appuie sur **Importer**.
+
+### Monter de niveau
+
+Dans l'application, onglet **Fiche** → **Copier le XML**, importe-le sur AideDD, monte de niveau là-bas, relance le favori sur la nouvelle fiche finale, et colle le résultat dans **Mettre à jour le personnage**. Les cases cochées, les notes, les armes et les sorts ajoutés sont conservés.
+
+## Installer l'application sur le téléphone
+
+Ouvre l'adresse de l'application, puis :
+- **Firefox (Android)** : menu ⋮ → Ajouter à l'écran d'accueil.
+- **Chrome (Android)** : menu ⋮ → Ajouter à l'écran d'accueil (ou Installer l'application).
+- **Safari (iPhone)** : bouton Partager → Sur l'écran d'accueil.
+
+Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.
