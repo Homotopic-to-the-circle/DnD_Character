@@ -248,6 +248,8 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
 .cache-box input{height:34px;padding:0 8px}
 .ev{flex-direction:column}.ev-l1{display:flex;justify-content:space-between;gap:8px}.ev-btns{display:flex;flex-wrap:wrap;gap:6px;justify-content:end}
 .harmo-mj{color:var(--accent)}
+/* reçu / révélé / harmonisé : une ligne chacun, collés à droite */
+.etiq{display:flex;flex-direction:column;align-items:flex-end;flex:none;text-align:right}.etiq>span{white-space:nowrap}
 .btn-s{height:32px;padding:0 10px;display:inline-flex;align-items:center;line-height:1}
 .envoi-box .code-row{align-items:center}
 .code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
@@ -260,7 +262,7 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
    Tout passe par des fonctions Supabase protégées par le code MJ (gardé sur cet appareil uniquement). */
 const SUPA='https://mgcofajllvellwcudjxx.supabase.co',CLE_PUB='sb_publishable_WLlUZ1Aznum4Rz1qwab53Q_xisC28pj';
 const KEY='dnd55.mj';
-const VERSION='18.10.2026 à 19:30';
+const VERSION='18.10.2026 à 19:41';
 const TYPES=[['objet','Objet'],['arme','Arme'],['armure','Armure'],['magique','Objet magique'],['potion','Potion'],['parchemin','Parchemin'],['lettre','Lettre'],['carte','Carte'],['autre','Autre']];
 const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['campagne','Campagne']];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -366,11 +368,11 @@ function ongEnvois(){
   const nomJ=id=>(etat.joueurs.find(j=>j.id===id)||{nom:'(joueur retiré)'}).nom;
   const l=etat.envois.map(e=>{
     const vrai=e.o_cache?(e.o_nom||(e.secret&&e.secret.nom)):(e.secret&&e.secret.nom),nom=e.revele&&vrai?vrai:e.contenu.nom;
-    const etiquette=[e.recu_le?'<span class="ok">reçu</span>':'<span class="muted">en attente</span>',e.harmonise?'<span class="harmo-mj">✦ harmonisé</span>':e.revele&&vrai?'<span class="muted">révélé</span>':''].filter(Boolean).join(' · ');
+    const etiquette=[e.recu_le?'<span class="ok">reçu</span>':'<span class="muted">en attente</span>',e.harmonise?'<span class="harmo-mj">✦ harmonisé</span>':e.revele&&vrai?'<span class="muted">révélé</span>':''].filter(Boolean).join('');
     const btn=(a,t,cls='')=>`<button class="btn-s ${cls}" data-a="${a}" data-id="${esc(e.id)}">${t}</button>`;
     return `<div class="ev"><div class="ev-l1"><span><b>${esc(nom)}</b>${num(e.contenu.qte)>1?' ×'+esc(e.contenu.qte):''} → ${esc(nomJ(e.joueur_id))}
       ${vrai&&!e.revele&&vrai!==e.contenu.nom?`<br><span class="muted">vrai nom : ${esc(vrai)}</span>`:''}
-      <br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span><span>${etiquette}</span></div>
+      <br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span><span class="etiq">${etiquette}</span></div>
       ${(e.o_cache&&!e.revele)||e.o_harmo||e.harmonise?`<div class="ev-btns">${e.o_cache&&!e.revele?btn('reveler','Révéler'):''}${e.harmonise?btn('rompre','Rompre l’harmonisation'):e.o_harmo?btn('harmoniser','✦ Harmoniser'):''}</div>`:''}</div>`}).join('');
   return `<section><h2>Envois</h2>${l||'<p class="muted">Rien d’envoyé pour l’instant.</p>'}
     <p class="muted">« En attente » : le joueur n’a pas encore ouvert son app. L’objet arrivera dès qu’il l’ouvre.</p></section>`;
