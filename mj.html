@@ -38,6 +38,14 @@ h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
 .h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
 .err-t{color:var(--danger)}
+/* harmonisation : petite étoile rouge ; à l'éveil, elle tourne, luit d'or et une lueur balaie la ligne */
+.harmo{display:inline-block;margin-left:6px;color:var(--accent);font-size:1rem;line-height:1}
+@media (prefers-reduced-motion:no-preference){
+  .harmo.eveil{animation:eveil 2.4s ease-out}
+  .objet.eveil{background:linear-gradient(100deg,transparent 35%,rgba(217,164,65,.4) 50%,transparent 65%) no-repeat;background-size:300% 100%;animation:lueur 2.4s ease-out}
+}
+@keyframes eveil{0%{transform:scale(.2) rotate(-120deg);opacity:0}35%{transform:scale(1.7) rotate(0);opacity:1;color:#b8862b;text-shadow:0 0 6px #e0b04a,0 0 16px #e0b04a}75%{transform:scale(1);text-shadow:0 0 8px #e0b04a}100%{transform:none;text-shadow:none}}
+@keyframes lueur{from{background-position:110% 0}to{background-position:-10% 0}}
 /* visionneuse plein écran pour les lettres et cartes envoyées en image (toucher l'image : zoom ×2,5) */
 .visionneuse{position:fixed;inset:0;z-index:50;background:#1d130b;display:flex;flex-direction:column}
 .vis-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;color:#f6ecd4;font-family:var(--disp);font-size:1.1rem}
@@ -236,6 +244,11 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
 .ev:not(:has(~ .ev)){border-bottom:none}
 .ok{color:#3d6b2f}
 .fichier{display:block;cursor:pointer}.btn-like{display:flex;align-items:center;justify-content:center;height:34px;border:1px dashed var(--accent);border-radius:4px;color:var(--accent)}
+.case{display:flex;align-items:center;gap:8px;font-size:.95rem}.case input{width:18px;height:18px;accent-color:var(--accent)}
+.cache-box{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px dashed var(--line);border-radius:3px}
+.cache-box input{height:34px;padding:0 8px}
+.ev{flex-direction:column}.ev-l1{display:flex;justify-content:space-between;gap:8px}.ev-btns{display:flex;flex-wrap:wrap;gap:6px;justify-content:end}
+.harmo-mj{color:var(--accent)}
 .btn-s{height:32px;padding:0 10px;display:inline-flex;align-items:center;line-height:1}
 .envoi-box .code-row{align-items:center}
 .code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
@@ -310,7 +323,7 @@ function ongJoueurs(){
     ?`<div class="jr"><div class="row code-row"><input data-jnom="${esc(j.id)}" value="${esc(j.nom)}" aria-label="Nom du joueur">${ui.confRetirer===j.id
         ?`<button class="dgr" data-a="retirerJOui" data-id="${esc(j.id)}">Retirer ?</button>`:`<button class="x" data-a="retirerJ" data-id="${esc(j.id)}" aria-label="Retirer ${esc(j.nom)}">✕</button>`}</div></div>`
     :`<div class="jr"><div class="l1"><b>${esc(j.nom)}</b><span class="muted">vu ${esc(quand(j.vu_le))}</span></div>
-      <div>${j.perso?`${esc(j.perso)} · ${esc(j.classe||'')} niv ${esc(j.niveau||'?')} · PV ${esc(j.pv)}/${esc(j.pvMax)}`:'<span class="muted">Pas encore de personnage relié.</span>'}</div>
+      <div>${j.classe?`${esc(j.perso||'Sans nom')} · ${esc(j.classe||'')} niv ${esc(j.niveau||'?')} · PV ${esc(j.pv)}/${esc(j.pvMax)}${num(j.harmonises)?` · <span class="harmo-mj">✦ ${esc(j.harmonises)}/3</span>`:''}`:'<span class="muted">Pas encore de personnage relié.</span>'}</div>
       ${j.cle?`<div class="code"><span class="muted">Code :</span><b>${esc(jolieCle(j.cle))}</b><button class="btn-s" data-a="copierCode" data-c="${esc(jolieCle(j.cle))}">Copier</button></div>`:''}
       ${nouveauCode===j.id?'<p class="muted">Envoie ce code au joueur : il l’entre dans son app, onglet Fiche, « Sauvegarde en ligne ».</p>':''}</div>`;
   return `<section><h2>Joueurs</h2>${js.length?js.map(ligne).join(''):'<p class="muted">Aucun joueur. Ajoute-les ci-dessous.</p>'}</section>
@@ -319,11 +332,16 @@ function ongJoueurs(){
 function formObjet(o,id){
   const v=k=>esc(o[k]??'');
   return `<div class="form" data-form="${id}">
-    <input class="full" data-k="nom" value="${v('nom')}" placeholder="Nom de l’objet">
+    <label class="full case"><input type="checkbox" data-k="cache" ${o.cache?'checked':''}> Objet mystérieux (révélé plus tard)</label>
+    ${o.cache?`<div class="full cache-box"><div class="lab">Ce que le joueur voit d’abord</div>
+      <input data-k="nom_cache" value="${v('nom_cache')}" placeholder="Nom visible (ex. Anneau d’argent gravé)">
+      <textarea data-k="desc_cache" rows="2" placeholder="Description visible (facultatif)">${v('desc_cache')}</textarea>
+      <div class="lab">Une fois révélé</div></div>`:''}
+    <input class="full" data-k="nom" value="${v('nom')}" placeholder="${o.cache?'Vrai nom (ex. Anneau de protection)':'Nom de l’objet'}">
     <input data-k="qte" value="${v('qte')||1}" inputmode="numeric" placeholder="Qté" aria-label="Quantité">
     <input data-k="lien" value="${v('lien')}" placeholder="Lien (AideDD…) ou fichier joint" inputmode="url">
     <label class="full fichier"><input type="file" accept="image/*,application/pdf" data-fichier="${id}" hidden><span class="btn-like">${ui.envoiFichier===id?'Envoi du fichier…':'Joindre une image ou un PDF'}</span></label>
-    <textarea class="full" data-k="description" rows="2" placeholder="Description (facultatif)">${v('description')}</textarea></div>`;
+    <textarea class="full" data-k="description" rows="2" placeholder="${o.cache?'Vraie description (facultatif)':'Description (facultatif)'}">${v('description')}</textarea></div>`;
 }
 function ongObjets(){
   const js=etat.joueurs;
@@ -333,8 +351,9 @@ function ongObjets(){
       :`<button class="btn-s" data-a="retirerO" data-id="${esc(o.id)}">Retirer</button>`}</div></div>`;
     const nom=o.lien?`<a class="ext nom" href="${esc(o.lien)}" target="_blank" rel="noopener">${esc(o.nom)}</a>`:`<span class="nom">${esc(o.nom)}</span>`;
     const ouvert=ui.envoi===o.id,ch=ui.choix;
-    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}</span>
+    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}${o.cache?' <span class="badge">?</span>':''}</span>
       <button class="btn-s ${ouvert?'on':''}" data-a="envoiOuvrir" data-id="${esc(o.id)}">Envoyer</button></div>
+      ${o.cache?`<div class="d">Le joueur voit : « ${esc(o.nom_cache||'Objet mystérieux')} »</div>`:''}
       ${o.description?`<div class="d">${esc(o.description)}</div>`:''}
       ${ouvert?`<div class="envoi-box"><div class="lab">À qui ?</div><div class="chips2">${js.map(j=>`<button class="${ch[j.id]?'on':''}" data-a="choix" data-id="${esc(j.id)}" aria-pressed="${!!ch[j.id]}">${esc(j.nom)}</button>`).join('')||'<span class="muted">Ajoute d’abord des joueurs.</span>'}</div>
         <div class="row code-row"><span class="muted">Quantité</span><input id="eqte" value="${num(o.qte)>1?esc(o.qte):1}" inputmode="numeric" style="max-width:5rem;flex:none"><button class="pri" data-a="envoyer" data-id="${esc(o.id)}">Envoyer</button></div></div>`:''}</div>`;
@@ -345,8 +364,14 @@ function ongObjets(){
 }
 function ongEnvois(){
   const nomJ=id=>(etat.joueurs.find(j=>j.id===id)||{nom:'(joueur retiré)'}).nom;
-  const l=etat.envois.map(e=>`<div class="ev"><span><b>${esc(e.contenu.nom)}</b>${num(e.contenu.qte)>1?' ×'+esc(e.contenu.qte):''} → ${esc(nomJ(e.joueur_id))}<br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span>
-    <span class="${e.recu_le?'ok':'muted'}">${e.recu_le?'reçu':'en attente'}</span></div>`).join('');
+  const l=etat.envois.map(e=>{
+    const vrai=e.secret&&e.secret.nom,nom=e.revele&&vrai?vrai:e.contenu.nom;
+    const etiquette=[e.recu_le?'<span class="ok">reçu</span>':'<span class="muted">en attente</span>',e.harmonise?'<span class="harmo-mj">✦ harmonisé</span>':e.revele&&vrai?'<span class="muted">révélé</span>':''].filter(Boolean).join(' · ');
+    const btn=(a,t,cls='')=>`<button class="btn-s ${cls}" data-a="${a}" data-id="${esc(e.id)}">${t}</button>`;
+    return `<div class="ev"><div class="ev-l1"><span><b>${esc(nom)}</b>${num(e.contenu.qte)>1?' ×'+esc(e.contenu.qte):''} → ${esc(nomJ(e.joueur_id))}
+      ${vrai&&!e.revele?`<br><span class="muted">vu comme « ${esc(e.contenu.nom)} » · vrai nom : ${esc(vrai)}</span>`:''}
+      <br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span><span>${etiquette}</span></div>
+      <div class="ev-btns">${vrai&&!e.revele?btn('reveler','Révéler'):''}${e.harmonise?btn('rompre','Rompre l’harmonisation'):btn('harmoniser','✦ Harmoniser')}</div></div>`}).join('');
   return `<section><h2>Envois</h2>${l||'<p class="muted">Rien d’envoyé pour l’instant.</p>'}
     <p class="muted">« En attente » : le joueur n’a pas encore ouvert son app. L’objet arrivera dès qu’il l’ouvre.</p></section>`;
 }
@@ -360,7 +385,7 @@ function ongCampagne(){
 }
 
 /* ---------- interactions ---------- */
-function lireForm(id){const f=document.querySelector(`[data-form="${id}"]`),o={};if(!f)return o;f.querySelectorAll('[data-k]').forEach(el=>o[el.dataset.k]=el.value);o.qte=Math.max(0,num(o.qte));return o}
+function lireForm(id){const f=document.querySelector(`[data-form="${id}"]`),o={};if(!f)return o;f.querySelectorAll('[data-k]').forEach(el=>o[el.dataset.k]=el.type==='checkbox'?el.checked:el.value);o.qte=Math.max(0,num(o.qte));return o}
 function telecharger(texte,nom){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([texte],{type:'application/json'}));a.download=nom;document.body.appendChild(a);a.click();a.remove()}catch(e){}}
 document.addEventListener('click',async ev=>{
   const b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
@@ -395,6 +420,12 @@ document.addEventListener('click',async ev=>{
       const noms=ids.map(id=>(etat.joueurs.find(j=>j.id===id)||{}).nom).join(', ');
       b.disabled=true;b.textContent='Envoi…';
       const r=await action('mj_envoyer',{p_objet_id:b.dataset.id,p_joueurs:ids,p_qte:q},'« '+(o?o.nom:'Objet')+' » envoyé à '+noms+'.');if(r!=null){ui.envoi=null;ui.choix={};render()}return}
+    case 'reveler':case 'harmoniser':case 'rompre':{if(b.disabled)return;b.disabled=true;
+      const e=etat.envois.find(x=>x.id===b.dataset.id),j=e&&etat.joueurs.find(x=>x.id===e.joueur_id),nom=e?(e.secret&&e.secret.nom)||e.contenu.nom:'';
+      const r=await action('mj_action',{p_envoi:b.dataset.id,p_action:a},r=>a==='rompre'?'Harmonisation rompue : '+nom+'.'
+        :a==='reveler'?'« '+nom+' » révélé à '+(j?j.nom:'')+'.'
+        :'✦ '+(j?j.nom:'')+' s’harmonise avec « '+nom+' »'+(r&&r.harmonises>3?' — attention, '+r.harmonises+' objets harmonisés (3 au maximum).':'.'));
+      return}
     case 'renommer':{const n=document.getElementById('cnom').value;await action('mj_campagne_renommer',{p_nom:n},'Nom enregistré.');return}
     case 'exporter':{try{const x=await rpc('mj_export',{p_code:code});telecharger(JSON.stringify(x,null,1),'export-'+(etat.campagne.nom||'campagne').replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json');flash={t:'Export téléchargé.'}}catch(e){flash={err:1,t:erreur(e)}}render();return}
     case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;Promise.all(['./mj.html','mj.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{}))).finally(()=>location.reload());return}
@@ -429,6 +460,12 @@ async function joindre(input){
   ui.envoiFichier=null;render();
 }
 document.addEventListener('change',ev=>{if(ev.target.dataset&&ev.target.dataset.fichier)joindre(ev.target)},true);
+/* cocher « mystérieux » affiche les champs de l'apparence */
+document.addEventListener('change',ev=>{
+  const el=ev.target;if(!(el.dataset&&el.dataset.k==='cache'))return;
+  const f=el.closest('[data-form]');if(f.dataset.form==='nouveau'){ui.brouillon=lireForm('nouveau');render()}
+  else{const o=etat.objets.find(x=>x.id===f.dataset.form);if(o){o.cache=el.checked;setTimeout(render,50)}}
+});
 /* modifications en mode crayon : enregistrées dès qu'on quitte le champ */
 document.addEventListener('change',async ev=>{
   const el=ev.target;
