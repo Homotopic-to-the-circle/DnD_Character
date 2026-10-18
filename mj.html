@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#efe2c2">
 <meta name="robots" content="noindex">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MJ Dal-Mor">
+<link rel="manifest" href="mj.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="mj-192.png">
+<link rel="apple-touch-icon" href="mj-180.png">
 <title>MJ · Feuille de Perso</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'">
 <style>
@@ -346,7 +350,7 @@ function ongCampagne(){
       :`<div><b>${esc(etat.campagne.nom)}</b> · ${etat.joueurs.length} joueur(s) · ${etat.objets.length} objet(s)</div>`}</section>
     <section><h2>Export complet</h2><p class="muted">Toutes les fiches, le catalogue et les envois dans un seul fichier. À ranger sur ton kDrive de temps en temps.</p>
       <button data-a="exporter">Télécharger l’export</button></section>
-    <section><h2>Cet appareil</h2>${ui.confSortir?`<p>Oublier le code MJ sur cet appareil ?</p><div class="row"><button class="dgr" data-a="sortirOui">Oui, se déconnecter</button><button data-a="confNon">Annuler</button></div>`
+    <section><h2>Cet appareil</h2><button data-a="majApp">Mettre à jour l’application</button>${ui.confSortir?`<p>Oublier le code MJ sur cet appareil ?</p><div class="row"><button class="dgr" data-a="sortirOui">Oui, se déconnecter</button><button data-a="confNon">Annuler</button></div>`
       :`<button data-a="sortir">Se déconnecter</button>`}</section>`;
 }
 
@@ -387,6 +391,7 @@ document.addEventListener('click',async ev=>{
       const r=await action('mj_envoyer',{p_objet_id:b.dataset.id,p_joueurs:ids,p_qte:q},'« '+(o?o.nom:'Objet')+' » envoyé à '+noms+'.');if(r!=null){ui.envoi=null;ui.choix={};render()}return}
     case 'renommer':{const n=document.getElementById('cnom').value;await action('mj_campagne_renommer',{p_nom:n},'Nom enregistré.');return}
     case 'exporter':{try{const x=await rpc('mj_export',{p_code:code});telecharger(JSON.stringify(x,null,1),'export-'+(etat.campagne.nom||'campagne').replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json');flash={t:'Export téléchargé.'}}catch(e){flash={err:1,t:erreur(e)}}render();return}
+    case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;Promise.all(['./mj.html','mj.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{}))).finally(()=>location.reload());return}
     case 'sortir':ui.confSortir=true;render();return;
     case 'sortirOui':code='';charge=false;etat=null;ui.confSortir=false;try{localStorage.removeItem(KEY+'.code')}catch(e){}render();return;
   }
@@ -402,6 +407,20 @@ document.addEventListener('change',async ev=>{
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='code'){const b=document.querySelector('[data-a=entrer]');if(b)b.click()}});
 /* rafraîchit les « reçu / en attente » et les PV sans déranger une saisie */
 setInterval(()=>{if(!code||!charge||ui.edit||ui.ajout||ui.envoi||document.visibilityState==='hidden')return;const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;charger(true)},20000);
+/* glisser à gauche / droite pour changer d'onglet, en boucle (comme l'app joueur) */
+let tx=null,ty=null;
+document.addEventListener('touchstart',ev=>{
+  if(!code||!charge||ev.touches.length>1||(ev.target.closest&&ev.target.closest('input,textarea,select'))){tx=null;return}
+  tx=ev.touches[0].clientX;ty=ev.touches[0].clientY;
+},{passive:true});
+document.addEventListener('touchend',ev=>{
+  if(tx==null)return;const t=ev.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
+  if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy)){
+    const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),n=ONGLETS.length;
+    ui.onglet=ONGLETS[(i+(dx<0?1:-1)+n)%n][0];ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;
+    try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);
+  }
+},{passive:true});
 render();if(code)charger();
 </script>
 
