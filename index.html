@@ -285,8 +285,10 @@ function lienAuto(type,nom,d,extra){
   return '';
 }
 function lien(type,nom,extra){const p=P();return (p.etat.liens||{})[type+':'+propre(nom)]||lienAuto(type,nom,D(p),extra)}
+/* AideDD coche (✔) les aptitudes prises en compte dans ses calculs : inutile ici */
+const sansCoche=t=>String(t??'').replace(/\s*[✔✓]\s*/g,' ').trim();
 function itemLien(type,nom,label,extra){
-  const u=lien(type,nom,extra);label=label??nom;
+  const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
   return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`;
 }
@@ -379,7 +381,7 @@ function ongCombat(p,d,e){
       <div class="full"><input data-f="armes.${i}.deg" value="${esc(a.deg)}" aria-label="Dégâts" placeholder="Dégâts"><input data-f="armes.${i}.note" value="${esc(a.note)}" aria-label="Notes" placeholder="Botte / notes"></div></div>`).join('')+`<button data-a="ajoutArme">+ Ajouter une arme</button>`
     :(e.armes.length?`<div class="armes">${e.armes.map(a=>`<div class="arme"><span class="nom">${a.nom?itemLien('arme',a.nom,undefined,a.deg):'Sans nom'}</span><span class="att">${esc(a.att)}</span>
       <span class="deg">${esc(a.deg)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</span></div>`).join('')}</div>`:'<p class="muted">Aucune arme. Ajoute-en avec Modifier.</p>');
-  const res=ressources(p).map(r=>`<div class="n">${!ed&&r.k.startsWith('c:')?itemLien('capa',r.nom):esc(r.nom)}${ed&&r.perso!=null?` <button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`:''}</div>${cases(r.k,r.max)}`).join('');
+  const res=ressources(p).map(r=>`<div class="n">${!ed&&r.k.startsWith('c:')?itemLien('capa',r.nom):esc(sansCoche(r.nom))}${ed&&r.perso!=null?` <button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`:''}</div>${cases(r.k,r.max)}`).join('');
   const autres=ed?d.capa.map(x=>itemLien('capa',x.nom)).join('')
     :d.capa.filter(x=>!x.max).map(x=>`<li>${itemLien('capa',x.nom)}</li>`).join('');
   return `<section class="card pvcard">
