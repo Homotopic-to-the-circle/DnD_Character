@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#efe2c2">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>MJ · Feuille de Perso</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'">
+<style>
+/* Layout : une colonne mobile sur parchemin, en-tête collant (nom, états, onglets), titres en petites capitales rouges soulignés d'un filet effilé comme dans les blocs de stats */
+/* Thème unique, assumé : parchemin clair (lisible en jeu, même dans un téléphone en mode sombre) */
+:root{
+  --bg:#efe2c2;--card:#f6ecd4;--fg:#2a1c12;--muted:#6e5a44;--line:#cdb68c;
+  --accent:#7a1c12;--accent-soft:#ecd3b8;--on-accent:#fbf4e4;--danger:#7a1c12;--danger-soft:#ecd3b8;
+  --conc:#3f5226;--conc-soft:#dfe3c4;--warn:#6a4a10;--warn-soft:#f1dfae;
+  --disp:"IM Fell English SC",Georgia,"Times New Roman",serif;
+  --body:"Alegreya",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+html{background:var(--bg)}
+body{color:var(--fg);font:17px/1.4 var(--body);background:var(--bg)}
+*{box-sizing:border-box}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
+main{display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--disp);font-weight:400;margin:0;text-wrap:balance;color:var(--accent)}
+h1{font-size:1.6rem;line-height:1.1}
+/* filet rouge plein sous chaque titre */
+h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
+   border-bottom:2px solid var(--accent)}
+/* titre avec un bouton à droite (Repos long) */
+.h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
+.err-t{color:var(--danger)}
+.code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
+/* pas de filet sous le dernier élément d'une liste */
+ul.plain li:last-child,.res>:nth-last-child(-n+2),.skill:nth-last-child(-n+2),
+.arme:not(:has(~ .arme)),.arme-ed:not(:has(~ .arme-ed)),.slot:not(:has(~ .slot)),.sort:not(:has(~ .sort)),
+.sort-ed:not(:has(~ .sort-ed)),.objet:not(:has(~ .objet)),.obj-ed:not(:has(~ .obj-ed)){border-bottom:none}
+section{display:flex;flex-direction:column;gap:8px}
+.muted{color:var(--muted);font-size:.92rem;font-style:italic}
+button{font:inherit;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:4px;padding:8px 12px;cursor:pointer}
+button.pri,button.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+button.dgr{color:var(--danger);border-color:var(--danger)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,textarea{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100%;min-width:0}
+textarea{min-height:90px;resize:vertical}
+a{color:var(--accent)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 1px 3px rgba(80,50,20,.12)}
+.texte{white-space:pre-wrap;overflow-wrap:anywhere}
+.lab{font-family:var(--disp);font-size:.85rem;letter-spacing:.04em;color:var(--muted)}
+/* en-tête */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));margin-top:-12px;padding-top:16px!important;display:flex;flex-direction:column;gap:6px;padding-top:4px;padding-bottom:0}
+.top>.row{flex-wrap:nowrap}
+.top .titre{flex:1;min-width:0}
+.top .titre h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .titre .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top button{padding:5px 9px;font-size:.92rem}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--accent)}
+.tabs button{flex:1;padding:6px 2px 4px;font-family:var(--disp);font-size:1rem;border:none;border-radius:3px 3px 0 0;white-space:nowrap;min-width:0;color:var(--muted)}
+.tabs button[aria-current="true"]{background:var(--accent);color:var(--on-accent)}
+/* boutons de l'en-tête (‹, États, crayon) : hauteur fixe identique ; le crayon est un carré de cette hauteur */
+.top>.row>button{height:36px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;flex:none;line-height:1}
+.top>.row>button.icone{width:36px;padding:0}
+.top button.icone svg{display:block;width:18px;height:18px}
+/* mode Modifier : champs et boutons d'une même hauteur, pour des lignes alignées */
+main.ed input{box-sizing:border-box;height:32px;padding:0 8px;font-size:.95rem}
+main.ed .lien-in,main.ed .lien-ed input{font-size:.8rem}
+main.ed button{box-sizing:border-box;height:32px;padding:0 10px;font-size:.95rem;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+main.ed .x{width:32px;padding:0}
+main.ed .box{height:18px;padding:0}
+main.ed .pvval input{height:auto;padding:0;font-size:2.1rem}
+main.ed .pvcard .pv button{height:34px;padding:0;font-size:1.2rem}
+main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
+/* états actifs */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--disp);font-size:.92rem;padding:2px 10px;border-radius:3px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent)}
+.chip.conc{border-color:var(--conc);background:var(--conc);color:var(--on-accent)}
+.etats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.etats button{padding:7px 6px;font-size:1rem}
+.etats button.on{background:var(--accent);color:var(--on-accent)}
+/* PV */
+.pv{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center}
+.pv button{font-size:1.6rem;padding:4px 0;line-height:1.2}
+.pvval{display:flex;align-items:baseline;justify-content:center;gap:6px;font-variant-numeric:tabular-nums lining-nums}
+.pvval input{width:4.5ch;font-size:2.4rem;font-weight:700;text-align:center;padding:0;border:none;background:transparent;border-bottom:1px solid var(--accent);border-radius:0;color:var(--accent)}
+.pvval span{font-size:1.3rem;color:var(--muted)}
+.pvcard{display:grid;grid-template-columns:1.35fr 1fr;gap:10px 14px;padding:10px 12px}
+.pvcol{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pvcol+.pvcol{border-left:1px solid var(--line);padding-left:12px}
+.pvcard .pv{grid-template-columns:30px 1fr 30px;gap:4px}
+.pvcard .pv button{font-size:1.2rem;padding:0;height:34px}
+.pvcard .pvval input{width:3ch;font-size:2.1rem}
+.pvcard .pvval span{font-size:1.15rem}
+.pvcol .pv{margin-top:auto}
+.mort{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:6px}
+.mort-g{display:grid;grid-template-columns:auto auto;gap:2px 10px;align-items:center;justify-items:end}
+.mort .boxes{gap:6px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.stat{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px 2px;min-width:0}
+.stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
+.stat .lab{font-size:.72rem;letter-spacing:.01em}
+/* cases : losanges, comme les emplacements des fiches officielles */
+.boxes{display:grid;gap:4px 8px;justify-content:end;padding:2px}
+.slot .boxes{justify-content:end}
+.cpt{display:flex;align-items:center;gap:10px;justify-content:end}
+.cpt button{width:34px;height:34px;padding:0;font-size:1.2rem;line-height:1}
+.cpt b{font-size:1.3rem;min-width:4.5ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
+.cpt b span{font-size:.95rem;font-weight:400;color:var(--muted)}
+.box{width:18px;height:18px;padding:0;border:2px solid var(--accent);border-radius:2px;background:transparent;transform:rotate(45deg);margin:3px}
+.box.on{background:var(--accent)}
+.box.e{border-color:var(--fg)}.box.e.on{background:var(--fg)}
+.res{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;align-items:center}
+.res .n{min-width:0}
+/* filet fin entre les ressources, comme pour l'équipement */
+.res{gap:0}.res>.n{padding-right:10px}
+.res>*{align-self:stretch;border-bottom:1px solid var(--line);padding:5px 0;min-height:40px;box-sizing:border-box}
+.res>.n{display:flex;align-items:center}.res>.boxes{align-content:center}.res>.cpt,.res>.res-ed{align-items:center}
+.x{border:none;background:transparent;color:var(--accent);padding:4px 8px}
+/* armes */
+.armes{display:flex;flex-direction:column}
+.arme{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.arme .nom{font-weight:700;font-size:1.08rem}
+.arme .att{font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums lining-nums;color:var(--accent);text-align:right}
+.arme .deg{grid-column:1/-1}
+.arme-ed{display:grid;grid-template-columns:1fr 4.2rem auto;gap:6px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.arme-ed .full{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.arme-ed input{padding:4px 6px}
+/* caracs */
+.cars{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.car{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px}
+.car .lab{color:var(--accent)}
+.car .m{font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.car .v{color:var(--muted);font-size:.9rem}
+.car .s{font-size:.85rem;margin-top:2px}
+.dot{display:inline-block;width:.55em;height:.55em;border:1.5px solid var(--accent);margin-right:7px;vertical-align:.08em;transform:rotate(45deg)}
+.dot.on{background:var(--accent)}
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.skill{display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);font-size:1rem;min-width:0}
+.skill b{font-variant-numeric:tabular-nums lining-nums}
+/* toutes les listes suivent la convention de l'équipement : une ligne par élément, filet fin dessous */
+ul.plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;display:flex;align-items:center}
+/* sorts */
+.magie{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.slot{display:grid;grid-template-columns:5rem 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;box-sizing:border-box}
+.sort{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:1px solid var(--line)}
+.sort a{font-weight:700;font-size:1.08rem;text-decoration:none;color:var(--fg)}  /* noir gras, comme les armes ; le rouge reste aux titres */
+.sort>div:first-child{display:flex;align-items:center;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:17px;min-width:17px;font-family:var(--disp);font-size:.72rem;line-height:1;border:1px solid var(--accent);border-radius:2px;padding:2px 3px 0;margin-left:6px;color:var(--accent)}
+.grid9{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grid9 label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column}
+.coins{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.coins label,.coin{font-family:var(--disp);font-size:.85rem;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.coin b{font-family:var(--body);font-size:1.3rem;color:var(--fg);font-variant-numeric:tabular-nums lining-nums}
+.coins input{text-align:center;font-variant-numeric:tabular-nums}
+/* équipement */
+.objets{display:flex;flex-direction:column}
+.objet{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);min-height:40px}
+.obj-n{min-width:0}.obj-d{display:block;font-size:.9rem;font-style:italic}
+.neuf{display:inline-block;margin-left:8px;padding:0 6px;border-radius:2px;background:var(--accent);color:var(--on-accent);font-size:.75rem;vertical-align:2px}
+.alerte.trouve{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}.alerte .row{flex-wrap:nowrap;gap:6px}
+.qte{display:flex;align-items:center;gap:6px;flex:none}
+.qte button{padding:0;width:30px;height:30px;line-height:1;font-size:1.1rem}
+.qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
+.obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.obj-ed input{padding:4px 6px}
+.obj-ed .lien-in{grid-column:1/-1;font-size:.8rem;color:var(--muted)}
+.sort-ed{padding:6px 0 8px;border-bottom:1px dashed var(--line)}
+.sort-ed .row{flex-wrap:nowrap}
+.sort-ed .nom{flex:1;font-weight:700}
+.sort-ed .sort-inf{flex-wrap:nowrap;margin-top:4px}
+.sort-ed .sort-inf input{flex:1;min-width:0;padding:4px 6px}
+.sort-ed .lien-in{width:100%;margin-top:4px;padding:4px 6px;font-size:.8rem;color:var(--muted)}
+.res-ed{flex-wrap:nowrap;justify-content:end}.res-ed input{width:4.5rem;text-align:center}
+.capa-ed{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}.capa-ed .lien-ed{min-width:0}
+.grat{display:inline-flex;align-items:center;gap:6px;margin-left:10px;vertical-align:middle}.grat .muted{font-size:.8rem}.grat .boxes{gap:2px 4px;padding:0}.grat .box{width:10px;height:10px;margin:2px;border-width:1.5px}
+.grat .box{position:relative}.grat .box::after{content:'';position:absolute;inset:-9px}  /* zone de toucher plus grande que le losange */
+.lien-ed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:6px;align-items:center;font-size:1rem}
+.lien-ed input{font-size:.8rem;padding:4px 6px}
+/* liens vers AideDD sans indicateur : on touche le nom pour lire la règle (les liens restent visibles en mode Modifier) */
+a.ext{text-decoration:none;color:inherit}
+.alerte{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--conc-soft);color:var(--conc);border:1px solid var(--conc);border-radius:3px;padding:6px 10px}
+.alerte b{font-family:var(--disp);font-weight:400;font-size:1.1rem}
+.alerte button{flex:none;border-color:var(--conc);color:var(--conc)}
+.perso{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;color:var(--fg);border-color:var(--line)}
+.perso .t{font-family:var(--disp);font-size:1.3rem;color:var(--accent)}
+.msg{background:var(--card);border-left:3px solid var(--conc);border-radius:2px;padding:8px 10px;font-size:.95rem}
+.msg.err{border-left-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){
+  .box{transition:background .12s}
+  main.in-g{animation:inG .18s ease-out}main.in-d{animation:inD .18s ease-out}
+  @keyframes inG{from{transform:translateX(28px);opacity:.3}to{transform:none;opacity:1}}
+  @keyframes inD{from{transform:translateX(-28px);opacity:.3}to{transform:none;opacity:1}}
+}
+/* les 5 tuiles restent sur une ligne, même sur petit écran */
+@media (max-width:420px){.stats{gap:4px}.stat{padding:5px 1px}.stat b{font-size:1.2rem}.stat .lab{display:block;font-size:.66rem;line-height:1.1}}
+</style>
+<style>
+/* compléments propres à l'app MJ (même parchemin que l'app joueur) */
+.jr{padding:8px 0;border-bottom:1px solid var(--line)}
+.jr:not(:has(~ .jr)){border-bottom:none}
+.jr .l1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.jr .code{display:flex;align-items:center;gap:8px;margin-top:4px}
+.jr .code b{font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.ob{padding:7px 0;border-bottom:1px solid var(--line)}
+.ob:not(:has(~ .ob)){border-bottom:none}
+.ob .l1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ob .nom{font-weight:700}
+.ob .typ{font-size:.85rem;color:var(--muted);margin-left:6px}
+.ob .d{font-size:.92rem;font-style:italic;color:var(--muted)}
+.envoi-box{margin-top:6px;padding:8px;border:1px dashed var(--accent);border-radius:3px;display:flex;flex-direction:column;gap:8px}
+.chips2{display:flex;flex-wrap:wrap;gap:6px}
+.chips2 button{height:32px;padding:0 10px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.form .full{grid-column:1/-1}
+.form input,.form select,.form textarea{box-sizing:border-box;width:100%}
+.form input,.form select{height:34px;padding:0 8px}
+select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:3px}
+.ev{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.ev:not(:has(~ .ev)){border-bottom:none}
+.ok{color:#3d6b2f}
+.btn-s{height:32px;padding:0 10px;display:inline-flex;align-items:center;line-height:1}
+.envoi-box .code-row{align-items:center}
+.code-row{flex-wrap:nowrap}.code-row>*{box-sizing:border-box;height:38px}.code-row input{flex:1;min-width:0}.code-row button{padding:0 14px}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<script>
+/* App MJ : joueurs et leurs codes, catalogue d'objets par lots, envois aux joueurs.
+   Tout passe par des fonctions Supabase protégées par le code MJ (gardé sur cet appareil uniquement). */
+const SUPA='https://mgcofajllvellwcudjxx.supabase.co',CLE_PUB='sb_publishable_WLlUZ1Aznum4Rz1qwab53Q_xisC28pj';
+const KEY='dnd55.mj';
+const TYPES=[['objet','Objet'],['arme','Arme'],['armure','Armure'],['magique','Objet magique'],['potion','Potion'],['parchemin','Parchemin'],['lettre','Lettre'],['carte','Carte'],['autre','Autre']];
+const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['campagne','Campagne']];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const n=parseInt(v,10);return isNaN(n)?0:n};
+const jolieCle=c=>String(c||'').replace(/(.{4})(?=.)/g,'$1-');
+const typeNom=t=>(TYPES.find(x=>x[0]===t)||[0,t])[1];
+let code='';try{code=localStorage.getItem(KEY+'.code')||''}catch(e){}
+let ui={onglet:'joueurs',edit:false,envoi:null,choix:{},ajout:false,init:false,confRetirer:null,confSortir:false};
+try{const o=localStorage.getItem(KEY+'.onglet');if(o)ui.onglet=o}catch(e){}
+let etat=null,flash=null,charge=false,nouveauCode=null;
+
+async function rpc(fn,args){
+  const r=await fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:CLE_PUB,'Content-Type':'application/json'},body:JSON.stringify(args)});
+  const t=await r.text();
+  if(!r.ok){let m=t;try{m=JSON.parse(t).message||t}catch(e){}const er=new Error(m);er.serveur=true;throw er}
+  return t?JSON.parse(t):null;
+}
+const MSG={code_mj_invalide:'Code MJ refusé.',init_invalide:'Code d’initialisation refusé (ou déjà utilisé).',code_trop_court:'Le code MJ doit faire au moins 8 caractères.',nom_manquant:'Indique un nom.',objet_inconnu:'Objet introuvable.'};
+function erreur(e){return e&&e.serveur?(MSG[e.message]||'Erreur du serveur : '+e.message):'Pas de connexion. Réessaie.'}
+async function charger(silence){
+  try{etat=await rpc('mj_etat',{p_code:code});charge=true}
+  catch(e){if(e.serveur&&e.message==='code_mj_invalide'){code='';try{localStorage.removeItem(KEY+'.code')}catch(_){}}if(!silence)flash={err:1,t:erreur(e)}}
+  render();
+}
+async function action(fn,args,msg){
+  try{const r=await rpc(fn,Object.assign({p_code:code},args));if(msg)flash={t:typeof msg==='function'?msg(r):msg};await charger(true);return r}
+  catch(e){flash={err:1,t:erreur(e)};render();return null}
+}
+function msgHtml(){if(!flash)return'';const h=`<div class="msg ${flash.err?'err':''}" role="status">${esc(flash.t)}</div>`;flash=null;return h}
+const quand=t=>{if(!t)return'jamais';const m=Math.round((Date.now()-Date.parse(t))/60000);return m<1?'à l’instant':m<60?'il y a '+m+' min':m<1440?'il y a '+Math.round(m/60)+' h':new Date(t).toLocaleDateString('fr-CH')};
+
+/* ---------- rendu ---------- */
+function render(){
+  const app=document.getElementById('app');
+  if(!code){app.innerHTML=vueConnexion();return}
+  if(!charge){app.innerHTML=`<h1>MJ</h1>${msgHtml()}<p class="muted">Chargement…</p>`;return}
+  const tabs=ONGLETS.map(([k,l])=>`<button data-a="onglet" data-o="${k}" aria-current="${ui.onglet===k}">${l}</button>`).join('');
+  const corps={joueurs:ongJoueurs,objets:ongObjets,envois:ongEnvois,campagne:ongCampagne}[ui.onglet]||ongJoueurs;
+  app.innerHTML=`<header class="top"><div class="row"><div class="titre"><h1>${esc(etat.campagne.nom)}</h1></div>
+    <button data-a="rafraichir" aria-label="Rafraîchir" title="Rafraîchir">↻</button>
+    <button data-a="edit" class="icone ${ui.edit?'on':''}" aria-pressed="${ui.edit}" aria-label="${ui.edit?'Terminer':'Modifier'}">${ui.edit
+      ?'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+      :'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'}</button></div>
+    <nav class="tabs">${tabs}</nav></header>${msgHtml()}<main class="${ui.edit?'ed':''}">${corps()}</main>`;
+}
+function vueConnexion(){
+  return `<h1>Espace MJ</h1>${msgHtml()}
+  ${ui.init?`<section><h2>Première connexion</h2>
+      <p class="muted">Entre le code d’initialisation reçu une seule fois, puis choisis ton code MJ (8 caractères au moins). Garde-le pour toi.</p>
+      <div class="form"><input class="full" id="init" placeholder="Code d’initialisation" autocapitalize="characters" autocomplete="off">
+      <input class="full" id="nc1" type="password" placeholder="Nouveau code MJ" autocomplete="new-password">
+      <input class="full" id="nc2" type="password" placeholder="Répète le code MJ" autocomplete="new-password"></div>
+      <div class="row"><button class="pri" data-a="initialiser">Valider</button><button data-a="initNon">Retour</button></div></section>`
+  :`<section><h2>Connexion</h2><div class="row code-row"><input id="code" type="password" placeholder="Code MJ" autocomplete="current-password"><button class="pri" data-a="entrer">Entrer</button></div>
+      <p class="muted">Le code reste enregistré sur cet appareil.</p><button data-a="initOui">Première fois ? Code d’initialisation</button></section>`}`;
+}
+function ongJoueurs(){
+  const js=etat.joueurs;
+  const ligne=j=>ui.edit
+    ?`<div class="jr"><div class="row code-row"><input data-jnom="${esc(j.id)}" value="${esc(j.nom)}" aria-label="Nom du joueur">${ui.confRetirer===j.id
+        ?`<button class="dgr" data-a="retirerJOui" data-id="${esc(j.id)}">Retirer ?</button>`:`<button class="x" data-a="retirerJ" data-id="${esc(j.id)}" aria-label="Retirer ${esc(j.nom)}">✕</button>`}</div></div>`
+    :`<div class="jr"><div class="l1"><b>${esc(j.nom)}</b><span class="muted">vu ${esc(quand(j.vu_le))}</span></div>
+      <div>${j.perso?`${esc(j.perso)} · ${esc(j.classe||'')} niv ${esc(j.niveau||'?')} · PV ${esc(j.pv)}/${esc(j.pvMax)}`:'<span class="muted">Pas encore de personnage relié.</span>'}</div>
+      ${j.cle?`<div class="code"><span class="muted">Code :</span><b>${esc(jolieCle(j.cle))}</b><button class="btn-s" data-a="copierCode" data-c="${esc(jolieCle(j.cle))}">Copier</button></div>`:''}
+      ${nouveauCode===j.id?'<p class="muted">Envoie ce code au joueur : il l’entre dans son app, onglet Fiche, « Sauvegarde en ligne ».</p>':''}</div>`;
+  return `<section><h2>Joueurs</h2>${js.length?js.map(ligne).join(''):'<p class="muted">Aucun joueur. Ajoute-les ci-dessous.</p>'}</section>
+    <section><h2>Ajouter un joueur</h2><div class="row code-row"><input id="jnom" placeholder="Nom (joueur ou personnage)"><button data-a="ajoutJ">Ajouter</button></div></section>`;
+}
+function lots(){const l=[...new Set(etat.objets.map(o=>o.lot))];return l.sort((a,b)=>(a===''?1:0)-(b===''?1:0)||a.localeCompare(b,'fr'))}
+function formObjet(o,id){
+  const v=k=>esc(o[k]??'');
+  return `<div class="form" data-form="${id}">
+    <input class="full" data-k="nom" value="${v('nom')}" placeholder="Nom de l’objet">
+    <input data-k="lot" value="${v('lot')}" placeholder="Lot (ex. Repaire du mage)" list="lots">
+    <select data-k="type">${TYPES.map(([k,l])=>`<option value="${k}" ${o.type===k?'selected':''}>${l}</option>`).join('')}</select>
+    <input data-k="qte" value="${v('qte')||1}" inputmode="numeric" placeholder="Quantité">
+    <input data-k="lien" value="${v('lien')}" placeholder="Lien (kDrive, AideDD…)" inputmode="url">
+    <textarea class="full" data-k="description" rows="2" placeholder="Description (facultatif)">${v('description')}</textarea></div>`;
+}
+function ongObjets(){
+  const js=etat.joueurs,dl=`<datalist id="lots">${lots().filter(Boolean).map(l=>`<option value="${esc(l)}">`).join('')}</datalist>`;
+  const ligne=o=>{
+    if(ui.edit)return `<div class="ob">${formObjet(o,o.id)}<div class="row" style="justify-content:end;margin-top:6px">${ui.confRetirer===o.id
+      ?`<button class="dgr btn-s" data-a="retirerOOui" data-id="${esc(o.id)}">Retirer du catalogue ?</button><button class="btn-s" data-a="confNon">Annuler</button>`
+      :`<button class="btn-s" data-a="retirerO" data-id="${esc(o.id)}">Retirer</button>`}</div></div>`;
+    const nom=o.lien?`<a class="ext nom" href="${esc(o.lien)}" target="_blank" rel="noopener">${esc(o.nom)}</a>`:`<span class="nom">${esc(o.nom)}</span>`;
+    const ouvert=ui.envoi===o.id,ch=ui.choix;
+    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}<span class="typ">${esc(typeNom(o.type))}</span></span>
+      <button class="btn-s ${ouvert?'on':''}" data-a="envoiOuvrir" data-id="${esc(o.id)}">Envoyer</button></div>
+      ${o.description?`<div class="d">${esc(o.description)}</div>`:''}
+      ${ouvert?`<div class="envoi-box"><div class="lab">À qui ?</div><div class="chips2">${js.map(j=>`<button class="${ch[j.id]?'on':''}" data-a="choix" data-id="${esc(j.id)}" aria-pressed="${!!ch[j.id]}">${esc(j.nom)}</button>`).join('')||'<span class="muted">Ajoute d’abord des joueurs.</span>'}</div>
+        <div class="row code-row"><span class="muted">Quantité</span><input id="eqte" value="${num(o.qte)>1?esc(o.qte):1}" inputmode="numeric" style="max-width:5rem;flex:none"><button class="pri" data-a="envoyer" data-id="${esc(o.id)}">Envoyer</button></div></div>`:''}</div>`;
+  };
+  const groupes=lots().map(l=>`<section><h2>${esc(l||'Sans lot')}</h2>${etat.objets.filter(o=>o.lot===l).map(ligne).join('')}</section>`).join('');
+  return `${dl}${groupes||'<p class="muted">Catalogue vide. Prépare tes objets, lettres et cartes ci-dessous.</p>'}
+    <section><h2>Nouvel objet</h2>${ui.ajout?`${formObjet({type:'objet',qte:1,lot:ui.dernierLot||''},'nouveau')}<div class="row" style="margin-top:6px"><button class="pri" data-a="ajoutO">Ajouter au catalogue</button><button data-a="ajoutNon">Annuler</button></div>`
+      :`<button data-a="ajoutOui">+ Préparer un objet</button>`}</section>`;
+}
+function ongEnvois(){
+  const nomJ=id=>(etat.joueurs.find(j=>j.id===id)||{nom:'(joueur retiré)'}).nom;
+  const l=etat.envois.map(e=>`<div class="ev"><span><b>${esc(e.contenu.nom)}</b>${num(e.contenu.qte)>1?' ×'+esc(e.contenu.qte):''} → ${esc(nomJ(e.joueur_id))}<br><span class="muted">${new Date(e.envoye_le).toLocaleString('fr-CH',{dateStyle:'short',timeStyle:'short'})}</span></span>
+    <span class="${e.recu_le?'ok':'muted'}">${e.recu_le?'reçu':'en attente'}</span></div>`).join('');
+  return `<section><h2>Envois</h2>${l||'<p class="muted">Rien d’envoyé pour l’instant.</p>'}
+    <p class="muted">« En attente » : le joueur n’a pas encore ouvert son app. L’objet arrivera dès qu’il l’ouvre.</p></section>`;
+}
+function ongCampagne(){
+  return `<section><h2>Campagne</h2>${ui.edit?`<label class="lab">Nom<input id="cnom" value="${esc(etat.campagne.nom)}"></label><button data-a="renommer">Enregistrer le nom</button>`
+      :`<div><b>${esc(etat.campagne.nom)}</b> · ${etat.joueurs.length} joueur(s) · ${etat.objets.length} objet(s)</div>`}</section>
+    <section><h2>Export complet</h2><p class="muted">Toutes les fiches, le catalogue et les envois dans un seul fichier. À ranger sur ton kDrive de temps en temps.</p>
+      <button data-a="exporter">Télécharger l’export</button></section>
+    <section><h2>Cet appareil</h2>${ui.confSortir?`<p>Oublier le code MJ sur cet appareil ?</p><div class="row"><button class="dgr" data-a="sortirOui">Oui, se déconnecter</button><button data-a="confNon">Annuler</button></div>`
+      :`<button data-a="sortir">Se déconnecter</button>`}</section>`;
+}
+
+/* ---------- interactions ---------- */
+function lireForm(id){const f=document.querySelector(`[data-form="${id}"]`),o={};f.querySelectorAll('[data-k]').forEach(el=>o[el.dataset.k]=el.value);o.qte=Math.max(0,num(o.qte));return o}
+function telecharger(texte,nom){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([texte],{type:'application/json'}));a.download=nom;document.body.appendChild(a);a.click();a.remove()}catch(e){}}
+document.addEventListener('click',async ev=>{
+  const b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+  switch(a){
+    case 'onglet':ui.onglet=b.dataset.o;ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);return;
+    case 'edit':ui.edit=!ui.edit;ui.confRetirer=null;ui.envoi=null;render();return;
+    case 'rafraichir':await charger();flash=null;return;
+    case 'initOui':ui.init=true;render();return;
+    case 'initNon':ui.init=false;render();return;
+    case 'entrer':{const c=document.getElementById('code').value;if(!c)return;code=c;
+      try{etat=await rpc('mj_etat',{p_code:code});charge=true;try{localStorage.setItem(KEY+'.code',code)}catch(e){}}
+      catch(e){code='';flash={err:1,t:erreur(e)}}render();return}
+    case 'initialiser':{const i=document.getElementById('init').value,c1=document.getElementById('nc1').value,c2=document.getElementById('nc2').value;
+      if(c1!==c2){flash={err:1,t:'Les deux codes MJ ne sont pas identiques.'};render();return}
+      try{await rpc('mj_initialiser',{p_init:i,p_code:c1});code=c1;try{localStorage.setItem(KEY+'.code',code)}catch(e){}ui.init=false;flash={t:'Code MJ enregistré. Bienvenue !'};await charger()}
+      catch(e){flash={err:1,t:erreur(e)};render()}return}
+    case 'copierCode':{try{await navigator.clipboard.writeText(b.dataset.c);flash={t:'Code copié : '+b.dataset.c}}catch(e){flash={t:'Code : '+b.dataset.c}}render();return}
+    case 'ajoutJ':{const n=document.getElementById('jnom').value.trim();if(!n){flash={err:1,t:'Indique un nom.'};render();return}
+      const r=await action('mj_joueur_creer',{p_nom:n},r=>n+' ajouté. Code : '+jolieCle(r.cle));if(r){nouveauCode=r.id;render()}return}
+    case 'retirerJ':case 'retirerO':ui.confRetirer=b.dataset.id;render();return;
+    case 'confNon':ui.confRetirer=null;ui.confSortir=false;render();return;
+    case 'retirerJOui':ui.confRetirer=null;await action('mj_joueur_modifier',{p_id:b.dataset.id,p_nom:null,p_archive:true},'Joueur retiré (sa fiche reste dans l’export).');return;
+    case 'retirerOOui':ui.confRetirer=null;await action('mj_objet_sauver',{p_objet:{id:b.dataset.id,archive:true}},'Objet retiré du catalogue.');return;
+    case 'ajoutOui':ui.ajout=true;render();return;
+    case 'ajoutNon':ui.ajout=false;render();return;
+    case 'ajoutO':{const o=lireForm('nouveau');if(!o.nom.trim()){flash={err:1,t:'Indique un nom.'};render();return}
+      ui.dernierLot=o.lot;const r=await action('mj_objet_sauver',{p_objet:o},'« '+o.nom+' » ajouté au catalogue.');if(r){ui.ajout=false;render()}return}
+    case 'envoiOuvrir':ui.envoi=ui.envoi===b.dataset.id?null:b.dataset.id;ui.choix={};render();return;
+    case 'choix':ui.choix[b.dataset.id]=!ui.choix[b.dataset.id];render();return;
+    case 'envoyer':{const ids=Object.keys(ui.choix).filter(k=>ui.choix[k]);if(!ids.length){flash={err:1,t:'Choisis au moins un joueur.'};render();return}
+      const q=Math.max(1,num(document.getElementById('eqte').value)),o=etat.objets.find(x=>x.id===b.dataset.id);
+      const noms=ids.map(id=>(etat.joueurs.find(j=>j.id===id)||{}).nom).join(', ');
+      const r=await action('mj_envoyer',{p_objet_id:b.dataset.id,p_joueurs:ids,p_qte:q},'« '+(o?o.nom:'Objet')+' » envoyé à '+noms+'.');if(r!=null){ui.envoi=null;ui.choix={};render()}return}
+    case 'renommer':{const n=document.getElementById('cnom').value;await action('mj_campagne_renommer',{p_nom:n},'Nom enregistré.');return}
+    case 'exporter':{try{const x=await rpc('mj_export',{p_code:code});telecharger(JSON.stringify(x,null,1),'export-'+(etat.campagne.nom||'campagne').replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json');flash={t:'Export téléchargé.'}}catch(e){flash={err:1,t:erreur(e)}}render();return}
+    case 'sortir':ui.confSortir=true;render();return;
+    case 'sortirOui':code='';charge=false;etat=null;ui.confSortir=false;try{localStorage.removeItem(KEY+'.code')}catch(e){}render();return;
+  }
+});
+/* modifications en mode crayon : enregistrées dès qu'on quitte le champ */
+document.addEventListener('change',async ev=>{
+  const el=ev.target;
+  if(el.dataset&&el.dataset.jnom){await action('mj_joueur_modifier',{p_id:el.dataset.jnom,p_nom:el.value,p_archive:null},'Nom enregistré.');return}
+  const f=el.closest&&el.closest('[data-form]');
+  if(f&&f.dataset.form!=='nouveau'){const o=lireForm(f.dataset.form);o.id=f.dataset.form;if(!o.nom.trim())return;
+    try{await rpc('mj_objet_sauver',{p_code:code,p_objet:o});const i=etat.objets.findIndex(x=>x.id===o.id);if(i>=0)Object.assign(etat.objets[i],o)}catch(e){flash={err:1,t:erreur(e)};render()}}
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='code'){const b=document.querySelector('[data-a=entrer]');if(b)b.click()}});
+/* rafraîchit les « reçu / en attente » et les PV sans déranger une saisie */
+setInterval(()=>{if(!code||!charge||ui.edit||ui.ajout||ui.envoi||document.visibilityState==='hidden')return;const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;charger(true)},20000);
+render();if(code)charger();
+</script>
+
+</body>
+</html>
