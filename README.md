@@ -41,7 +41,7 @@ Le même code est aussi dans le fichier [`bookmarklet-aidedd.txt`](bookmarklet-a
 
 ### Monter de niveau
 
-Dans l'application, onglet **Fiche** → **Copier le XML**, importe-le sur AideDD, monte de niveau là-bas, relance le favori sur la nouvelle fiche finale, et colle le résultat dans **Mettre à jour le personnage**. Les cases cochées, les notes, les armes et les sorts ajoutés sont conservés.
+Dans l'application, onglet **Fiche** → **Télécharger le .xml**. Ouvre le créateur AideDD, importe ce fichier .xml et monte de niveau. Sur la nouvelle fiche finale, relance le favori et colle le résultat dans **Mettre à jour le personnage**. Les cases cochées, les notes, les armes et les sorts ajoutés sont conservés.
 
 ## Installer l'application sur le téléphone
 
@@ -49,5 +49,7 @@ Ouvre l'adresse de l'application, puis :
 - **Firefox (Android)** : menu ⋮ → Ajouter à l'écran d'accueil.
 - **Chrome (Android)** : menu ⋮ → Ajouter à l'écran d'accueil (ou Installer l'application).
 - **Safari (iPhone)** : bouton Partager → Sur l'écran d'accueil.
+
+**iPhone :** l'app de l'écran d'accueil ne voit pas les données de Safari. Installe d'abord l'icône, puis importe ton personnage **dans l'app installée**.
 
 Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.

@@ -36,6 +36,14 @@ h1{font-size:1.6rem;line-height:1.1}
 /* filet rouge plein sous chaque titre */
 h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
    border-bottom:2px solid var(--accent)}
+/* titre avec un bouton à droite (Repos long) */
+.h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
+.err-t{color:var(--danger)}
+/* pas de filet sous le dernier élément d'une liste */
+ul.plain li:last-child,.res>:nth-last-child(-n+2),.skill:nth-last-child(-n+2),
+.arme:not(:has(~ .arme)),.arme-ed:not(:has(~ .arme-ed)),.slot:not(:has(~ .slot)),.sort:not(:has(~ .sort)),
+.sort-ed:not(:has(~ .sort-ed)),.objet:not(:has(~ .objet)),.obj-ed:not(:has(~ .obj-ed)){border-bottom:none}
 section{display:flex;flex-direction:column;gap:8px}
 .muted{color:var(--muted);font-size:.92rem;font-style:italic}
 button{font:inherit;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:4px;padding:8px 12px;cursor:pointer}
@@ -103,7 +111,7 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .stat .lab{font-size:.72rem;letter-spacing:.01em}
 /* cases : losanges, comme les emplacements des fiches officielles */
 .boxes{display:grid;gap:4px 8px;justify-content:end;padding:2px}
-.slot .boxes{justify-content:start}
+.slot .boxes{justify-content:end}
 .cpt{display:flex;align-items:center;gap:10px;justify-content:end}
 .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem;line-height:1}
 .cpt b{font-size:1.3rem;min-width:4.5ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
@@ -113,6 +121,10 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .box.e{border-color:var(--fg)}.box.e.on{background:var(--fg)}
 .res{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;align-items:center}
 .res .n{min-width:0}
+/* filet fin entre les ressources, comme pour l'équipement */
+.res{gap:0}.res>.n{padding-right:10px}
+.res>*{align-self:stretch;border-bottom:1px solid var(--line);padding:5px 0;min-height:40px;box-sizing:border-box}
+.res>.n{display:flex;align-items:center}.res>.boxes{align-content:center}.res>.cpt,.res>.res-ed{align-items:center}
 .x{border:none;background:transparent;color:var(--accent);padding:4px 8px}
 /* armes */
 .armes{display:flex;flex-direction:column}
@@ -140,7 +152,7 @@ ul.plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
 ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;display:flex;align-items:center}
 /* sorts */
 .magie{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.slot{display:grid;grid-template-columns:5rem 1fr;gap:8px;align-items:center}
+.slot{display:grid;grid-template-columns:5rem 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;box-sizing:border-box}
 .sort{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:1px solid var(--line)}
 .sort a{font-weight:700;font-size:1.1rem;text-decoration:none}
 .sort>div:first-child{display:flex;align-items:center;flex-wrap:wrap}
@@ -197,7 +209,7 @@ a.ext{text-decoration:none;color:inherit;border-bottom:1px dotted var(--accent)}
 
 <script>
 const EXEMPLE = {"v":1,"date":"2026-10-18T03:38:28.265Z","id":{"nom":"Character Name","historique":"Acolyte","classe":"Guerrier","sousClasse":"","espece":"Humain","niveau":"1","xp":"0","alignement":"Loyal bon","taille":"..."},"combat":{"ca":"14","pvMax":"11","dv":"1d10","maitrise":"+2","init":"+2","vitesse":"9 m","percPassive":"10"},"car":[{"n":"FOR","val":15,"mod":"+2","jds":"+4","jdsM":true},{"n":"DEX","val":14,"mod":"+2","jds":"+2","jdsM":false},{"n":"CON","val":13,"mod":"+1","jds":"+3","jdsM":true},{"n":"INT","val":9,"mod":"-1","jds":"-1","jdsM":false},{"n":"SAG","val":11,"mod":"+0","jds":"+0","jdsM":false},{"n":"CHA","val":13,"mod":"+1","jds":"+1","jdsM":false}],"ski":[{"id":0,"nom":"Acrobaties","val":"+4","m":true},{"id":1,"nom":"Dressage","val":"+0","m":false},{"id":2,"nom":"Arcanes","val":"-1","m":false},{"id":3,"nom":"Athlétisme","val":"+4","m":true},{"id":4,"nom":"Intimidation","val":"+1","m":false},{"id":5,"nom":"Histoire","val":"-1","m":false},{"id":6,"nom":"Intuition","val":"+2","m":true},{"id":7,"nom":"Persuasion","val":"+1","m":false},{"id":8,"nom":"Investigation","val":"-1","m":false},{"id":9,"nom":"Médecine","val":"+0","m":false},{"id":10,"nom":"Nature","val":"-1","m":false},{"id":11,"nom":"Perception","val":"+0","m":false},{"id":12,"nom":"Représentation","val":"+1","m":false},{"id":13,"nom":"Tromperie","val":"+1","m":false},{"id":14,"nom":"Religion","val":"+1","m":true},{"id":15,"nom":"Discrétion","val":"+2","m":false},{"id":16,"nom":"Escamotage","val":"+2","m":false},{"id":17,"nom":"Survie","val":"+0","m":false}],"armes":[{"nom":"Cimeterre","att":"+4","deg":"1d6+2 tranchant","note":"enchaînement"},{"nom":"Épée courte","att":"+4","deg":"1d6+2 perforant","note":"distraction"},{"nom":"Arc long","att":"+6","deg":"1d8+2 perforant","note":"lente"}],"capa":[{"nom":"Style de combat (Archerie)"},{"nom":"Second souffle","max":2},{"nom":"Bottes d'armes","max":3}],"traits":["Ingénieux","Compétent ✔","Polyvalent (Bagarreur de tavernes)"],"dons":["Bagarreur de tavernes","Initié à la magie (Clerc)"],"maitrises":{"armures":{"L":true,"I":true,"Lo":true,"B":true},"armes":"Armes simples, armes martiales","outils":"Matériel de calligraphe","langues":"Commun, Draconique, Halfelin"},"magie":{"carac":"","mod":"","dd":"","att":"","slots":["","","","","","","","",""]},"sorts":[{"niv":0,"nom":"Assistance","url":"https://www.aidedd.org/spell/fr/assistance","inc":"Action","portee":"Contact","C":true,"R":false,"M":false,"note":""},{"niv":0,"nom":"Mot de radiance","url":"https://www.aidedd.org/spell/fr/mot-de-radiance","inc":"Action","portee":"Perso","C":false,"R":false,"M":true,"note":""},{"niv":1,"nom":"Bénédiction","url":"https://www.aidedd.org/spell/fr/benediction","inc":"Action","portee":"9 m","C":true,"R":false,"M":true,"note":""}],"equipement":"Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d'exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe","harmo":[],"pieces":{"pc":"0","pa":"0","pe":"0","po":"19","pp":"0"},"histoire":"...","choix":{"l":"fr","class1":"5","level1":"1","voie1":"","class2":"1","level2":"0","voie2":"","species":"1","lineage":"","back":"1","align":"0","car[0]":"15","car[1]":"14","car[2]":"13","car[3]":"8","car[4]":"10","car[5]":"12","bCar[0]":"","bCar[1]":"","bCar[2]":"","bCar[3]":"+1","bCar[4]":"+1","bCar[5]":"+1","feats":"Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,","invoc":",,,,,,,,,","manoeuv":",,,,,,,,","choice":",,,,,,,,,,,,,,,,,,,,","option0":",0,,,,,,,,,,,,,,,,,,,","option1":",Assistance,,,,,,,,,,,,,,,,,,,","option2":",Mot de radiance,,,,,,,,,,,,,,,,,,,","option3":",Bénédiction,,,,,,,,,,,,,,,,,,,","option4":",,,,,,,,,,,,,,,,,,,,","option5":",,,,,,,,,,,,,,,,,,,,","option6":",,,,,,,,,,,,,,,,,,,,","ritual":",,,,,,","customNames":",,","customTrait":",,,,,,,,,,,,,,,,,,,,","skillE":"0","skillB":"6,14","skillC":"0,3,0,0","lang":"1,7,0,0,0,0,0","tool":",,Matériel de calligraphe,,,,","hp":"0,10,,,,,,,,,,,,,,,,,,,","armor":"Armure de cuir clouté,Sans bouclier","weapons":"Cimeterre,1,Épée courte,1,Arc long,1","sort1_0":",,,,,,,,,,,,,,","sort1_1":",,,,,,,,,,,,,,","sort1_2":",,,,,,,,,,,,,,","sort1_3":",,,,,,,,,,,,,,","sort1_4":",,,,,,,,,,,,,,","sort1_5":",,,,,,,,,,,,,,","sort1_6":",,,,,,,,,,,,,,","sort1_7":",,,,,,,,,,,,,,","sort1_8":",,,,,,,,,,,,,,","sort1_9":",,,,,,,,,,,,,,","sort2_0":",,,,,,,,,,,,,,","sort2_1":",,,,,,,,,,,,,,","sort2_2":",,,,,,,,,,,,,,","sort2_3":",,,,,,,,,,,,,,","sort2_4":",,,,,,,,,,,,,,","sort2_5":",,,,,,,,,,,,,,","sort2_6":",,,,,,,,,,,,,,","sort2_7":",,,,,,,,,,,,,,","sort2_8":",,,,,,,,,,,,,,","sort2_9":",,,,,,,,,,,,,,"},"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<creator>\n<version>0.8<\/version>\n<confLang>1<\/confLang>\n<name>Character Name<\/name>\n<class1>5<\/class1>\n<level1>1<\/level1>\n<voie1><\/voie1>\n<class2>1<\/class2>\n<level2>0<\/level2>\n<voie2><\/voie2>\n<className>Guerrier<\/className>\n<subClassName><\/subClassName>\n<XP>0<\/XP>\n<species>1<\/species>\n<speciesName>Humain<\/speciesName>\n<lineage><\/lineage>\n<back>1<\/back>\n<backName>Acolyte<\/backName>\n<lang>1,7,0,0,0,0,0<\/lang>\n<align>0<\/align>\n<size>...<\/size>\n<str>15<\/str><dex>14<\/dex><con>13<\/con>\n<int>8<\/int><wis>10<\/wis><cha>12<\/cha>\n<bstr><\/bstr><bdex><\/bdex><bcon><\/bcon>\n<bint>+1<\/bint><bwis>+1<\/bwis><bcha>+1<\/bcha>\n<feats>Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,<\/feats>\n<invoc>,,,,,,,,,<\/invoc>\n<manoeuv>,,,,,,,,<\/manoeuv>\n<choice>,,,,,,,,,,,,,,,,,,,,<\/choice>\n<option0>,0,,,,,,,,,,,,,,,,,,,<\/option0>\n<option1>,Assistance,,,,,,,,,,,,,,,,,,,<\/option1>\n<option2>,Mot de radiance,,,,,,,,,,,,,,,,,,,<\/option2>\n<option3>,Bénédiction,,,,,,,,,,,,,,,,,,,<\/option3>\n<option4>,,,,,,,,,,,,,,,,,,,,<\/option4>\n<option5>,,,,,,,,,,,,,,,,,,,,<\/option5>\n<option6>,,,,,,,,,,,,,,,,,,,,<\/option6>\n<option7>RFU<\/option7>\n<option8>RFU<\/option8>\n<option9>RFU<\/option9>\n<ritual>,,,,,,<\/ritual>\n<customNames>,,<\/customNames>\n<customTrait>,,,,,,,,,,,,,,,,,,,,<\/customTrait>\n<skillE>0<\/skillE>\n<skillC>0,3,0,0<\/skillC>\n<skillB>6,14<\/skillB>\n<armor>Armure de cuir clouté,Sans bouclier<\/armor>\n<weapons>Cimeterre,1,Épée courte,1,Arc long,1<\/weapons>\n<tool>,,Matériel de calligraphe,,,,<\/tool>\n<cantNam1><\/cantNam1><cantBon1><\/cantBon1><cantDmg1><\/cantDmg1><cantNot1><\/cantNot1>\n<cantNam2><\/cantNam2><cantBon2><\/cantBon2><cantDmg2><\/cantDmg2><cantNot2><\/cantNot2>\n<cantNam3><\/cantNam3><cantBon3><\/cantBon3><cantDmg3><\/cantDmg3><cantNot3><\/cantNot3>\n<hp>0,10,,,,,,,,,,,,,,,,,,,<\/hp>\n<spells0>,,,,,,,,,,,,,,<\/spells0>\n<spells1>,,,,,,,,,,,,,,<\/spells1>\n<spells2>,,,,,,,,,,,,,,<\/spells2>\n<spells3>,,,,,,,,,,,,,,<\/spells3>\n<spells4>,,,,,,,,,,,,,,<\/spells4>\n<spells5>,,,,,,,,,,,,,,<\/spells5>\n<spells6>,,,,,,,,,,,,,,<\/spells6>\n<spells7>,,,,,,,,,,,,,,<\/spells7>\n<spells8>,,,,,,,,,,,,,,<\/spells8>\n<spells9>,,,,,,,,,,,,,,<\/spells9>\n<spells10>,,,,,,,,,,,,,,<\/spells10>\n<spells11>,,,,,,,,,,,,,,<\/spells11>\n<spells12>,,,,,,,,,,,,,,<\/spells12>\n<spells13>,,,,,,,,,,,,,,<\/spells13>\n<spells14>,,,,,,,,,,,,,,<\/spells14>\n<spells15>,,,,,,,,,,,,,,<\/spells15>\n<spells16>,,,,,,,,,,,,,,<\/spells16>\n<spells17>,,,,,,,,,,,,,,<\/spells17>\n<spells18>,,,,,,,,,,,,,,<\/spells18>\n<spells19>,,,,,,,,,,,,,,<\/spells19>\n<spellNote0><\/spellNote0>\n<spellNote1><\/spellNote1>\n<spellNote2><\/spellNote2>\n<spellNote3><\/spellNote3>\n<spellNote4><\/spellNote4>\n<spellNote5><\/spellNote5>\n<spellNote6><\/spellNote6>\n<spellNote7><\/spellNote7>\n<spellNote8><\/spellNote8>\n<spellNote9><\/spellNote9>\n<spellNote10><\/spellNote10>\n<spellNote11><\/spellNote11>\n<spellNote12><\/spellNote12>\n<spellNote13><\/spellNote13>\n<spellNote14><\/spellNote14>\n<spellNote15><\/spellNote15>\n<spellNote16><\/spellNote16>\n<spellNote17><\/spellNote17>\n<spellNote18><\/spellNote18>\n<spellNote19><\/spellNote19>\n<spellNote20><\/spellNote20>\n<spellNote21><\/spellNote21>\n<spellNote22><\/spellNote22>\n<spellNote23><\/spellNote23>\n<spellNote24><\/spellNote24>\n<spellNote25><\/spellNote25>\n<spellNote26><\/spellNote26>\n<spellNote27><\/spellNote27>\n<spellNote28><\/spellNote28>\n<spellNote29><\/spellNote29>\n<spellNote30><\/spellNote30>\n<spellNote31><\/spellNote31>\n<spellNote32><\/spellNote32>\n<spellNote33><\/spellNote33>\n<spellNote34><\/spellNote34>\n<spellNote35><\/spellNote35>\n<spellNote36><\/spellNote36>\n<spellNote37><\/spellNote37>\n<spellNote38><\/spellNote38>\n<spellNote39><\/spellNote39>\n<spellNote40><\/spellNote40>\n<spellNote41><\/spellNote41>\n<spellNote42><\/spellNote42>\n<spellNote43><\/spellNote43>\n<spellNote44><\/spellNote44>\n<spellNote45><\/spellNote45>\n<spellNote46><\/spellNote46>\n<spellNote47><\/spellNote47>\n<spellNote48><\/spellNote48>\n<spellNote49><\/spellNote49>\n<spellNote50><\/spellNote50>\n<spellNote51><\/spellNote51>\n<spellNote52><\/spellNote52>\n<spellNote53><\/spellNote53>\n<spellNote54><\/spellNote54>\n<spellNote55><\/spellNote55>\n<spellNote56><\/spellNote56>\n<spellNote57><\/spellNote57>\n<spellNote58><\/spellNote58>\n<spellNote59><\/spellNote59>\n<spellNote60><\/spellNote60>\n<spellNote61><\/spellNote61>\n<spellNote62><\/spellNote62>\n<spellNote63><\/spellNote63>\n<spellNote64><\/spellNote64>\n<spellNote65><\/spellNote65>\n<spellNote66><\/spellNote66>\n<spellNote67><\/spellNote67>\n<spellNote68><\/spellNote68>\n<spellNote69><\/spellNote69>\n<spellNote70><\/spellNote70>\n<spellNote71><\/spellNote71>\n<spellNote72><\/spellNote72>\n<spellNote73><\/spellNote73>\n<spellNote74><\/spellNote74>\n<br />\n<b>Warning<\/b>:  Undefined array key \"myAppearance\" in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<br />\n<b>Deprecated<\/b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<appearance><\/appearance>\n<backstory>...<\/backstory>\n<equipment>Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d&#039;exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe<\/equipment>\n<attun1><\/attun1>\n<attun2><\/attun2>\n<attun3><\/attun3>\n<cp>0<\/cp>\n<sp>0<\/sp>\n<ep>0<\/ep>\n<gp>19<\/gp>\n<pp>0<\/pp>\n<\/creator>"};
-const VERSION='18.10.2026 à 15:49';
+const VERSION='18.10.2026 à 16:13';
 const KEY='dnd55.v1';
 const ONGLETS=[['combat','Combat'],['carac','Caracs'],['sorts','Sorts'],['sac','Sac'],['fiche','Fiche']];
 const ETATS=['À terre','Agrippé','Assourdi','Aveuglé','Charmé','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Neutralisé','Paralysé','Pétrifié'];
@@ -207,6 +219,8 @@ let ui={vue:'liste',id:null,onglet:'combat'};
 try{const u=JSON.parse(localStorage.getItem(KEY+'.ui')||'null');if(u&&(u.vue==='liste'||db.persos[u.id]))ui=u}catch(e){}
 ui.edit=false;ui.etats=false;ui.degatsConc=0;
 let flash=null,confirmSuppr=false,sortieTexte='',anim='';
+/* confirmations en deux temps : conf = 'repos' | 'retour' | 'maj' ; majTexte garde l'export collé pendant la confirmation */
+let conf='',majTexte='',confTimer=null;
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db));localStorage.setItem(KEY+'.ui',JSON.stringify({vue:ui.vue,id:ui.id,onglet:ui.onglet}))}catch(e){flash={err:1,t:"Sauvegarde impossible sur cet appareil. Fais une sauvegarde complète depuis l'onglet Fiche."}}}
 
@@ -249,6 +263,25 @@ function mettreAJour(p,d){
   if(num(e.pv)>=oldMax)e.pv=newMax;
   return `Mise à jour : niveau ${old.id.niveau} → ${d.id.niveau}, PV max ${oldMax} → ${newMax}. Cases cochées et notes conservées.`;
 }
+/* l'export collé correspond-il à ce personnage ? (renvoie la liste des différences) */
+function differences(p,d){
+  const old=D(p),r=[],vrai=n=>{n=String(n||'').trim();return n&&n!=='Character Name'?n:''};
+  const nn=vrai(d.id.nom),noms=[vrai(old.id.nom),vrai(p.etat.nom)].filter(Boolean).map(x=>x.toLowerCase());
+  if(nn&&noms.length&&!noms.includes(nn.toLowerCase()))r.push('nom « '+nn+' » au lieu de « '+(vrai(p.etat.nom)||vrai(old.id.nom))+' »');
+  if(d.id.classe!==old.id.classe)r.push('classe '+d.id.classe+' au lieu de '+old.id.classe);
+  if(num(d.id.niveau)<num(old.id.niveau))r.push('niveau '+d.id.niveau+', plus bas que '+old.id.niveau);
+  return r;
+}
+function revenir(p){
+  const cur=D(p);p.versions.pop();const old=D(p);
+  if(num(p.etat.pv)>num(old.combat.pvMax))p.etat.pv=num(old.combat.pvMax);
+  return `Retour à la version précédente : niveau ${cur.id.niveau} → ${old.id.niveau}. Cases cochées et notes conservées.`;
+}
+function reposLong(p){
+  const e=p.etat;e.pv=num(D(p).combat.pvMax);e.pvTemp=0;e.used={};e.epuis=Math.max(0,num(e.epuis)-1);e.conc='';ui.degatsConc=0;
+  return 'Repos long : PV au maximum, toutes les cases décochées'+(e.epuis?', épuisement '+e.epuis:'')+'.';
+}
+function armerConf(k){conf=k;clearTimeout(confTimer);if(k!=='maj')confTimer=setTimeout(()=>{if(conf===k){conf='';render()}},4000)}
 function lireTexte(t){
   try{return JSON.parse(t.trim())}catch(e){throw new Error("Ce texte n'est pas un export valide. Recopie tout le contenu donné par le bookmarklet.")}
 }
@@ -259,7 +292,7 @@ function importer(t){
     return n+' personnage(s) restauré(s).';
   }
   if(o&&o.type==='sauvegarde-perso'&&o.perso){
-    const p=migrer(o.perso);if(db.persos[p.id])p.id+='b';db.persos[p.id]=p;db.ordre.push(p.id);return 'Personnage restauré.';
+    const p=migrer(o.perso);while(db.persos[p.id])p.id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);db.persos[p.id]=p;db.ordre.push(p.id);return 'Personnage restauré.';
   }
   if(!estFiche(o))throw new Error("Ce texte ne vient pas du bookmarklet AideDD.");
   const p=creer(o);ui.vue='perso';ui.id=p.id;ui.onglet='combat';
@@ -369,7 +402,8 @@ function cases(k,max,cls='',compteur=false){
   const u=Math.min(P().etat.used[k]||0,max);let h='';
   /* au-delà de 12 (réserves de points) ou réserve de PV : compteur « restants / max » au lieu des cases */
   if(max>12||compteur)return `<div class="cpt"><button data-a="cpt" data-k="${esc(k)}" data-d="1" data-max="${max}" aria-label="Dépenser 1">−</button><b>${max-u}<span> / ${max}</span></b><button data-a="cpt" data-k="${esc(k)}" data-d="-1" data-max="${max}" aria-label="Récupérer 1">+</button></div>`;
-  for(let i=0;i<max;i++)h+=`<button class="box ${cls} ${i<u?'on':''}" data-a="case" data-k="${esc(k)}" data-i="${i}" data-max="${max}" aria-label="case ${i+1} sur ${max}"></button>`;
+  const ligne0=max<=6?max:Math.ceil(max/2);
+  for(let i=0;i<max;i++)h+=(i===ligne0&&max%2&&max>6?'<span aria-hidden="true"></span>':'')+`<button class="box ${cls} ${i<u?'on':''}" data-a="case" data-k="${esc(k)}" data-i="${i}" data-max="${max}" aria-label="case ${i+1} sur ${max}"></button>`;
   /* jusqu'à 6 cases : une ligne ; de 7 à 12 : deux lignes équilibrées (10 → 5 + 5), centrées sur le nom */
   const ligne=max<=6?max:Math.ceil(max/2);
   return `<div class="boxes" style="grid-template-columns:repeat(${ligne},auto)">${h}</div>`;
@@ -626,14 +660,20 @@ function ongSac(p,d,e){
 
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
-  return `<section><h2>Personnage</h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
+  return `<section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
       ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
         :`<div>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</div><div>Espèce : ${itemLien('espece',d.id.espece)} · Historique : ${itemLien('historique',d.id.historique)}</div><div class="muted">${esc(d.id.alignement)}</div>`}</section>
     <section><h2>Monter de niveau</h2>
-      <p class="muted">1. Copie le XML et importe-le sur AideDD. 2. Monte de niveau là-bas. 3. Lance le bookmarklet sur la fiche finale et colle le résultat ici. Tes cases cochées, armes et notes sont conservées.</p>
-      <div class="row"><button data-a="copierXml">Copier le XML</button><button data-a="telXml">Télécharger le .xml</button></div>
-      <textarea id="maj" placeholder="Colle le nouvel export ici"></textarea>
-      <button class="pri" data-a="maj">Mettre à jour le personnage</button></section>
+      <p class="muted">1. Télécharge le fichier .xml ci-dessous. 2. Ouvre le créateur AideDD, importe ce fichier et monte de niveau. 3. Sur la fiche finale, lance le favori « Export AideDD » et colle le résultat ici. Tes cases cochées, armes, sorts ajoutés et notes sont conservés.</p>
+      <button data-a="telXml">Télécharger le .xml</button>
+      <textarea id="maj" placeholder="Colle le nouvel export ici">${esc(conf==='maj'?majTexte:'')}</textarea>
+      ${conf==='maj'?`<p class="err-t">Cet export ne ressemble pas à ce personnage : ${esc(differences(p,JSON.parse(majTexte)).join(' ; '))}. Mettre à jour quand même ?</p>
+        <div class="row"><button class="pri" data-a="majOui">Oui, mettre à jour</button><button data-a="confNon">Annuler</button></div>`
+      :`<button class="pri" data-a="maj">Mettre à jour le personnage</button>`}
+      ${p.versions.length>1?(conf==='retour'
+        ?`<p>Revenir au niveau ${esc(p.versions[p.versions.length-2].data.id.niveau)} (import du ${new Date(p.versions[p.versions.length-2].date).toLocaleDateString('fr-CH')}) ? Les cases et les notes sont gardées.</p>
+          <div class="row"><button class="dgr" data-a="retourOui">Oui, revenir</button><button data-a="confNon">Annuler</button></div>`
+        :`<button data-a="retour">Revenir à la version précédente</button>`):''}</section>
     ${sortieTexte?`<section><p class="muted">La copie automatique n’a pas marché : sélectionne ce texte et copie-le.</p><textarea readonly id="sortie">${esc(sortieTexte)}</textarea></section>`:''}
     <section><h2>Sauvegarde</h2>
       <p class="muted">Garde une copie de temps en temps (notes, messages). Elle se recolle dans « Importer » sur l’écran d’accueil.</p>
@@ -652,16 +692,16 @@ async function copier(t){
 }
 function changerOnglet(sens){
   const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),n=ONGLETS.length;
-  ui.onglet=ONGLETS[(i+sens+n)%n][0];confirmSuppr=false;anim=sens>0?'in-g':'in-d';
+  ui.onglet=ONGLETS[(i+sens+n)%n][0];confirmSuppr=false;conf='';majTexte='';anim=sens>0?'in-g':'in-d';
   save();render();window.scrollTo(0,0);
 }
 document.addEventListener('click',ev=>{
   const b=ev.target.closest('[data-a]');if(!b)return;
   const a=b.dataset.a,p=P();let haut=false;
   try{switch(a){
-    case 'ouvrir':ui.vue='perso';ui.id=b.dataset.id;ui.onglet='combat';ui.edit=false;ui.etats=false;ui.degatsConc=0;confirmSuppr=false;sortieTexte='';haut=true;break;
+    case 'ouvrir':ui.vue='perso';ui.id=b.dataset.id;ui.onglet='combat';ui.edit=false;ui.etats=false;ui.degatsConc=0;confirmSuppr=false;conf='';majTexte='';sortieTexte='';haut=true;break;
     case 'liste':ui.vue='liste';ui.edit=false;ui.etats=false;haut=true;break;
-    case 'onglet':{const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),j=ONGLETS.findIndex(o=>o[0]===b.dataset.o);anim=j>i?'in-g':j<i?'in-d':'';ui.onglet=b.dataset.o;confirmSuppr=false;haut=true;break}
+    case 'onglet':{const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),j=ONGLETS.findIndex(o=>o[0]===b.dataset.o);anim=j>i?'in-g':j<i?'in-d':'';ui.onglet=b.dataset.o;confirmSuppr=false;conf='';majTexte='';haut=true;break}
     case 'edit':ui.edit=!ui.edit;break;
     case 'etatsOuvrir':ui.etats=!ui.etats;haut=ui.etats;break;
     case 'etat':p.etat.etats[b.dataset.n]=!p.etat.etats[b.dataset.n];break;
@@ -672,7 +712,14 @@ document.addEventListener('click',ev=>{
       Promise.all(['./','manifest.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{}))).finally(()=>location.reload());return}
     case 'exemple':{const q=creer(JSON.parse(JSON.stringify(EXEMPLE)),'Exemple (Guerrier)');ui.vue='perso';ui.id=q.id;ui.onglet='combat';break}
     case 'importer':flash={t:importer(document.getElementById('imp').value)};break;
-    case 'maj':{const o=lireTexte(document.getElementById('maj').value);if(!estFiche(o))throw new Error("Ce texte ne vient pas du bookmarklet AideDD.");flash={t:mettreAJour(p,o)};break}
+    case 'maj':{const t=document.getElementById('maj').value,o=lireTexte(t);if(!estFiche(o))throw new Error("Ce texte ne vient pas du bookmarklet AideDD.");
+      if(differences(p,o).length){majTexte=t.trim();armerConf('maj');break}
+      flash={t:mettreAJour(p,o)};break}
+    case 'majOui':{const o=lireTexte(majTexte);conf='';majTexte='';flash={t:mettreAJour(p,o)};break}
+    case 'confNon':conf='';majTexte='';break;
+    case 'retour':armerConf('retour');break;
+    case 'retourOui':conf='';if(p.versions.length>1)flash={t:revenir(p)};break;
+    case 'repos':if(conf==='repos'){conf='';flash={t:reposLong(p)}}else armerConf('repos');break;
     case 'pv':{const c=b.dataset.c,av=num(p.etat[c]);p.etat[c]=Math.max(0,av+num(b.dataset.d));noterDegats(av-num(p.etat[c]));break}
     case 'concOk':ui.degatsConc=0;break;
     case 'cpt':{const k=b.dataset.k,m=num(b.dataset.max);p.etat.used[k]=Math.min(m,Math.max(0,Math.min(p.etat.used[k]||0,m)+num(b.dataset.d)));break}
@@ -695,7 +742,7 @@ document.addEventListener('click',ev=>{
     case 'capaRes':{const n=b.dataset.n,m=String(n).match(/\((\d+)/);p.etat.ressPerso.push({nom:propre(sansCoche(n)),max:m?Math.min(99,+m[1]):1});flash={t:'« '+propre(sansCoche(n))+' » ajoutée aux ressources.'};break}
     case 'supprRes':p.etat.ressPerso.splice(num(b.dataset.i),1);break;
     case 'copierXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import. Relance le bookmarklet sur AideDD.");save();copier(x);return}
-    case 'telXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import.");telecharger(x,nomFichier(p,'xml'),'application/xml');flash={t:'Si aucun fichier n’apparaît, utilise « Copier le XML ».'};break}
+    case 'telXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import.");telecharger(x,nomFichier(p,'xml'),'application/xml');flash={t:'Fichier '+nomFichier(p,'xml')+' téléchargé.'};break}
     case 'copierSauv':copier(JSON.stringify({type:'sauvegarde-perso',date:new Date().toISOString(),perso:p}));return;
     case 'telSauv':telecharger(JSON.stringify({type:'sauvegarde-perso',date:new Date().toISOString(),perso:p}),nomFichier(p,'json'),'application/json');flash={t:'Si aucun fichier n’apparaît, utilise « Copier la sauvegarde ».'};break;
     case 'suppr':confirmSuppr=true;break;
@@ -733,6 +780,14 @@ document.addEventListener('touchend',ev=>{
   if(tx==null)return;const t=ev.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
   if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy))changerOnglet(dx<0?1:-1);
 },{passive:true});
+/* plusieurs fenêtres ouvertes (onglet + icône d'écran d'accueil) : chacune relit ce que l'autre vient d'enregistrer,
+   pour ne jamais réécrire une copie périmée par-dessus */
+function relire(){
+  try{const s=localStorage.getItem(KEY);if(!s||s===JSON.stringify(db))return;db=JSON.parse(s);Object.values(db.persos).forEach(migrer);
+    const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName))return;render()}catch(e){}
+}
+window.addEventListener('storage',ev=>{if(ev.key===KEY)relire()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')relire()});
 render();
 </script>
 
