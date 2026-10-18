@@ -227,7 +227,7 @@ a.ext{text-decoration:none;color:inherit}
 .envoi-box{margin-top:6px;padding:8px;border:1px dashed var(--accent);border-radius:3px;display:flex;flex-direction:column;gap:8px}
 .chips2{display:flex;flex-wrap:wrap;gap:6px}
 .chips2 button{height:32px;padding:0 10px}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.form{display:grid;grid-template-columns:4rem 1fr;gap:6px}
 .form .full{grid-column:1/-1}
 .form input,.form select,.form textarea{box-sizing:border-box;width:100%}
 .form input,.form select{height:34px;padding:0 8px}
@@ -253,11 +253,10 @@ const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['c
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>{const n=parseInt(v,10);return isNaN(n)?0:n};
 const jolieCle=c=>String(c||'').replace(/(.{4})(?=.)/g,'$1-');
-const typeNom=t=>(TYPES.find(x=>x[0]===t)||[0,t])[1];
 let code='';try{code=localStorage.getItem(KEY+'.code')||''}catch(e){}
 let ui={onglet:'joueurs',edit:false,envoi:null,choix:{},ajout:false,init:false,confRetirer:null,confSortir:false};
 try{const o=localStorage.getItem(KEY+'.onglet');if(o)ui.onglet=o}catch(e){}
-let etat=null,flash=null,charge=false,nouveauCode=null;
+let etat=null,flash=null,charge=false,nouveauCode=null,anim='';
 
 async function rpc(fn,args){
   const r=await fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:CLE_PUB,'Content-Type':'application/json'},body:JSON.stringify(args)});
@@ -291,7 +290,8 @@ function render(){
     <button data-a="edit" class="icone ${ui.edit?'on':''}" aria-pressed="${ui.edit}" aria-label="${ui.edit?'Terminer':'Modifier'}">${ui.edit
       ?'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
       :'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'}</button></div>
-    <nav class="tabs">${tabs}</nav></header>${msgHtml()}<main class="${ui.edit?'ed':''}">${corps()}</main>`;
+    <nav class="tabs">${tabs}</nav></header>${msgHtml()}<main class="${anim}${ui.edit?' ed':''}">${corps()}</main>`;
+  anim='';
 }
 function vueConnexion(){
   return `<h1>Espace MJ</h1>${msgHtml()}
@@ -320,9 +320,8 @@ function formObjet(o,id){
   const v=k=>esc(o[k]??'');
   return `<div class="form" data-form="${id}">
     <input class="full" data-k="nom" value="${v('nom')}" placeholder="Nom de l’objet">
-    <select data-k="type">${TYPES.map(([k,l])=>`<option value="${k}" ${o.type===k?'selected':''}>${l}</option>`).join('')}</select>
-    <input data-k="qte" value="${v('qte')||1}" inputmode="numeric" placeholder="Quantité">
-    <input class="full" data-k="lien" value="${v('lien')}" placeholder="Lien (AideDD…) ou fichier joint" inputmode="url">
+    <input data-k="qte" value="${v('qte')||1}" inputmode="numeric" placeholder="Qté" aria-label="Quantité">
+    <input data-k="lien" value="${v('lien')}" placeholder="Lien (AideDD…) ou fichier joint" inputmode="url">
     <label class="full fichier"><input type="file" accept="image/*,application/pdf" data-fichier="${id}" hidden><span class="btn-like">${ui.envoiFichier===id?'Envoi du fichier…':'Joindre une image ou un PDF'}</span></label>
     <textarea class="full" data-k="description" rows="2" placeholder="Description (facultatif)">${v('description')}</textarea></div>`;
 }
@@ -334,7 +333,7 @@ function ongObjets(){
       :`<button class="btn-s" data-a="retirerO" data-id="${esc(o.id)}">Retirer</button>`}</div></div>`;
     const nom=o.lien?`<a class="ext nom" href="${esc(o.lien)}" target="_blank" rel="noopener">${esc(o.nom)}</a>`:`<span class="nom">${esc(o.nom)}</span>`;
     const ouvert=ui.envoi===o.id,ch=ui.choix;
-    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}<span class="typ">${esc(typeNom(o.type))}</span></span>
+    return `<div class="ob"><div class="l1"><span>${nom}${num(o.qte)>1?' <span class="muted">×'+esc(o.qte)+'</span>':''}</span>
       <button class="btn-s ${ouvert?'on':''}" data-a="envoiOuvrir" data-id="${esc(o.id)}">Envoyer</button></div>
       ${o.description?`<div class="d">${esc(o.description)}</div>`:''}
       ${ouvert?`<div class="envoi-box"><div class="lab">À qui ?</div><div class="chips2">${js.map(j=>`<button class="${ch[j.id]?'on':''}" data-a="choix" data-id="${esc(j.id)}" aria-pressed="${!!ch[j.id]}">${esc(j.nom)}</button>`).join('')||'<span class="muted">Ajoute d’abord des joueurs.</span>'}</div>
@@ -366,7 +365,7 @@ function telecharger(texte,nom){try{const a=document.createElement('a');a.href=U
 document.addEventListener('click',async ev=>{
   const b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
   switch(a){
-    case 'onglet':ui.onglet=b.dataset.o;ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);return;
+    case 'onglet':{const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),j=ONGLETS.findIndex(o=>o[0]===b.dataset.o);anim=j>i?'in-g':j<i?'in-d':''}ui.onglet=b.dataset.o;ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);return;
     case 'edit':ui.edit=!ui.edit;ui.confRetirer=null;ui.envoi=null;render();return;
     case 'rafraichir':await charger();flash=null;return;
     case 'initOui':ui.init=true;render();return;
@@ -452,7 +451,7 @@ document.addEventListener('touchend',ev=>{
   if(tx==null)return;const t=ev.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
   if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy)){
     const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),n=ONGLETS.length;
-    ui.onglet=ONGLETS[(i+(dx<0?1:-1)+n)%n][0];ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;
+    ui.onglet=ONGLETS[(i+(dx<0?1:-1)+n)%n][0];anim=dx<0?'in-g':'in-d';ui.envoi=null;ui.confRetirer=null;ui.confSortir=false;
     try{localStorage.setItem(KEY+'.onglet',ui.onglet)}catch(e){}render();window.scrollTo(0,0);
   }
 },{passive:true});
