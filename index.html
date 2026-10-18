@@ -160,7 +160,8 @@ a.ext{text-decoration:none;color:inherit;border-bottom:1px dotted var(--accent)}
   @keyframes inG{from{transform:translateX(28px);opacity:.3}to{transform:none;opacity:1}}
   @keyframes inD{from{transform:translateX(-28px);opacity:.3}to{transform:none;opacity:1}}
 }
-@media (max-width:380px){.stats{grid-template-columns:repeat(3,1fr)}}
+/* les 5 tuiles restent sur une ligne, même sur petit écran */
+@media (max-width:420px){.stats{gap:4px}.stat{padding:5px 1px}.stat b{font-size:1.2rem}.stat .lab{display:block;font-size:.66rem;line-height:1.1}}
 </style>
 </head>
 <body>
