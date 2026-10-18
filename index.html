@@ -27,10 +27,6 @@
 }
 html{background:var(--bg)}
 body{color:var(--fg);font:17px/1.4 var(--body);background:var(--bg)}
-/* légère patine du parchemin, fixée à l'écran entier et loin de l'en-tête pour ne pas créer de cadre */
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse 90% 55% at 100% 100%,rgba(140,95,40,.13),transparent 70%),
-             radial-gradient(ellipse 60% 40% at 0% 85%,rgba(140,95,40,.08),transparent 70%)}
 *{box-sizing:border-box}
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
 main{display:flex;flex-direction:column;gap:18px}
@@ -121,8 +117,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .skills{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 .skill{display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);font-size:1rem;min-width:0}
 .skill b{font-variant-numeric:tabular-nums lining-nums}
-ul.plain{margin:0;padding-left:1.1em}
-ul.plain li::marker{color:var(--accent)}
+/* toutes les listes suivent la convention de l'équipement : une ligne par élément, filet fin dessous */
+ul.plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;display:flex;align-items:center}
 /* sorts */
 .magie{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .slot{display:grid;grid-template-columns:5rem 1fr;gap:8px;align-items:center}
