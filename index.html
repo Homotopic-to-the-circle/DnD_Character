@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#efe2c2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Feuille de Perso">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>html,body{height:100%}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Feuille de Perso</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout : une colonne mobile sur parchemin, en-tête collant (nom, états, onglets), titres en petites capitales rouges soulignés d'un filet effilé comme dans les blocs de stats */
+/* Thème unique, assumé : parchemin clair (lisible en jeu, même dans un téléphone en mode sombre) */
+:root{
+  --bg:#efe2c2;--card:#f8f0dc;--fg:#2a1c12;--muted:#6e5a44;--line:#cdb68c;
+  --accent:#7a1c12;--accent-soft:#ecd3b8;--on-accent:#fbf4e4;--danger:#7a1c12;--danger-soft:#ecd3b8;
+  --conc:#3f5226;--conc-soft:#dfe3c4;--warn:#6a4a10;--warn-soft:#f1dfae;
+  --disp:"IM Fell English SC",Georgia,"Times New Roman",serif;
+  --body:"Alegreya",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+body{
+  color:var(--fg);font:17px/1.4 var(--body);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% 0%,rgba(255,250,235,.55),transparent 70%),
+    radial-gradient(ellipse 70% 60% at 100% 100%,rgba(140,95,40,.16),transparent 70%),
+    radial-gradient(ellipse 50% 40% at 0% 70%,rgba(140,95,40,.10),transparent 70%);
+  background-attachment:fixed;
+}
+*{box-sizing:border-box}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
+main{display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--disp);font-weight:400;margin:0;text-wrap:balance;color:var(--accent)}
+h1{font-size:1.6rem;line-height:1.1}
+/* filet rouge effilé, signature des blocs de stats */
+h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
+   background:linear-gradient(90deg,var(--accent) 0%,var(--accent) 35%,transparent 100%) bottom left/100% 2px no-repeat}
+section{display:flex;flex-direction:column;gap:8px}
+.muted{color:var(--muted);font-size:.92rem;font-style:italic}
+button{font:inherit;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:4px;padding:8px 12px;cursor:pointer}
+button.pri,button.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+button.dgr{color:var(--danger);border-color:var(--danger)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,textarea{font:inherit;color:var(--fg);background:rgba(255,252,242,.7);border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100%;min-width:0}
+textarea{min-height:90px;resize:vertical}
+a{color:var(--accent)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 1px 3px rgba(80,50,20,.12)}
+.texte{white-space:pre-wrap;overflow-wrap:anywhere}
+.lab{font-family:var(--disp);font-size:.85rem;letter-spacing:.04em;color:var(--muted)}
+/* en-tête */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-direction:column;gap:6px;padding-top:4px;padding-bottom:8px;border-bottom:3px double var(--line)}
+.top>.row{flex-wrap:nowrap}
+.top .titre{flex:1;min-width:0}
+.top .titre h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .titre .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top button{padding:5px 9px;font-size:.92rem}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--accent)}
+.tabs button{flex:1;padding:6px 2px 4px;font-family:var(--disp);font-size:1rem;border:none;border-radius:3px 3px 0 0;white-space:nowrap;min-width:0;color:var(--muted)}
+.tabs button[aria-current="true"]{background:var(--accent);color:var(--on-accent)}
+.editbar{background:var(--warn-soft);color:var(--warn);border:1px dashed var(--warn);border-radius:3px;padding:4px 10px;font-size:.9rem;font-style:italic}
+/* états actifs */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--disp);font-size:.92rem;padding:2px 10px;border-radius:3px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent)}
+.chip.conc{border-color:var(--conc);background:var(--conc);color:var(--on-accent)}
+.etats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.etats button{padding:7px 6px;font-size:1rem}
+.etats button.on{background:var(--accent);color:var(--on-accent)}
+/* PV */
+.pv{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center}
+.pv button{font-size:1.6rem;padding:4px 0;line-height:1.2}
+.pvval{display:flex;align-items:baseline;justify-content:center;gap:6px;font-variant-numeric:tabular-nums lining-nums}
+.pvval input{width:4.5ch;font-size:2.4rem;font-weight:700;text-align:center;padding:0;border:none;background:transparent;border-bottom:1px solid var(--accent);border-radius:0;color:var(--accent)}
+.pvval span{font-size:1.3rem;color:var(--muted)}
+.pvcard{display:grid;grid-template-columns:1.35fr 1fr;gap:10px 14px;padding:10px 12px}
+.pvcol{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pvcol+.pvcol{border-left:1px solid var(--line);padding-left:12px}
+.pvcard .pv{grid-template-columns:30px 1fr 30px;gap:4px}
+.pvcard .pv button{font-size:1.2rem;padding:0;height:34px}
+.pvcard .pvval input{width:3ch;font-size:2.1rem}
+.pvcard .pvval span{font-size:1.15rem}
+.pvcol .pv{margin-top:auto}
+.mort{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:6px}
+.mort-g{display:grid;grid-template-columns:auto auto;gap:2px 10px;align-items:center;justify-items:end}
+.mort .boxes{gap:6px}.mort .box{width:18px;height:18px;margin:3px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.stat{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px 2px;min-width:0}
+.stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
+.stat .lab{font-size:.72rem;letter-spacing:.01em}
+/* cases : losanges, comme les emplacements des fiches officielles */
+.boxes{display:flex;gap:8px;flex-wrap:wrap;padding:2px}
+.box{width:22px;height:22px;padding:0;border:2px solid var(--accent);border-radius:2px;background:transparent;transform:rotate(45deg);margin:3px}
+.box.on{background:var(--accent)}
+.box.e{border-color:var(--fg)}.box.e.on{background:var(--fg)}
+.res{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center}
+.res .n{min-width:0}
+.x{border:none;background:transparent;color:var(--accent);padding:4px 8px}
+/* armes */
+.armes{display:flex;flex-direction:column}
+.arme{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.arme .nom{font-weight:700;font-size:1.08rem}
+.arme .att{font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums lining-nums;color:var(--accent);text-align:right}
+.arme .deg{grid-column:1/-1}
+.arme-ed{display:grid;grid-template-columns:1fr 4.2rem auto;gap:6px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.arme-ed .full{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.arme-ed input{padding:4px 6px}
+/* caracs */
+.cars{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.car{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px}
+.car .lab{color:var(--accent)}
+.car .m{font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.car .v{color:var(--muted);font-size:.9rem}
+.car .s{font-size:.85rem;margin-top:2px}
+.dot{display:inline-block;width:.55em;height:.55em;border:1.5px solid var(--accent);margin-right:7px;vertical-align:.08em;transform:rotate(45deg)}
+.dot.on{background:var(--accent)}
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.skill{display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);font-size:1rem;min-width:0}
+.skill b{font-variant-numeric:tabular-nums lining-nums}
+ul.plain{margin:0;padding-left:1.1em}
+ul.plain li::marker{color:var(--accent)}
+/* sorts */
+.magie{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.slot{display:grid;grid-template-columns:5rem 1fr;gap:8px;align-items:center}
+.sort{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:1px solid var(--line)}
+.sort a{font-weight:700;font-size:1.1rem;text-decoration:none}
+.badge{display:inline-block;font-family:var(--disp);font-size:.8rem;border:1px solid var(--accent);border-radius:2px;padding:0 4px;margin-left:5px;color:var(--accent)}
+.grid9{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grid9 label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column}
+.coins{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.coins label,.coin{font-family:var(--disp);font-size:.85rem;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.coin b{font-family:var(--body);font-size:1.3rem;color:var(--fg);font-variant-numeric:tabular-nums lining-nums}
+.coins input{text-align:center;font-variant-numeric:tabular-nums}
+/* équipement */
+.objets{display:flex;flex-direction:column}
+.objet{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);min-height:40px}
+.qte{display:flex;align-items:center;gap:6px;flex:none}
+.qte button{padding:0;width:30px;height:30px;line-height:1;font-size:1.1rem}
+.qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
+.obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.obj-ed input{padding:4px 6px}
+.obj-ed .lien-in{grid-column:1/-1;font-size:.8rem;color:var(--muted)}
+.lien-ed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:6px;align-items:center;font-size:1rem}
+.lien-ed input{font-size:.8rem;padding:4px 6px}
+a.ext{text-decoration:none;color:inherit;border-bottom:1px dotted var(--accent)}
+.alerte{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--conc-soft);color:var(--conc);border:1px solid var(--conc);border-radius:3px;padding:6px 10px}
+.alerte b{font-family:var(--disp);font-weight:400;font-size:1.1rem}
+.alerte button{flex:none;border-color:var(--conc);color:var(--conc)}
+.perso{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;color:var(--fg);border-color:var(--line)}
+.perso .t{font-family:var(--disp);font-size:1.3rem;color:var(--accent)}
+.msg{background:var(--card);border-left:3px solid var(--conc);border-radius:2px;padding:8px 10px;font-size:.95rem}
+.msg.err{border-left-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){
+  .box{transition:background .12s}
+  main.in-g{animation:inG .18s ease-out}main.in-d{animation:inD .18s ease-out}
+  @keyframes inG{from{transform:translateX(28px);opacity:.3}to{transform:none;opacity:1}}
+  @keyframes inD{from{transform:translateX(-28px);opacity:.3}to{transform:none;opacity:1}}
+}
+@media (max-width:380px){.stats{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+
+<div id="app" class="wrap"></div>
+
+<script>
+const EXEMPLE = {"v":1,"date":"2026-10-18T03:38:28.265Z","id":{"nom":"Character Name","historique":"Acolyte","classe":"Guerrier","sousClasse":"","espece":"Humain","niveau":"1","xp":"0","alignement":"Loyal bon","taille":"..."},"combat":{"ca":"14","pvMax":"11","dv":"1d10","maitrise":"+2","init":"+2","vitesse":"9 m","percPassive":"10"},"car":[{"n":"FOR","val":15,"mod":"+2","jds":"+4","jdsM":true},{"n":"DEX","val":14,"mod":"+2","jds":"+2","jdsM":false},{"n":"CON","val":13,"mod":"+1","jds":"+3","jdsM":true},{"n":"INT","val":9,"mod":"-1","jds":"-1","jdsM":false},{"n":"SAG","val":11,"mod":"+0","jds":"+0","jdsM":false},{"n":"CHA","val":13,"mod":"+1","jds":"+1","jdsM":false}],"ski":[{"id":0,"nom":"Acrobaties","val":"+4","m":true},{"id":1,"nom":"Dressage","val":"+0","m":false},{"id":2,"nom":"Arcanes","val":"-1","m":false},{"id":3,"nom":"Athlétisme","val":"+4","m":true},{"id":4,"nom":"Intimidation","val":"+1","m":false},{"id":5,"nom":"Histoire","val":"-1","m":false},{"id":6,"nom":"Intuition","val":"+2","m":true},{"id":7,"nom":"Persuasion","val":"+1","m":false},{"id":8,"nom":"Investigation","val":"-1","m":false},{"id":9,"nom":"Médecine","val":"+0","m":false},{"id":10,"nom":"Nature","val":"-1","m":false},{"id":11,"nom":"Perception","val":"+0","m":false},{"id":12,"nom":"Représentation","val":"+1","m":false},{"id":13,"nom":"Tromperie","val":"+1","m":false},{"id":14,"nom":"Religion","val":"+1","m":true},{"id":15,"nom":"Discrétion","val":"+2","m":false},{"id":16,"nom":"Escamotage","val":"+2","m":false},{"id":17,"nom":"Survie","val":"+0","m":false}],"armes":[{"nom":"Cimeterre","att":"+4","deg":"1d6+2 tranchant","note":"enchaînement"},{"nom":"Épée courte","att":"+4","deg":"1d6+2 perforant","note":"distraction"},{"nom":"Arc long","att":"+6","deg":"1d8+2 perforant","note":"lente"}],"capa":[{"nom":"Style de combat (Archerie)"},{"nom":"Second souffle","max":2},{"nom":"Bottes d'armes","max":3}],"traits":["Ingénieux","Compétent ✔","Polyvalent (Bagarreur de tavernes)"],"dons":["Bagarreur de tavernes","Initié à la magie (Clerc)"],"maitrises":{"armures":{"L":true,"I":true,"Lo":true,"B":true},"armes":"Armes simples, armes martiales","outils":"Matériel de calligraphe","langues":"Commun, Draconique, Halfelin"},"magie":{"carac":"","mod":"","dd":"","att":"","slots":["","","","","","","","",""]},"sorts":[{"niv":0,"nom":"Assistance","url":"https://www.aidedd.org/spell/fr/assistance","inc":"Action","portee":"Contact","C":true,"R":false,"M":false,"note":""},{"niv":0,"nom":"Mot de radiance","url":"https://www.aidedd.org/spell/fr/mot-de-radiance","inc":"Action","portee":"Perso","C":false,"R":false,"M":true,"note":""},{"niv":1,"nom":"Bénédiction","url":"https://www.aidedd.org/spell/fr/benediction","inc":"Action","portee":"9 m","C":true,"R":false,"M":true,"note":""}],"equipement":"Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d'exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe","harmo":[],"pieces":{"pc":"0","pa":"0","pe":"0","po":"19","pp":"0"},"histoire":"...","choix":{"l":"fr","class1":"5","level1":"1","voie1":"","class2":"1","level2":"0","voie2":"","species":"1","lineage":"","back":"1","align":"0","car[0]":"15","car[1]":"14","car[2]":"13","car[3]":"8","car[4]":"10","car[5]":"12","bCar[0]":"","bCar[1]":"","bCar[2]":"","bCar[3]":"+1","bCar[4]":"+1","bCar[5]":"+1","feats":"Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,","invoc":",,,,,,,,,","manoeuv":",,,,,,,,","choice":",,,,,,,,,,,,,,,,,,,,","option0":",0,,,,,,,,,,,,,,,,,,,","option1":",Assistance,,,,,,,,,,,,,,,,,,,","option2":",Mot de radiance,,,,,,,,,,,,,,,,,,,","option3":",Bénédiction,,,,,,,,,,,,,,,,,,,","option4":",,,,,,,,,,,,,,,,,,,,","option5":",,,,,,,,,,,,,,,,,,,,","option6":",,,,,,,,,,,,,,,,,,,,","ritual":",,,,,,","customNames":",,","customTrait":",,,,,,,,,,,,,,,,,,,,","skillE":"0","skillB":"6,14","skillC":"0,3,0,0","lang":"1,7,0,0,0,0,0","tool":",,Matériel de calligraphe,,,,","hp":"0,10,,,,,,,,,,,,,,,,,,,","armor":"Armure de cuir clouté,Sans bouclier","weapons":"Cimeterre,1,Épée courte,1,Arc long,1","sort1_0":",,,,,,,,,,,,,,","sort1_1":",,,,,,,,,,,,,,","sort1_2":",,,,,,,,,,,,,,","sort1_3":",,,,,,,,,,,,,,","sort1_4":",,,,,,,,,,,,,,","sort1_5":",,,,,,,,,,,,,,","sort1_6":",,,,,,,,,,,,,,","sort1_7":",,,,,,,,,,,,,,","sort1_8":",,,,,,,,,,,,,,","sort1_9":",,,,,,,,,,,,,,","sort2_0":",,,,,,,,,,,,,,","sort2_1":",,,,,,,,,,,,,,","sort2_2":",,,,,,,,,,,,,,","sort2_3":",,,,,,,,,,,,,,","sort2_4":",,,,,,,,,,,,,,","sort2_5":",,,,,,,,,,,,,,","sort2_6":",,,,,,,,,,,,,,","sort2_7":",,,,,,,,,,,,,,","sort2_8":",,,,,,,,,,,,,,","sort2_9":",,,,,,,,,,,,,,"},"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<creator>\n<version>0.8<\/version>\n<confLang>1<\/confLang>\n<name>Character Name<\/name>\n<class1>5<\/class1>\n<level1>1<\/level1>\n<voie1><\/voie1>\n<class2>1<\/class2>\n<level2>0<\/level2>\n<voie2><\/voie2>\n<className>Guerrier<\/className>\n<subClassName><\/subClassName>\n<XP>0<\/XP>\n<species>1<\/species>\n<speciesName>Humain<\/speciesName>\n<lineage><\/lineage>\n<back>1<\/back>\n<backName>Acolyte<\/backName>\n<lang>1,7,0,0,0,0,0<\/lang>\n<align>0<\/align>\n<size>...<\/size>\n<str>15<\/str><dex>14<\/dex><con>13<\/con>\n<int>8<\/int><wis>10<\/wis><cha>12<\/cha>\n<bstr><\/bstr><bdex><\/bdex><bcon><\/bcon>\n<bint>+1<\/bint><bwis>+1<\/bwis><bcha>+1<\/bcha>\n<feats>Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,<\/feats>\n<invoc>,,,,,,,,,<\/invoc>\n<manoeuv>,,,,,,,,<\/manoeuv>\n<choice>,,,,,,,,,,,,,,,,,,,,<\/choice>\n<option0>,0,,,,,,,,,,,,,,,,,,,<\/option0>\n<option1>,Assistance,,,,,,,,,,,,,,,,,,,<\/option1>\n<option2>,Mot de radiance,,,,,,,,,,,,,,,,,,,<\/option2>\n<option3>,Bénédiction,,,,,,,,,,,,,,,,,,,<\/option3>\n<option4>,,,,,,,,,,,,,,,,,,,,<\/option4>\n<option5>,,,,,,,,,,,,,,,,,,,,<\/option5>\n<option6>,,,,,,,,,,,,,,,,,,,,<\/option6>\n<option7>RFU<\/option7>\n<option8>RFU<\/option8>\n<option9>RFU<\/option9>\n<ritual>,,,,,,<\/ritual>\n<customNames>,,<\/customNames>\n<customTrait>,,,,,,,,,,,,,,,,,,,,<\/customTrait>\n<skillE>0<\/skillE>\n<skillC>0,3,0,0<\/skillC>\n<skillB>6,14<\/skillB>\n<armor>Armure de cuir clouté,Sans bouclier<\/armor>\n<weapons>Cimeterre,1,Épée courte,1,Arc long,1<\/weapons>\n<tool>,,Matériel de calligraphe,,,,<\/tool>\n<cantNam1><\/cantNam1><cantBon1><\/cantBon1><cantDmg1><\/cantDmg1><cantNot1><\/cantNot1>\n<cantNam2><\/cantNam2><cantBon2><\/cantBon2><cantDmg2><\/cantDmg2><cantNot2><\/cantNot2>\n<cantNam3><\/cantNam3><cantBon3><\/cantBon3><cantDmg3><\/cantDmg3><cantNot3><\/cantNot3>\n<hp>0,10,,,,,,,,,,,,,,,,,,,<\/hp>\n<spells0>,,,,,,,,,,,,,,<\/spells0>\n<spells1>,,,,,,,,,,,,,,<\/spells1>\n<spells2>,,,,,,,,,,,,,,<\/spells2>\n<spells3>,,,,,,,,,,,,,,<\/spells3>\n<spells4>,,,,,,,,,,,,,,<\/spells4>\n<spells5>,,,,,,,,,,,,,,<\/spells5>\n<spells6>,,,,,,,,,,,,,,<\/spells6>\n<spells7>,,,,,,,,,,,,,,<\/spells7>\n<spells8>,,,,,,,,,,,,,,<\/spells8>\n<spells9>,,,,,,,,,,,,,,<\/spells9>\n<spells10>,,,,,,,,,,,,,,<\/spells10>\n<spells11>,,,,,,,,,,,,,,<\/spells11>\n<spells12>,,,,,,,,,,,,,,<\/spells12>\n<spells13>,,,,,,,,,,,,,,<\/spells13>\n<spells14>,,,,,,,,,,,,,,<\/spells14>\n<spells15>,,,,,,,,,,,,,,<\/spells15>\n<spells16>,,,,,,,,,,,,,,<\/spells16>\n<spells17>,,,,,,,,,,,,,,<\/spells17>\n<spells18>,,,,,,,,,,,,,,<\/spells18>\n<spells19>,,,,,,,,,,,,,,<\/spells19>\n<spellNote0><\/spellNote0>\n<spellNote1><\/spellNote1>\n<spellNote2><\/spellNote2>\n<spellNote3><\/spellNote3>\n<spellNote4><\/spellNote4>\n<spellNote5><\/spellNote5>\n<spellNote6><\/spellNote6>\n<spellNote7><\/spellNote7>\n<spellNote8><\/spellNote8>\n<spellNote9><\/spellNote9>\n<spellNote10><\/spellNote10>\n<spellNote11><\/spellNote11>\n<spellNote12><\/spellNote12>\n<spellNote13><\/spellNote13>\n<spellNote14><\/spellNote14>\n<spellNote15><\/spellNote15>\n<spellNote16><\/spellNote16>\n<spellNote17><\/spellNote17>\n<spellNote18><\/spellNote18>\n<spellNote19><\/spellNote19>\n<spellNote20><\/spellNote20>\n<spellNote21><\/spellNote21>\n<spellNote22><\/spellNote22>\n<spellNote23><\/spellNote23>\n<spellNote24><\/spellNote24>\n<spellNote25><\/spellNote25>\n<spellNote26><\/spellNote26>\n<spellNote27><\/spellNote27>\n<spellNote28><\/spellNote28>\n<spellNote29><\/spellNote29>\n<spellNote30><\/spellNote30>\n<spellNote31><\/spellNote31>\n<spellNote32><\/spellNote32>\n<spellNote33><\/spellNote33>\n<spellNote34><\/spellNote34>\n<spellNote35><\/spellNote35>\n<spellNote36><\/spellNote36>\n<spellNote37><\/spellNote37>\n<spellNote38><\/spellNote38>\n<spellNote39><\/spellNote39>\n<spellNote40><\/spellNote40>\n<spellNote41><\/spellNote41>\n<spellNote42><\/spellNote42>\n<spellNote43><\/spellNote43>\n<spellNote44><\/spellNote44>\n<spellNote45><\/spellNote45>\n<spellNote46><\/spellNote46>\n<spellNote47><\/spellNote47>\n<spellNote48><\/spellNote48>\n<spellNote49><\/spellNote49>\n<spellNote50><\/spellNote50>\n<spellNote51><\/spellNote51>\n<spellNote52><\/spellNote52>\n<spellNote53><\/spellNote53>\n<spellNote54><\/spellNote54>\n<spellNote55><\/spellNote55>\n<spellNote56><\/spellNote56>\n<spellNote57><\/spellNote57>\n<spellNote58><\/spellNote58>\n<spellNote59><\/spellNote59>\n<spellNote60><\/spellNote60>\n<spellNote61><\/spellNote61>\n<spellNote62><\/spellNote62>\n<spellNote63><\/spellNote63>\n<spellNote64><\/spellNote64>\n<spellNote65><\/spellNote65>\n<spellNote66><\/spellNote66>\n<spellNote67><\/spellNote67>\n<spellNote68><\/spellNote68>\n<spellNote69><\/spellNote69>\n<spellNote70><\/spellNote70>\n<spellNote71><\/spellNote71>\n<spellNote72><\/spellNote72>\n<spellNote73><\/spellNote73>\n<spellNote74><\/spellNote74>\n<br />\n<b>Warning<\/b>:  Undefined array key \"myAppearance\" in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<br />\n<b>Deprecated<\/b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<appearance><\/appearance>\n<backstory>...<\/backstory>\n<equipment>Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d&#039;exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe<\/equipment>\n<attun1><\/attun1>\n<attun2><\/attun2>\n<attun3><\/attun3>\n<cp>0<\/cp>\n<sp>0<\/sp>\n<ep>0<\/ep>\n<gp>19<\/gp>\n<pp>0<\/pp>\n<\/creator>"};
+const KEY='dnd55.v1';
+const ONGLETS=[['combat','Combat'],['carac','Caracs'],['sorts','Sorts'],['sac','Sac'],['fiche','Fiche']];
+const ETATS=['À terre','Agrippé','Assourdi','Aveuglé','Charmé','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Neutralisé','Paralysé','Pétrifié'];
+let db={persos:{},ordre:[]};
+try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}
+let ui={vue:'liste',id:null,onglet:'combat'};
+try{const u=JSON.parse(localStorage.getItem(KEY+'.ui')||'null');if(u&&(u.vue==='liste'||db.persos[u.id]))ui=u}catch(e){}
+ui.edit=false;ui.etats=false;ui.degatsConc=0;
+let flash=null,confirmSuppr=false,sortieTexte='',anim='';
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));localStorage.setItem(KEY+'.ui',JSON.stringify({vue:ui.vue,id:ui.id,onglet:ui.onglet}))}catch(e){flash={err:1,t:"Sauvegarde impossible sur cet appareil. Fais une sauvegarde complète depuis l'onglet Fiche."}}}
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=()=>db.persos[ui.id];
+const D=p=>p.versions[p.versions.length-1].data;
+const num=v=>{const n=parseInt(v,10);return isNaN(n)?0:n};
+
+/* ---------- import / fusion ---------- */
+function estFiche(o){return o&&o.v===1&&o.combat&&o.car}
+function initEtat(d){
+  return{nom:d.id.nom&&d.id.nom!=='Character Name'?d.id.nom:'',pv:num(d.combat.pvMax),pvTemp:0,used:{},
+    armes:d.armes.map(a=>({...a})),ressPerso:[],magie:{},slotsTot:{},
+    equipement:d.equipement||'',pieces:{...d.pieces},harmo:[...(d.harmo||[]),'','',''].slice(0,3),notes:'',
+    etats:{},epuis:0,conc:'',liens:{},objets:lireObjets(d.equipement)};
+}
+/* Les deux écritures d'AideDD donnent une quantité :
+   « 20 flèches » → Flèches ×20 ; « parchemin (10 feuilles) » → Parchemin ×10 ; « livre (prières) » reste tel quel */
+function lireObjet(x){
+  let nom=String(x).trim(),qte=1,compte=false,m;
+  if((m=nom.match(/^(\d+)\s+(.+)$/))){qte=+m[1];nom=m[2];compte=true}
+  else if((m=nom.match(/^(.+?)\s*\((\d+)(?:\s[^)]*)?\)$/))){nom=m[1];qte=+m[2];compte=true}
+  nom=nom.trim();return{nom:nom.charAt(0).toUpperCase()+nom.slice(1),qte,compte};
+}
+function lireObjets(s){return String(s||'').split(/[,\n]+/).map(x=>x.trim()).filter(Boolean).map(lireObjet)}
+const texteObjets=e=>(e.objets||[]).filter(o=>o.nom).map(o=>(num(o.qte)>1?o.qte+' ':'')+o.nom).join(', ');
+function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=e.conc||'';e.liens=e.liens||{};if(!e.objets)e.objets=lireObjets(e.equipement);
+  e.objets=e.objets.map(o=>num(o.qte)===1&&/\(\d+/.test(o.nom)?lireObjet(o.nom):o);e.objets.forEach(o=>{if(num(o.qte)!==1)o.compte=true});return p}
+function creer(d,nom){
+  const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const p={id,versions:[{date:new Date().toISOString(),data:d}],etat:initEtat(d)};
+  if(nom)p.etat.nom=nom;
+  db.persos[id]=p;db.ordre.push(id);return p;
+}
+function mettreAJour(p,d){
+  const old=D(p),e=p.etat,oldMax=num(old.combat.pvMax),newMax=num(d.combat.pvMax);
+  p.versions.push({date:new Date().toISOString(),data:d});
+  const noms=new Set(e.armes.map(a=>a.nom));
+  d.armes.forEach(a=>{if(!noms.has(a.nom))e.armes.push({...a})});
+  if(num(e.pv)>=oldMax)e.pv=newMax;
+  return `Mise à jour : niveau ${old.id.niveau} → ${d.id.niveau}, PV max ${oldMax} → ${newMax}. Cases cochées et notes conservées.`;
+}
+function lireTexte(t){
+  try{return JSON.parse(t.trim())}catch(e){throw new Error("Ce texte n'est pas un export valide. Recopie tout le contenu donné par le bookmarklet.")}
+}
+function importer(t){
+  const o=lireTexte(t);
+  if(o&&o.type==='sauvegarde-persos'&&o.persos){
+    let n=0;Object.values(o.persos).forEach(p=>{if(!db.persos[p.id]){db.persos[p.id]=migrer(p);db.ordre.push(p.id);n++}});
+    return n+' personnage(s) restauré(s).';
+  }
+  if(o&&o.type==='sauvegarde-perso'&&o.perso){
+    const p=migrer(o.perso);if(db.persos[p.id])p.id+='b';db.persos[p.id]=p;db.ordre.push(p.id);return 'Personnage restauré.';
+  }
+  if(!estFiche(o))throw new Error("Ce texte ne vient pas du bookmarklet AideDD.");
+  const p=creer(o);ui.vue='perso';ui.id=p.id;ui.onglet='combat';
+  return 'Personnage importé. Donne-lui un nom : bouton Modifier, onglet Fiche.';
+}
+Object.values(db.persos).forEach(migrer);
+
+/* ---------- ressources ---------- */
+function ressources(p){
+  const d=D(p),e=p.etat,r=[];
+  d.capa.filter(c=>c.max).forEach(c=>r.push({k:'c:'+c.nom,nom:c.nom,max:c.max}));
+  r.push({k:'dv',nom:'Dés de vie ('+d.combat.dv+')',max:Math.max(1,num(d.id.niveau))});
+  e.ressPerso.forEach((x,i)=>r.push({k:'p:'+x.nom,nom:x.nom,max:x.max,perso:i}));
+  return r;
+}
+function cases(k,max,cls=''){
+  const u=Math.min(P().etat.used[k]||0,max);let h='';
+  for(let i=0;i<max;i++)h+=`<button class="box ${cls} ${i<u?'on':''}" data-a="case" data-k="${esc(k)}" data-i="${i}" data-max="${max}" aria-label="case ${i+1} sur ${max}"></button>`;
+  return `<div class="boxes">${h}</div>`;
+}
+/* ---------- liens AideDD (automatiques, remplaçables en mode Modifier) ---------- */
+const AD='https://www.aidedd.org/';
+const propre=s=>String(s||'').replace(/\(.*?\)/g,'').replace(/✔/g,'').trim();
+const slug=s=>propre(s).toLowerCase().replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+/* le texte recherché s'arrête avant le premier mot à apostrophe (' ou ’ selon les pages) : « Bottes d'armes » cherche « Bottes » */
+const frag=s=>{const m=propre(s).split(/\s+/),k=m.findIndex(w=>/['’]/.test(w));return encodeURIComponent((k>0?m.slice(0,k):m).join(' ')).replace(/-/g,'%2D')};
+const ARMURE=/armure|cotte|harnois|cuirasse|clibanion|demi-plate|brigandine|bouclier|broigne|chemise de mailles/i;
+function lienAuto(type,nom,d,extra){
+  switch(type){
+    case 'objet':{
+      if(ARMURE.test(nom))return AD+'regles-24/equipement/armures/#:~:text='+frag(nom);
+      if(/^(matériel|outils|instruments?|nécessaire|kit|accessoires|ustensiles|jeu) /i.test(propre(nom)))return AD+'regles-24/equipement/outils/#:~:text='+frag(nom);
+      const ar=(d.armes||[]).find(a=>a.nom.toLowerCase()===propre(nom).toLowerCase());
+      if(ar)return lienAuto('arme',ar.nom,d,ar.deg);
+      return AD+'regles-24/equipement/materiel-daventurier/#:~:text='+frag(nom);
+    }
+    case 'don':return AD+'feat/fr/'+slug(nom);
+    case 'trait':return AD+'regles-24/origines-des-personnages/description-des-especes/#:~:text='+frag(nom);
+    case 'espece':return AD+'regles-24/origines-des-personnages/description-des-especes/#:~:text='+frag(nom);
+    case 'historique':return AD+'regles-24/origines-des-personnages/description-des-historiques/#:~:text='+frag(nom);
+    case 'capa':{
+      const st=String(nom).match(/^\s*Style de combat\s*\((.+)\)/i);
+      if(st)return AD+'feat/fr/'+slug(st[1]);   /* en 2024, chaque style de combat est un don */
+      return AD+'regles-24/classes/'+slug(d.id.classe)+'/#:~:text=%3A-,'+frag(nom);
+    }
+    case 'arme':{
+      /* on cible la ligne du tableau : nom suivi du dé de dégâts (ex. « Épée courte » puis « 1d6 ») */
+      const de=String(extra||'').match(/\d+d\d+/);
+      return AD+'regles-24/equipement/armes/#:~:text='+frag(nom)+(de?',-'+de[0]:'');
+    }
+    case 'etat':return AD+'regles-24/glossaire/etats/#'+slug(nom);
+  }
+  return '';
+}
+function lien(type,nom,extra){const p=P();return (p.etat.liens||{})[type+':'+propre(nom)]||lienAuto(type,nom,D(p),extra)}
+function itemLien(type,nom,label,extra){
+  const u=lien(type,nom,extra);label=label??nom;
+  if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
+  return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+}
+function slotTot(p,l){const e=p.etat;return e.slotsTot[l]!=null&&e.slotsTot[l]!==''?num(e.slotsTot[l]):num(D(p).magie.slots[l-1])}
+
+/* ---------- XML pour AideDD ---------- */
+function xesc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function xmlPour(p){
+  let x=D(p).xml||'';if(!x)return'';const e=p.etat;
+  const r=(tag,val)=>{x=x.replace(new RegExp('<'+tag+'>[\\s\\S]*?</'+tag+'>'),()=>'<'+tag+'>'+xesc(val)+'</'+tag+'>')};
+  if(e.nom)r('name',e.nom);r('equipment',texteObjets(e));
+  r('cp',e.pieces.pc);r('sp',e.pieces.pa);r('ep',e.pieces.pe);r('gp',e.pieces.po);r('pp',e.pieces.pp);
+  e.harmo.forEach((h,i)=>r('attun'+(i+1),h));
+  return x;
+}
+function nomFichier(p,ext){return ((p.etat.nom||D(p).id.classe||'perso').replace(/[^\p{L}\p{N}]+/gu,'-')+'-niv'+D(p).id.niveau+'.'+ext)}
+function telecharger(texte,nom,type){
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([texte],{type}));a.download=nom;document.body.appendChild(a);a.click();a.remove()}catch(e){}
+}
+
+/* ---------- rendu ---------- */
+function render(){
+  const app=document.getElementById('app');
+  if(ui.vue==='perso'&&P())app.innerHTML=vuePerso();else{ui.vue='liste';app.innerHTML=vueListe()}
+  anim='';
+}
+function msgHtml(){if(!flash)return'';const h=`<div class="msg ${flash.err?'err':''}" role="status">${esc(flash.t)}</div>`;flash=null;return h}
+
+function vueListe(){
+  const ps=db.ordre.map(id=>db.persos[id]).filter(Boolean);
+  const liste=ps.length?ps.map(p=>{const d=D(p);return`<button class="perso card" data-a="ouvrir" data-id="${p.id}">
+    <span><span class="t">${esc(p.etat.nom||'Sans nom')}</span><br><span class="muted">${esc(d.id.classe)} niv ${esc(d.id.niveau)} · ${esc(d.id.espece)}</span></span>
+    <span class="muted">${esc(p.etat.pv)}/${esc(d.combat.pvMax)} PV</span></button>`}).join('')
+    :`<p class="muted">Aucun personnage pour l’instant. Colle l’export du bookmarklet ci-dessous, ou charge l’exemple pour essayer.</p>
+      <button data-a="exemple">Charger l’exemple (Guerrier niv 1)</button>`;
+  return `<h1>Mes personnages</h1>${msgHtml()}<section>${liste}</section>
+  <section><h2>Importer</h2>
+    <p class="muted">Sur la fiche finale AideDD, lance le bookmarklet, appuie sur Copier, puis colle ici. Une sauvegarde complète se colle au même endroit.</p>
+    <textarea id="imp" placeholder="Colle l’export ici"></textarea>
+    <button class="pri" data-a="importer">Importer</button></section>`;
+}
+
+function chipsEtats(e){
+  const c=[];
+  if(e.conc)c.push(`<button class="chip conc" data-a="etatsOuvrir">Concentration${e.conc!=='?'?' : '+esc(e.conc):''}</button>`);
+  ETATS.filter(n=>e.etats[n]).forEach(n=>c.push(`<button class="chip" data-a="etatsOuvrir">${esc(n)}</button>`));
+  if(e.epuis>0)c.push(`<button class="chip" data-a="etatsOuvrir">Épuisement ${e.epuis}</button>`);
+  return c.length?`<div class="chips" aria-label="États actifs">${c.join('')}</div>`:'';
+}
+function panneauEtats(p,d,e){
+  const concs=d.sorts.filter(s=>s.C);
+  const btnConc=[...concs.map(s=>`<button class="${e.conc===s.nom?'on':''}" data-a="conc" data-n="${esc(s.nom)}">${esc(s.nom)}</button>`),
+    `<button class="${e.conc==='?'?'on':''}" data-a="conc" data-n="?">Autre</button>`].join('');
+  return `<section class="card"><div class="row" style="justify-content:space-between"><h2 style="border:none">États</h2><button data-a="etatsFermer">Fermer</button></div>
+    <div class="lab">Concentration</div><div class="etats">${btnConc}</div>
+    ${e.conc?`<button data-a="conc" data-n="">Fin de la concentration</button>`:''}
+    <div class="lab">États</div>
+    <div class="etats">${ETATS.map(n=>`<button class="${e.etats[n]?'on':''}" data-a="etat" data-n="${esc(n)}" aria-pressed="${!!e.etats[n]}">${esc(n)}</button>`).join('')}</div>
+    <div class="lab">Épuisement</div>
+    <div class="row"><button data-a="epuis" data-d="-1" aria-label="Retirer un niveau">−</button><b style="font-size:1.3rem;min-width:2ch;text-align:center">${e.epuis}</b><button data-a="epuis" data-d="1" aria-label="Ajouter un niveau">+</button><span class="muted">sur 6</span></div>
+    <div class="muted">Règles : ${[...ETATS.filter(n=>e.etats[n]),...(e.epuis?['Épuisement']:[])].map(n=>itemLien('etat',n)).join(', ')||`<a class="ext" href="${AD}regles-24/glossaire/etats/" target="_blank" rel="noopener">tous les états</a>`}</div>
+    ${(ETATS.some(n=>e.etats[n])||e.epuis||e.conc)?`<button class="dgr" data-a="etatsVider">Tout retirer</button>`:''}
+  </section>`;
+}
+
+function vuePerso(){
+  const p=P(),d=D(p),e=p.etat;
+  const tabs=ONGLETS.map(([k,l])=>`<button data-a="onglet" data-o="${k}" aria-current="${ui.onglet===k}">${l}</button>`).join('');
+  const corps={combat:ongCombat,carac:ongCarac,sorts:ongSorts,sac:ongSac,fiche:ongFiche}[ui.onglet]||ongCombat;
+  return `<header class="top"><div class="row"><button data-a="liste" aria-label="Retour à la liste">‹</button>
+    <div class="titre"><h1>${esc(e.nom||'Sans nom')}</h1><div class="muted">${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} niv ${esc(d.id.niveau)} · ${esc(d.id.espece)}</div></div>
+    <button data-a="etatsOuvrir" class="${ui.etats?'on':''}">États</button>
+    <button data-a="edit" class="${ui.edit?'on':''}">${ui.edit?'Terminé':'Modifier'}</button></div>
+    ${ui.edit?'<div class="editbar">Mode modification : les champs sont modifiables. Appuie sur Terminé pour verrouiller.</div>':''}
+    ${e.conc&&ui.degatsConc>0?`<div class="alerte" role="alert"><b>Jet de concentration à faire</b><button data-a="concOk">OK</button></div>`:''}
+    ${chipsEtats(e)}
+    <nav class="tabs">${tabs}</nav></header>${msgHtml()}
+    ${ui.etats?panneauEtats(p,d,e):''}
+    <main class="${anim}">${corps(p,d,e)}</main>`;
+}
+
+function ongCombat(p,d,e){
+  const c=d.combat,ed=ui.edit;
+  const stats=[['CA',c.ca],['Init.',c.init],['Vitesse',c.vitesse],['Maîtrise',c.maitrise],['Perc. passive',c.percPassive]]
+    .map(([l,v])=>`<div class="stat"><b>${esc(v)}</b><span class="lab">${l}</span></div>`).join('');
+  const armes=ed?e.armes.map((a,i)=>`<div class="arme-ed">
+      <input data-f="armes.${i}.nom" value="${esc(a.nom)}" placeholder="Nom" aria-label="Nom de l'arme">
+      <input data-f="armes.${i}.att" value="${esc(a.att)}" placeholder="+0" aria-label="Bonus d'attaque">
+      <button class="x" data-a="supprArme" data-i="${i}" aria-label="Retirer l'arme">✕</button>
+      <div class="full"><input data-f="armes.${i}.deg" value="${esc(a.deg)}" aria-label="Dégâts" placeholder="Dégâts"><input data-f="armes.${i}.note" value="${esc(a.note)}" aria-label="Notes" placeholder="Botte / notes"></div></div>`).join('')+`<button data-a="ajoutArme">+ Ajouter une arme</button>`
+    :(e.armes.length?`<div class="armes">${e.armes.map(a=>`<div class="arme"><span class="nom">${a.nom?itemLien('arme',a.nom,undefined,a.deg):'Sans nom'}</span><span class="att">${esc(a.att)}</span>
+      <span class="deg">${esc(a.deg)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</span></div>`).join('')}</div>`:'<p class="muted">Aucune arme. Ajoute-en avec Modifier.</p>');
+  const res=ressources(p).map(r=>`<div class="n">${!ed&&r.k.startsWith('c:')?itemLien('capa',r.nom):esc(r.nom)}${ed&&r.perso!=null?` <button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`:''}</div>${cases(r.k,r.max)}`).join('');
+  const autres=ed?d.capa.map(x=>itemLien('capa',x.nom)).join('')
+    :d.capa.filter(x=>!x.max).map(x=>`<li>${itemLien('capa',x.nom)}</li>`).join('');
+  return `<section class="card pvcard">
+      <div class="pvcol"><div class="lab">Points de vie</div>
+        <div class="pv"><button data-a="pv" data-c="pv" data-d="-1" aria-label="Retirer 1 PV">−</button>
+        <div class="pvval"><input id="pv" data-f="pv" data-num inputmode="numeric" value="${esc(e.pv)}" aria-label="PV actuels"><span>/ ${esc(c.pvMax)}</span></div>
+        <button data-a="pv" data-c="pv" data-d="1" aria-label="Ajouter 1 PV">+</button></div></div>
+      <div class="pvcol"><div class="lab">PV temporaires</div>
+        <div class="pv temp"><button data-a="pv" data-c="pvTemp" data-d="-1" aria-label="Retirer 1 PV temporaire">−</button>
+        <div class="pvval"><input id="pvt" data-f="pvTemp" data-num inputmode="numeric" value="${esc(e.pvTemp)}" aria-label="PV temporaires"></div>
+        <button data-a="pv" data-c="pvTemp" data-d="1" aria-label="Ajouter 1 PV temporaire">+</button></div></div>
+      <div class="mort"><span class="lab">Jets contre<br>la mort</span><div class="mort-g"><span class="lab">Succès</span>${cases('jm:s',3)}<span class="lab">Échecs</span>${cases('jm:e',3,'e')}</div></div></section>
+    <div class="stats">${stats}</div>
+    <section><h2>Armes et attaques</h2>${armes}</section>
+    <section><h2>Ressources</h2><div class="res">${res}</div>
+      ${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource (ex. Rage)" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}</section>
+    ${autres?`<section><h2>Capacités</h2>${ed?`<div class="lab">Liens vers AideDD (modifiables)</div>${autres}`:`<ul class="plain">${autres}</ul>`}</section>`:''}`;
+}
+
+function ongCarac(p,d,e){
+  const cars=d.car.map(c=>`<div class="car"><div class="lab">${c.n}</div><div class="m">${esc(c.mod)}</div><div class="v">${c.val}</div>
+    <div class="s"><span class="dot ${c.jdsM?'on':''}"></span>JS ${esc(c.jds)}</div></div>`).join('');
+  const sk=[...d.ski].sort((a,b)=>a.nom.localeCompare(b.nom,'fr')).map(s=>`<div class="skill"><span><span class="dot ${s.m?'on':''}"></span>${esc(s.nom)}</span><b>${esc(s.val)}</b></div>`).join('');
+  const m=d.maitrises,arm=[['L','légères'],['I','intermédiaires'],['Lo','lourdes'],['B','boucliers']].filter(([k])=>m.armures[k]).map(x=>x[1]).join(', ');
+  return `<div class="cars">${cars}</div>
+    <section><h2>Compétences</h2><div class="skills">${sk}</div></section>
+    <section><h2>Traits d’espèce</h2>${ui.edit?d.traits.map(t=>itemLien('trait',t)).join(''):`<ul class="plain">${d.traits.map(t=>`<li>${itemLien('trait',t)}</li>`).join('')}</ul>`}</section>
+    <section><h2>Dons</h2>${ui.edit?d.dons.map(t=>itemLien('don',t)).join(''):`<ul class="plain">${d.dons.map(t=>`<li>${itemLien('don',t)}</li>`).join('')}</ul>`}</section>
+    <section><h2>Maîtrises</h2><div><b>Armures :</b> ${esc(arm||'aucune')}</div><div><b>Armes :</b> ${esc(m.armes)}</div><div><b>Outils :</b> ${esc(m.outils||'aucun')}</div><div><b>Langues :</b> ${esc(m.langues)}</div></section>`;
+}
+
+function ongSorts(p,d,e){
+  const mg=d.magie,v=k=>e.magie[k]!=null?e.magie[k]:mg[k],ed=ui.edit;
+  const magie=ed?`<div class="magie">
+      <label class="lab">Caractéristique<input data-f="magie.carac" value="${esc(v('carac'))}" placeholder="Sagesse"></label>
+      <label class="lab">DD<input data-f="magie.dd" value="${esc(v('dd'))}" inputmode="numeric" placeholder="13"></label>
+      <label class="lab">Attaque<input data-f="magie.att" value="${esc(v('att'))}" placeholder="+5"></label></div>`
+    :`<div class="magie">${[['DD des sorts',v('dd')],['Attaque',v('att')],['Caractéristique',v('carac')]].map(([l,x])=>`<div class="stat"><b>${esc(x||'–')}</b><span class="lab">${l}</span></div>`).join('')}</div>`;
+  let slots='';for(let l=1;l<=9;l++){const t=slotTot(p,l);if(t>0)slots+=`<div class="slot"><span>Niveau ${l}</span>${cases('s:'+l,t)}</div>`}
+  let reglage='';for(let l=1;l<=9;l++)reglage+=`<label>Niv ${l}<input data-f="slotsTot.${l}" data-num inputmode="numeric" value="${slotTot(p,l)||''}" placeholder="0"></label>`;
+  const niv={};d.sorts.forEach(s=>(niv[s.niv]=niv[s.niv]||[]).push(s));
+  const liste=Object.keys(niv).sort((a,b)=>a-b).map(n=>`<section><h2>${n==0?'Sorts mineurs':'Niveau '+n}</h2>`+niv[n].map(s=>`<div class="sort">
+      <div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a>${s.C?'<span class="badge" title="Concentration">C</span>':''}${s.R?'<span class="badge" title="Rituel">R</span>':''}${s.M?'<span class="badge" title="Composante matérielle">M</span>':''}</div>
+      <div class="muted">${esc(s.inc)} · ${esc(s.portee)}${s.note?' · '+esc(s.note):''}</div></div>`).join('')+'</section>').join('');
+  return `${magie}
+    <section><h2>Emplacements de sort</h2>${slots||(ed?'':'<p class="muted">Aucun emplacement. Règle-les avec Modifier si ton personnage en a.</p>')}
+      ${ed?`<div class="lab">Nombre d’emplacements par niveau</div><div class="grid9">${reglage}</div>`:''}</section>
+    ${liste||'<p class="muted">Aucun sort.</p>'}`;
+}
+
+function ongSac(p,d,e){
+  const ed=ui.edit,C=[['pc','PC'],['pa','PA'],['pe','PE'],['po','PO'],['pp','PP']];
+  const coins=ed?C.map(([k,l])=>`<label>${l}<input data-f="pieces.${k}" inputmode="numeric" value="${esc(e.pieces[k])}"></label>`).join('')
+    :C.map(([k,l])=>`<div class="coin"><b>${esc(e.pieces[k]||0)}</b>${l}</div>`).join('');
+  const harmo=e.harmo.filter(Boolean);
+  return `<section><h2>Pièces</h2><div class="coins">${coins}</div></section>
+    <section><h2>Équipement</h2>${ed
+      ?e.objets.map((o,i)=>`<div class="obj-ed">
+          <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
+          <input data-f="objets.${i}.nom" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">
+          <button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>
+          ${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}</div>`).join('')
+        +`<button data-a="ajoutObj">+ Ajouter un objet</button>`
+      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet">${itemLien('objet',o.nom)}${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
+        :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
+    <section><h2>Objets harmonisés</h2>${ed?e.harmo.map((h,i)=>`<input data-f="harmo.${i}" value="${esc(h)}" placeholder="Objet ${i+1}">`).join('')
+      :(harmo.length?`<ul class="plain">${harmo.map(h=>`<li>${esc(h)}</li>`).join('')}</ul>`:'<p class="muted">Aucun.</p>')}</section>
+    <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
+}
+
+function ongFiche(p,d,e){
+  const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
+  return `<section><h2>Personnage</h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
+      ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
+        :`<div>Espèce : ${itemLien('espece',d.id.espece)} · Historique : ${itemLien('historique',d.id.historique)}</div><div class="muted">${esc(d.id.alignement)}</div>`}</section>
+    <section><h2>Monter de niveau</h2>
+      <p class="muted">1. Copie le XML et importe-le sur AideDD. 2. Monte de niveau là-bas. 3. Lance le bookmarklet sur la fiche finale et colle le résultat ici. Tes cases cochées, armes et notes sont conservées.</p>
+      <div class="row"><button data-a="copierXml">Copier le XML</button><button data-a="telXml">Télécharger le .xml</button></div>
+      <textarea id="maj" placeholder="Colle le nouvel export ici"></textarea>
+      <button class="pri" data-a="maj">Mettre à jour le personnage</button></section>
+    ${sortieTexte?`<section><p class="muted">La copie automatique n’a pas marché : sélectionne ce texte et copie-le.</p><textarea readonly id="sortie">${esc(sortieTexte)}</textarea></section>`:''}
+    <section><h2>Sauvegarde</h2>
+      <p class="muted">Garde une copie de temps en temps (notes, messages). Elle se recolle dans « Importer » sur l’écran d’accueil.</p>
+      <div class="row"><button data-a="copierSauv">Copier la sauvegarde</button><button data-a="telSauv">Télécharger</button></div></section>
+    <section><h2>Historique des imports</h2><ul class="plain">${hist}</ul></section>
+    <section>${confirmSuppr?`<p>Supprimer définitivement ${esc(e.nom||'ce personnage')} ?</p><div class="row"><button class="dgr" data-a="supprOui">Oui, supprimer</button><button data-a="supprNon">Annuler</button></div>`
+      :`<button class="dgr" data-a="suppr">Supprimer ce personnage</button>`}</section>`;
+}
+
+/* ---------- interactions ---------- */
+async function copier(t){
+  sortieTexte='';
+  try{await navigator.clipboard.writeText(t);flash={t:'Copié.'}}catch(e){sortieTexte=t;flash={err:1,t:'Copie automatique refusée.'}}
+  render();
+  const s=document.getElementById('sortie');if(s){s.focus();s.select()}
+}
+function changerOnglet(sens){
+  const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),n=ONGLETS.length;
+  ui.onglet=ONGLETS[(i+sens+n)%n][0];confirmSuppr=false;anim=sens>0?'in-g':'in-d';
+  save();render();window.scrollTo(0,0);
+}
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-a]');if(!b)return;
+  const a=b.dataset.a,p=P();let haut=false;
+  try{switch(a){
+    case 'ouvrir':ui.vue='perso';ui.id=b.dataset.id;ui.onglet='combat';ui.edit=false;ui.etats=false;ui.degatsConc=0;confirmSuppr=false;sortieTexte='';haut=true;break;
+    case 'liste':ui.vue='liste';ui.edit=false;ui.etats=false;haut=true;break;
+    case 'onglet':{const i=ONGLETS.findIndex(o=>o[0]===ui.onglet),j=ONGLETS.findIndex(o=>o[0]===b.dataset.o);anim=j>i?'in-g':j<i?'in-d':'';ui.onglet=b.dataset.o;confirmSuppr=false;haut=true;break}
+    case 'edit':ui.edit=!ui.edit;break;
+    case 'etatsOuvrir':ui.etats=!ui.etats;haut=ui.etats;break;
+    case 'etatsFermer':ui.etats=false;break;
+    case 'etat':p.etat.etats[b.dataset.n]=!p.etat.etats[b.dataset.n];break;
+    case 'conc':p.etat.conc=p.etat.conc===b.dataset.n?'':b.dataset.n;if(!p.etat.conc)ui.degatsConc=0;break;
+    case 'epuis':p.etat.epuis=Math.min(6,Math.max(0,p.etat.epuis+num(b.dataset.d)));break;
+    case 'etatsVider':p.etat.etats={};p.etat.epuis=0;p.etat.conc='';break;
+    case 'exemple':{const q=creer(JSON.parse(JSON.stringify(EXEMPLE)),'Exemple (Guerrier)');ui.vue='perso';ui.id=q.id;ui.onglet='combat';break}
+    case 'importer':flash={t:importer(document.getElementById('imp').value)};break;
+    case 'maj':{const o=lireTexte(document.getElementById('maj').value);if(!estFiche(o))throw new Error("Ce texte ne vient pas du bookmarklet AideDD.");flash={t:mettreAJour(p,o)};break}
+    case 'pv':{const c=b.dataset.c,av=num(p.etat[c]);p.etat[c]=Math.max(0,av+num(b.dataset.d));noterDegats(av-num(p.etat[c]));break}
+    case 'concOk':ui.degatsConc=0;break;
+    case 'case':{const k=b.dataset.k,i=num(b.dataset.i),u=Math.min(p.etat.used[k]||0,num(b.dataset.max));p.etat.used[k]=i<u?i:i+1;break}
+    case 'ajoutArme':p.etat.armes.push({nom:'',att:'',deg:'',note:''});break;
+    case 'supprArme':p.etat.armes.splice(num(b.dataset.i),1);break;
+    case 'qte':{const o=p.etat.objets[num(b.dataset.i)];o.qte=Math.max(0,num(o.qte)+num(b.dataset.d));o.compte=true;break}
+    case 'ajoutObj':p.etat.objets.push({nom:'',qte:1});break;
+    case 'supprObj':p.etat.objets.splice(num(b.dataset.i),1);break;
+    case 'ajoutRes':{const n=document.getElementById('rnom').value.trim(),m=num(document.getElementById('rmax').value);
+      if(!n||m<1)throw new Error('Indique un nom et un maximum (au moins 1).');p.etat.ressPerso.push({nom:n,max:Math.min(m,20)});break}
+    case 'supprRes':p.etat.ressPerso.splice(num(b.dataset.i),1);break;
+    case 'copierXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import. Relance le bookmarklet sur AideDD.");save();copier(x);return}
+    case 'telXml':{const x=xmlPour(p);if(!x)throw new Error("Pas de XML dans cet import.");telecharger(x,nomFichier(p,'xml'),'application/xml');flash={t:'Si aucun fichier n’apparaît, utilise « Copier le XML ».'};break}
+    case 'copierSauv':copier(JSON.stringify({type:'sauvegarde-perso',date:new Date().toISOString(),perso:p}));return;
+    case 'telSauv':telecharger(JSON.stringify({type:'sauvegarde-perso',date:new Date().toISOString(),perso:p}),nomFichier(p,'json'),'application/json');flash={t:'Si aucun fichier n’apparaît, utilise « Copier la sauvegarde ».'};break;
+    case 'suppr':confirmSuppr=true;break;
+    case 'supprNon':confirmSuppr=false;break;
+    case 'supprOui':delete db.persos[p.id];db.ordre=db.ordre.filter(x=>x!==p.id);ui.vue='liste';ui.edit=false;confirmSuppr=false;break;
+    default:return;
+  }}catch(err){flash={err:1,t:err.message}}
+  save();render();if(haut)window.scrollTo(0,0);
+});
+function noterDegats(n){const p=P();if(p&&p.etat.conc&&n>0)ui.degatsConc=(ui.degatsConc||0)+n}
+let avantSaisie=null;
+document.addEventListener('focusin',ev=>{const f=ev.target.dataset&&ev.target.dataset.f;if(f==='pv'||f==='pvTemp')avantSaisie=num(ev.target.value)});
+document.addEventListener('input',ev=>{
+  const el=ev.target,p=P();
+  if(el.dataset&&el.dataset.lien&&p){const k=el.dataset.lien,v=el.value.trim();if(v&&v!==lienAuto(k.split(':')[0],k.slice(k.indexOf(':')+1),D(p)))p.etat.liens[k]=v;else delete p.etat.liens[k];save();return}
+  const f=el.dataset&&el.dataset.f;if(!f||!p)return;
+  const path=f.split('.');let o=p.etat;
+  for(let i=0;i<path.length-1;i++){o=o[path[i]]=o[path[i]]??{}}
+  o[path[path.length-1]]=el.hasAttribute('data-num')?(el.value===''?'':Math.max(0,num(el.value))):el.value;
+  save();
+});
+document.addEventListener('change',ev=>{
+  const f=ev.target.dataset&&ev.target.dataset.f;
+  if((f==='pv'||f==='pvTemp')&&avantSaisie!=null){noterDegats(avantSaisie-num(ev.target.value));avantSaisie=num(ev.target.value)}
+  if((f&&/^objets\.\d+\.nom$/.test(f))||f==='nom'||f==='pv'||f==='pvTemp'||(f&&f.startsWith('slotsTot')))render();
+});
+/* glisser à gauche / droite pour changer d'onglet (en boucle) */
+let tx=null,ty=null;
+document.addEventListener('touchstart',ev=>{
+  if(ui.vue!=='perso'||ev.touches.length>1||(ev.target.closest&&ev.target.closest('input,textarea'))){tx=null;return}
+  tx=ev.touches[0].clientX;ty=ev.touches[0].clientY;
+},{passive:true});
+document.addEventListener('touchend',ev=>{
+  if(tx==null)return;const t=ev.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
+  if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy))changerOnglet(dx<0?1:-1);
+},{passive:true});
+render();
+</script>
+
+</body>
+</html>
