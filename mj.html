@@ -298,7 +298,7 @@ select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(
    Tout passe par des fonctions Supabase protégées par le code MJ (gardé sur cet appareil uniquement). */
 const SUPA='https://mgcofajllvellwcudjxx.supabase.co',CLE_PUB='sb_publishable_WLlUZ1Aznum4Rz1qwab53Q_xisC28pj';
 const KEY='dnd55.mj';
-const VERSION='19.10.2026 à 09:07';
+const VERSION='19.10.2026 à 18:26';
 const TYPES=[['objet','Objet'],['arme','Arme'],['armure','Armure'],['magique','Objet magique'],['potion','Potion'],['parchemin','Parchemin'],['lettre','Lettre'],['carte','Carte'],['autre','Autre']];
 const ONGLETS=[['joueurs','Joueurs'],['objets','Objets'],['envois','Envois'],['campagne','Campagne']];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -479,7 +479,7 @@ document.addEventListener('click',async ev=>{
       return}
     case 'renommer':{const n=document.getElementById('cnom').value;await action('mj_campagne_renommer',{p_nom:n},'Nom enregistré.');return}
     case 'exporter':{try{const x=await rpc('mj_export',{p_code:code});telecharger(JSON.stringify(x,null,1),'export-'+(etat.campagne.nom||'campagne').replace(/[^\p{L}\p{N}]+/gu,'-')+'-'+new Date().toISOString().slice(0,10)+'.json');flash={t:'Export téléchargé.'}}catch(e){flash={err:1,t:erreur(e)}}render();return}
-    case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;Promise.all(['./mj.html','mj.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{}))).finally(()=>location.reload());return}
+    case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;(self.caches?caches.keys().then(k=>Promise.all(k.map(n=>caches.delete(n)))):Promise.resolve()).catch(()=>{}).then(()=>Promise.all(['./mj.html','mj.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{})))).finally(()=>location.reload());return}
     case 'sortir':ui.confSortir=true;render();return;
     case 'sortirOui':code='';charge=false;etat=null;ui.confSortir=false;try{localStorage.removeItem(KEY+'.code')}catch(e){}render();return;
   }
@@ -545,6 +545,8 @@ document.addEventListener('touchend',ev=>{
 },{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&code&&charge&&!ui.edit&&!ui.ajout)charger(true)});
 render();if(code)charger();
+/* cache hors ligne, seulement sur le vrai site */
+if(location.hostname.endsWith('github.io')&&'serviceWorker' in navigator)try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 </script>
 
 </body>
