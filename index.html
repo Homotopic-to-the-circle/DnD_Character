@@ -40,6 +40,25 @@ h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
 .h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
 .err-t{color:var(--danger)}
+/* notes par ligne, sorts non préparés, avantage aux sauvegardes */
+.note-l{display:block;font-size:.88rem;font-style:italic;color:var(--muted)}
+ul.plain li>span{display:block}
+.note-in{width:100%;font-size:.85rem!important;color:var(--muted)}
+.capa-ed .note-in{grid-column:1/-1}
+.n-ed{flex-direction:column;align-items:stretch!important;gap:4px}
+.non-prep{opacity:.45}
+.ajout-sort{display:flex;flex-direction:column;gap:6px}
+.ajout-sort .sort-inf{flex-wrap:nowrap}.ajout-sort .sort-inf input{flex:1;min-width:0}
+.ajout-bas{flex-wrap:nowrap;align-items:center;gap:12px}.ajout-bas button{margin-left:auto}
+.case-s{display:flex;align-items:center;gap:7px;font-size:.92rem;cursor:pointer;position:relative}
+.case-s input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.losange{flex:none;width:11px;height:11px;border:2px solid var(--accent);transform:rotate(45deg);margin:0 2px}
+.case-s input:checked+.losange{background:var(--accent)}
+.sort-ed .box.prep{flex:none;margin:0 10px 0 4px}
+.car .s{position:relative}
+.js{position:relative}
+.av{position:absolute;left:100%;margin-left:5px;top:50%;transform:translateY(-50%);font-size:.75rem;color:var(--muted);font-style:italic}
+.av-btn{position:absolute;left:100%;margin-left:4px;top:50%;transform:translateY(-50%);height:22px!important;padding:0 5px!important;font-size:.72rem!important;line-height:1}
 /* harmonisation : petite étoile rouge à côté du nom */
 .harmo{display:inline-block;margin-left:6px;color:var(--accent);font-size:1rem;line-height:1}
 /* visionneuse plein écran pour les lettres et cartes envoyées en image (zoom à deux doigts, glisser pour se déplacer) */
@@ -116,6 +135,7 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .mort .boxes{gap:6px}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .stat{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px 2px;min-width:0}
+.pvmax-in{width:3.2ch;font-size:inherit!important;padding:0!important;height:auto!important;border:none;border-bottom:1px solid var(--accent);border-radius:0;background:transparent;text-align:center;color:var(--muted)}
 .stat-in{text-align:center;font-weight:700;font-size:1.2rem!important;padding:0!important;height:30px!important;margin:0 auto 2px;display:block;width:90%}
 .stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
 .stat .lab{font-size:.72rem;letter-spacing:.01em}
@@ -154,6 +174,10 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .car .s{font-size:.85rem;margin-top:2px}
 .dot{display:inline-block;width:.55em;height:.55em;border:1.5px solid var(--accent);margin-right:7px;vertical-align:.08em;transform:rotate(45deg)}
 .dot.on{background:var(--accent)}
+/* le losange tourné déborde d'environ 3 px : on le décale pour qu'il s'aligne sur le début des filets */
+.skill .dot{margin-left:3px}
+.dot-btn{padding:0!important;height:.55em!important;width:.55em;min-width:0;border-radius:0;background:transparent;cursor:pointer}.dot-btn.on{background:var(--accent)}
+.dot-btn{position:relative}.dot-btn::after{content:'';position:absolute;inset:-9px}  /* zone de toucher plus large que le losange */
 .skills{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 .skill{display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);font-size:1rem;min-width:0}
 .skill b{font-variant-numeric:tabular-nums lining-nums}
@@ -231,7 +255,7 @@ a.ext{text-decoration:none;color:inherit}
 
 <script>
 const EXEMPLE = {"v":1,"date":"2026-10-18T03:38:28.265Z","id":{"nom":"Character Name","historique":"Acolyte","classe":"Guerrier","sousClasse":"","espece":"Humain","niveau":"1","xp":"0","alignement":"Loyal bon","taille":"..."},"combat":{"ca":"14","pvMax":"11","dv":"1d10","maitrise":"+2","init":"+2","vitesse":"9 m","percPassive":"10"},"car":[{"n":"FOR","val":15,"mod":"+2","jds":"+4","jdsM":true},{"n":"DEX","val":14,"mod":"+2","jds":"+2","jdsM":false},{"n":"CON","val":13,"mod":"+1","jds":"+3","jdsM":true},{"n":"INT","val":9,"mod":"-1","jds":"-1","jdsM":false},{"n":"SAG","val":11,"mod":"+0","jds":"+0","jdsM":false},{"n":"CHA","val":13,"mod":"+1","jds":"+1","jdsM":false}],"ski":[{"id":0,"nom":"Acrobaties","val":"+4","m":true},{"id":1,"nom":"Dressage","val":"+0","m":false},{"id":2,"nom":"Arcanes","val":"-1","m":false},{"id":3,"nom":"Athlétisme","val":"+4","m":true},{"id":4,"nom":"Intimidation","val":"+1","m":false},{"id":5,"nom":"Histoire","val":"-1","m":false},{"id":6,"nom":"Intuition","val":"+2","m":true},{"id":7,"nom":"Persuasion","val":"+1","m":false},{"id":8,"nom":"Investigation","val":"-1","m":false},{"id":9,"nom":"Médecine","val":"+0","m":false},{"id":10,"nom":"Nature","val":"-1","m":false},{"id":11,"nom":"Perception","val":"+0","m":false},{"id":12,"nom":"Représentation","val":"+1","m":false},{"id":13,"nom":"Tromperie","val":"+1","m":false},{"id":14,"nom":"Religion","val":"+1","m":true},{"id":15,"nom":"Discrétion","val":"+2","m":false},{"id":16,"nom":"Escamotage","val":"+2","m":false},{"id":17,"nom":"Survie","val":"+0","m":false}],"armes":[{"nom":"Cimeterre","att":"+4","deg":"1d6+2 tranchant","note":"enchaînement"},{"nom":"Épée courte","att":"+4","deg":"1d6+2 perforant","note":"distraction"},{"nom":"Arc long","att":"+6","deg":"1d8+2 perforant","note":"lente"}],"capa":[{"nom":"Style de combat (Archerie)"},{"nom":"Second souffle","max":2},{"nom":"Bottes d'armes","max":3}],"traits":["Ingénieux","Compétent ✔","Polyvalent (Bagarreur de tavernes)"],"dons":["Bagarreur de tavernes","Initié à la magie (Clerc)"],"maitrises":{"armures":{"L":true,"I":true,"Lo":true,"B":true},"armes":"Armes simples, armes martiales","outils":"Matériel de calligraphe","langues":"Commun, Draconique, Halfelin"},"magie":{"carac":"","mod":"","dd":"","att":"","slots":["","","","","","","","",""]},"sorts":[{"niv":0,"nom":"Assistance","url":"https://www.aidedd.org/spell/fr/assistance","inc":"Action","portee":"Contact","C":true,"R":false,"M":false,"note":""},{"niv":0,"nom":"Mot de radiance","url":"https://www.aidedd.org/spell/fr/mot-de-radiance","inc":"Action","portee":"Perso","C":false,"R":false,"M":true,"note":""},{"niv":1,"nom":"Bénédiction","url":"https://www.aidedd.org/spell/fr/benediction","inc":"Action","portee":"9 m","C":true,"R":false,"M":true,"note":""}],"equipement":"Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d'exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe","harmo":[],"pieces":{"pc":"0","pa":"0","pe":"0","po":"19","pp":"0"},"histoire":"...","choix":{"l":"fr","class1":"5","level1":"1","voie1":"","class2":"1","level2":"0","voie2":"","species":"1","lineage":"","back":"1","align":"0","car[0]":"15","car[1]":"14","car[2]":"13","car[3]":"8","car[4]":"10","car[5]":"12","bCar[0]":"","bCar[1]":"","bCar[2]":"","bCar[3]":"+1","bCar[4]":"+1","bCar[5]":"+1","feats":"Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,","invoc":",,,,,,,,,","manoeuv":",,,,,,,,","choice":",,,,,,,,,,,,,,,,,,,,","option0":",0,,,,,,,,,,,,,,,,,,,","option1":",Assistance,,,,,,,,,,,,,,,,,,,","option2":",Mot de radiance,,,,,,,,,,,,,,,,,,,","option3":",Bénédiction,,,,,,,,,,,,,,,,,,,","option4":",,,,,,,,,,,,,,,,,,,,","option5":",,,,,,,,,,,,,,,,,,,,","option6":",,,,,,,,,,,,,,,,,,,,","ritual":",,,,,,","customNames":",,","customTrait":",,,,,,,,,,,,,,,,,,,,","skillE":"0","skillB":"6,14","skillC":"0,3,0,0","lang":"1,7,0,0,0,0,0","tool":",,Matériel de calligraphe,,,,","hp":"0,10,,,,,,,,,,,,,,,,,,,","armor":"Armure de cuir clouté,Sans bouclier","weapons":"Cimeterre,1,Épée courte,1,Arc long,1","sort1_0":",,,,,,,,,,,,,,","sort1_1":",,,,,,,,,,,,,,","sort1_2":",,,,,,,,,,,,,,","sort1_3":",,,,,,,,,,,,,,","sort1_4":",,,,,,,,,,,,,,","sort1_5":",,,,,,,,,,,,,,","sort1_6":",,,,,,,,,,,,,,","sort1_7":",,,,,,,,,,,,,,","sort1_8":",,,,,,,,,,,,,,","sort1_9":",,,,,,,,,,,,,,","sort2_0":",,,,,,,,,,,,,,","sort2_1":",,,,,,,,,,,,,,","sort2_2":",,,,,,,,,,,,,,","sort2_3":",,,,,,,,,,,,,,","sort2_4":",,,,,,,,,,,,,,","sort2_5":",,,,,,,,,,,,,,","sort2_6":",,,,,,,,,,,,,,","sort2_7":",,,,,,,,,,,,,,","sort2_8":",,,,,,,,,,,,,,","sort2_9":",,,,,,,,,,,,,,"},"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<creator>\n<version>0.8<\/version>\n<confLang>1<\/confLang>\n<name>Character Name<\/name>\n<class1>5<\/class1>\n<level1>1<\/level1>\n<voie1><\/voie1>\n<class2>1<\/class2>\n<level2>0<\/level2>\n<voie2><\/voie2>\n<className>Guerrier<\/className>\n<subClassName><\/subClassName>\n<XP>0<\/XP>\n<species>1<\/species>\n<speciesName>Humain<\/speciesName>\n<lineage><\/lineage>\n<back>1<\/back>\n<backName>Acolyte<\/backName>\n<lang>1,7,0,0,0,0,0<\/lang>\n<align>0<\/align>\n<size>...<\/size>\n<str>15<\/str><dex>14<\/dex><con>13<\/con>\n<int>8<\/int><wis>10<\/wis><cha>12<\/cha>\n<bstr><\/bstr><bdex><\/bdex><bcon><\/bcon>\n<bint>+1<\/bint><bwis>+1<\/bwis><bcha>+1<\/bcha>\n<feats>Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,<\/feats>\n<invoc>,,,,,,,,,<\/invoc>\n<manoeuv>,,,,,,,,<\/manoeuv>\n<choice>,,,,,,,,,,,,,,,,,,,,<\/choice>\n<option0>,0,,,,,,,,,,,,,,,,,,,<\/option0>\n<option1>,Assistance,,,,,,,,,,,,,,,,,,,<\/option1>\n<option2>,Mot de radiance,,,,,,,,,,,,,,,,,,,<\/option2>\n<option3>,Bénédiction,,,,,,,,,,,,,,,,,,,<\/option3>\n<option4>,,,,,,,,,,,,,,,,,,,,<\/option4>\n<option5>,,,,,,,,,,,,,,,,,,,,<\/option5>\n<option6>,,,,,,,,,,,,,,,,,,,,<\/option6>\n<option7>RFU<\/option7>\n<option8>RFU<\/option8>\n<option9>RFU<\/option9>\n<ritual>,,,,,,<\/ritual>\n<customNames>,,<\/customNames>\n<customTrait>,,,,,,,,,,,,,,,,,,,,<\/customTrait>\n<skillE>0<\/skillE>\n<skillC>0,3,0,0<\/skillC>\n<skillB>6,14<\/skillB>\n<armor>Armure de cuir clouté,Sans bouclier<\/armor>\n<weapons>Cimeterre,1,Épée courte,1,Arc long,1<\/weapons>\n<tool>,,Matériel de calligraphe,,,,<\/tool>\n<cantNam1><\/cantNam1><cantBon1><\/cantBon1><cantDmg1><\/cantDmg1><cantNot1><\/cantNot1>\n<cantNam2><\/cantNam2><cantBon2><\/cantBon2><cantDmg2><\/cantDmg2><cantNot2><\/cantNot2>\n<cantNam3><\/cantNam3><cantBon3><\/cantBon3><cantDmg3><\/cantDmg3><cantNot3><\/cantNot3>\n<hp>0,10,,,,,,,,,,,,,,,,,,,<\/hp>\n<spells0>,,,,,,,,,,,,,,<\/spells0>\n<spells1>,,,,,,,,,,,,,,<\/spells1>\n<spells2>,,,,,,,,,,,,,,<\/spells2>\n<spells3>,,,,,,,,,,,,,,<\/spells3>\n<spells4>,,,,,,,,,,,,,,<\/spells4>\n<spells5>,,,,,,,,,,,,,,<\/spells5>\n<spells6>,,,,,,,,,,,,,,<\/spells6>\n<spells7>,,,,,,,,,,,,,,<\/spells7>\n<spells8>,,,,,,,,,,,,,,<\/spells8>\n<spells9>,,,,,,,,,,,,,,<\/spells9>\n<spells10>,,,,,,,,,,,,,,<\/spells10>\n<spells11>,,,,,,,,,,,,,,<\/spells11>\n<spells12>,,,,,,,,,,,,,,<\/spells12>\n<spells13>,,,,,,,,,,,,,,<\/spells13>\n<spells14>,,,,,,,,,,,,,,<\/spells14>\n<spells15>,,,,,,,,,,,,,,<\/spells15>\n<spells16>,,,,,,,,,,,,,,<\/spells16>\n<spells17>,,,,,,,,,,,,,,<\/spells17>\n<spells18>,,,,,,,,,,,,,,<\/spells18>\n<spells19>,,,,,,,,,,,,,,<\/spells19>\n<spellNote0><\/spellNote0>\n<spellNote1><\/spellNote1>\n<spellNote2><\/spellNote2>\n<spellNote3><\/spellNote3>\n<spellNote4><\/spellNote4>\n<spellNote5><\/spellNote5>\n<spellNote6><\/spellNote6>\n<spellNote7><\/spellNote7>\n<spellNote8><\/spellNote8>\n<spellNote9><\/spellNote9>\n<spellNote10><\/spellNote10>\n<spellNote11><\/spellNote11>\n<spellNote12><\/spellNote12>\n<spellNote13><\/spellNote13>\n<spellNote14><\/spellNote14>\n<spellNote15><\/spellNote15>\n<spellNote16><\/spellNote16>\n<spellNote17><\/spellNote17>\n<spellNote18><\/spellNote18>\n<spellNote19><\/spellNote19>\n<spellNote20><\/spellNote20>\n<spellNote21><\/spellNote21>\n<spellNote22><\/spellNote22>\n<spellNote23><\/spellNote23>\n<spellNote24><\/spellNote24>\n<spellNote25><\/spellNote25>\n<spellNote26><\/spellNote26>\n<spellNote27><\/spellNote27>\n<spellNote28><\/spellNote28>\n<spellNote29><\/spellNote29>\n<spellNote30><\/spellNote30>\n<spellNote31><\/spellNote31>\n<spellNote32><\/spellNote32>\n<spellNote33><\/spellNote33>\n<spellNote34><\/spellNote34>\n<spellNote35><\/spellNote35>\n<spellNote36><\/spellNote36>\n<spellNote37><\/spellNote37>\n<spellNote38><\/spellNote38>\n<spellNote39><\/spellNote39>\n<spellNote40><\/spellNote40>\n<spellNote41><\/spellNote41>\n<spellNote42><\/spellNote42>\n<spellNote43><\/spellNote43>\n<spellNote44><\/spellNote44>\n<spellNote45><\/spellNote45>\n<spellNote46><\/spellNote46>\n<spellNote47><\/spellNote47>\n<spellNote48><\/spellNote48>\n<spellNote49><\/spellNote49>\n<spellNote50><\/spellNote50>\n<spellNote51><\/spellNote51>\n<spellNote52><\/spellNote52>\n<spellNote53><\/spellNote53>\n<spellNote54><\/spellNote54>\n<spellNote55><\/spellNote55>\n<spellNote56><\/spellNote56>\n<spellNote57><\/spellNote57>\n<spellNote58><\/spellNote58>\n<spellNote59><\/spellNote59>\n<spellNote60><\/spellNote60>\n<spellNote61><\/spellNote61>\n<spellNote62><\/spellNote62>\n<spellNote63><\/spellNote63>\n<spellNote64><\/spellNote64>\n<spellNote65><\/spellNote65>\n<spellNote66><\/spellNote66>\n<spellNote67><\/spellNote67>\n<spellNote68><\/spellNote68>\n<spellNote69><\/spellNote69>\n<spellNote70><\/spellNote70>\n<spellNote71><\/spellNote71>\n<spellNote72><\/spellNote72>\n<spellNote73><\/spellNote73>\n<spellNote74><\/spellNote74>\n<br />\n<b>Warning<\/b>:  Undefined array key \"myAppearance\" in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<br />\n<b>Deprecated<\/b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<appearance><\/appearance>\n<backstory>...<\/backstory>\n<equipment>Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d&#039;exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe<\/equipment>\n<attun1><\/attun1>\n<attun2><\/attun2>\n<attun3><\/attun3>\n<cp>0<\/cp>\n<sp>0<\/sp>\n<ep>0<\/ep>\n<gp>19<\/gp>\n<pp>0<\/pp>\n<\/creator>"};
-const VERSION='18.10.2026 à 23:40';
+const VERSION='19.10.2026 à 09:07';
 const KEY='dnd55.v1';
 const ONGLETS=[['combat','Combat'],['carac','Caracs'],['sorts','Sorts'],['sac','Sac'],['fiche','Fiche']];
 const ETATS=['À terre','Agrippé','Assourdi','Aveuglé','Charmé','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Neutralisé','Paralysé','Pétrifié'];
@@ -260,7 +284,7 @@ function initEtat(d){
   return{nom:d.id.nom&&d.id.nom!=='Character Name'?d.id.nom:'',pv:num(d.combat.pvMax),pvTemp:0,used:{},
     armes:d.armes.map(a=>({...a})),ressPerso:[],magie:{},slotsTot:{},
     equipement:d.equipement||'',pieces:{...d.pieces},harmo:[...(d.harmo||[]),'','',''].slice(0,3),notes:'',
-    etats:{},epuis:0,conc:'',liens:{},sortsPlus:[],sortsMoins:[],objets:lireObjets(d.equipement)};
+    etats:{},epuis:0,conc:'',liens:{},sortsPlus:[],sortsMoins:[],notesL:{},nonPrep:[],avJS:{},maitOv:{},statOv:{},objets:lireObjets(d.equipement)};
 }
 /* Les deux écritures d'AideDD donnent une quantité :
    « 20 flèches » → Flèches ×20 ; « parchemin (10 feuilles) » → Parchemin ×10 ; « livre (prières) » reste tel quel */
@@ -272,7 +296,7 @@ function lireObjet(x){
 }
 function lireObjets(s){return String(s||'').split(/[,\n]+/).map(x=>x.trim()).filter(Boolean).map(lireObjet)}
 const texteObjets=e=>(e.objets||[]).filter(o=>o.nom).map(o=>(num(o.qte)>1?o.qte+' ':'')+o.nom).join(', ');
-function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=e.conc||'';e.liens=e.liens||{};e.resOv=e.resOv||{};e.sortsPlus=e.sortsPlus||[];e.sortsMoins=e.sortsMoins||[];if(!e.objets)e.objets=lireObjets(e.equipement);
+function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=e.conc||'';e.liens=e.liens||{};e.resOv=e.resOv||{};e.sortsPlus=e.sortsPlus||[];e.sortsMoins=e.sortsMoins||[];e.notesL=e.notesL||{};e.nonPrep=e.nonPrep||[];e.avJS=e.avJS||{};e.maitOv=e.maitOv||{};e.statOv=e.statOv||{};if(!e.objets)e.objets=lireObjets(e.equipement);
   e.objets=e.objets.map(o=>num(o.qte)===1&&/\(\d+/.test(o.nom)?lireObjet(o.nom):o);e.objets.forEach(o=>{if(num(o.qte)!==1)o.compte=true});return p}
 function creer(d,nom){
   const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -281,7 +305,7 @@ function creer(d,nom){
   db.persos[id]=p;db.ordre.push(id);return p;
 }
 function mettreAJour(p,d){
-  const old=D(p),e=p.etat,oldMax=num(old.combat.pvMax),newMax=num(d.combat.pvMax);
+  const old=D(p),e=p.etat,oldMax=pvMaxDe(p),newMax=num(ov(e,'pvMax')??d.combat.pvMax);
   p.versions.push({date:new Date().toISOString(),data:d});
   const noms=new Set(e.armes.map(a=>a.nom));
   d.armes.forEach(a=>{if(!noms.has(a.nom))e.armes.push({...a})});
@@ -299,11 +323,11 @@ function differences(p,d){
 }
 function revenir(p){
   const cur=D(p);p.versions.pop();const old=D(p);
-  if(num(p.etat.pv)>num(old.combat.pvMax))p.etat.pv=num(old.combat.pvMax);
+  if(num(p.etat.pv)>pvMaxDe(p))p.etat.pv=pvMaxDe(p);
   return `Retour à la version précédente : niveau ${cur.id.niveau} → ${old.id.niveau}. Cases cochées et notes conservées.`;
 }
 function reposLong(p){
-  const e=p.etat;e.pv=num(D(p).combat.pvMax);e.pvTemp=0;e.used={};e.epuis=Math.max(0,num(e.epuis)-1);e.conc='';ui.degatsConc=0;
+  const e=p.etat;e.pv=pvMaxDe(p);e.pvTemp=0;e.used={};e.epuis=Math.max(0,num(e.epuis)-1);e.conc='';ui.degatsConc=0;
   return 'Repos long : PV au maximum, toutes les cases décochées'+(e.epuis?', épuisement '+e.epuis:'')+'.';
 }
 function armerConf(k){conf=k;clearTimeout(confTimer);if(k!=='maj')confTimer=setTimeout(()=>{if(conf===k){conf='';render()}},4000)}
@@ -474,6 +498,17 @@ function lien(type,nom,extra){const p=P();return (p.etat.liens||{})[type+':'+pro
 /* AideDD coche (✔) les aptitudes prises en compte dans ses calculs : inutile ici */
 /* symboles décoratifs d'AideDD (coches, ronds, cases) : retirés à l'affichage seulement */
 const sansCoche=t=>String(t??'').replace(/\s*[✔✓◯○●◻☐]+\s*/g,' ').replace(/\(\s*\)/g,'').replace(/\s{2,}/g,' ').trim();
+/* note libre par ligne (capacité, ressource, trait, don, sort) : rangée à part, le nom et le lien ne bougent pas */
+const cleNote=(type,nom)=>type+':'+propre(sansCoche(nom));
+function noteLue(type,nom){const t=(P().etat.notesL||{})[cleNote(type,nom)];return t?`<span class="note-l">${esc(t)}</span>`:''}
+function noteEd(type,nom){const k=cleNote(type,nom);return `<input class="note-in" data-note="${esc(k)}" value="${esc((P().etat.notesL||{})[k]||'')}" placeholder="Note" aria-label="Note">`}
+/* maîtrises corrigées à la main : on retient l'état voulu (maîtrisé ou non), le bonus s'ajuste de ± le bonus de maîtrise */
+const signe=n=>(n>=0?'+':'')+n;
+function maitrise(e,cle,base){const o=(e.maitOv||{})[cle];return o==null?!!base:o}
+function bonusCorrige(e,d,cle,base,val){const m=maitrise(e,cle,base);return m===!!base?val:signe(num(val)+(m?1:-1)*num(d.combat.maitrise))}
+/* valeurs corrigées à la main (crayon) : la saisie remplace la valeur d'AideDD, un champ vide la rétablit */
+const ov=(e,k)=>{const v=(e.statOv||{})[k];return v!=null&&String(v).trim()!==''?v:null};
+const pvMaxDe=p=>num(ov(p.etat,'pvMax')??D(p).combat.pvMax);
 function itemLien(type,nom,label,extra){
   const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
@@ -567,7 +602,7 @@ function vueListe(){
   const ps=db.ordre.map(id=>db.persos[id]).filter(Boolean);
   const liste=ps.length?ps.map(p=>{const d=D(p);return`<button class="perso card" data-a="ouvrir" data-id="${p.id}">
     <span><span class="t">${esc(p.etat.nom||'Sans nom')}</span><br><span class="muted">${esc(d.id.classe)} niv ${esc(d.id.niveau)} · ${esc(d.id.espece)}</span></span>
-    <span class="muted">${esc(p.etat.pv)}/${esc(d.combat.pvMax)} PV</span></button>`}).join('')
+    <span class="muted">${esc(p.etat.pv)}/${pvMaxDe(p)} PV</span></button>`}).join('')
     :`<p class="muted">Aucun personnage pour l’instant. Colle l’export du bookmarklet ci-dessous, ou charge l’exemple pour essayer.</p>
       <button data-a="exemple">Charger l’exemple (Guerrier niv 1)</button>`;
   return `<h1>Mes personnages</h1><section>${liste}</section>
@@ -620,8 +655,10 @@ function ongCombat(p,d,e){
   const c=d.combat,ed=ui.edit;
   /* CA modifiable (armure, bouclier…) : la valeur saisie remplace celle d'AideDD ; champ vide = valeur d'AideDD */
   const ca=e.ca!=null&&e.ca!==''?e.ca:c.ca;
-  const stats=[['CA',ca],['Init.',c.init],['Vitesse',c.vitesse],['Maîtrise',c.maitrise],['Perc. passive',c.percPassive]]
-    .map(([l,v])=>l==='CA'&&ed?`<div class="stat"><input class="stat-in" data-f="ca" inputmode="numeric" value="${esc(e.ca??'')}" placeholder="${esc(c.ca)}" aria-label="Classe d'armure"><span class="lab">${l}</span></div>`
+  const sp=d.ski.find(x=>/^perception$/i.test(x.nom)),pp=sp?num(c.percPassive)+num(bonusCorrige(e,d,'ski:'+sp.id,sp.m,sp.val))-num(sp.val):c.percPassive;
+  const champ={'CA':['ca',e.ca??'',c.ca],'Init.':['statOv.init',ov(e,'init')??'',c.init],'Vitesse':['statOv.vitesse',ov(e,'vitesse')??'',c.vitesse]};
+  const stats=[['CA',ca],['Init.',ov(e,'init')??c.init],['Vitesse',ov(e,'vitesse')??c.vitesse],['Maîtrise',c.maitrise],['Perc. passive',pp]]
+    .map(([l,v])=>champ[l]&&ed?`<div class="stat"><input class="stat-in" data-f="${champ[l][0]}" value="${esc(champ[l][1])}" placeholder="${esc(champ[l][2])}" aria-label="${l}"><span class="lab">${l}</span></div>`
       :`<div class="stat"><b>${esc(v)}</b><span class="lab">${l}</span></div>`).join('');
   const armes=ed?e.armes.map((a,i)=>`<div class="arme-ed">
       <input data-f="armes.${i}.nom" value="${esc(a.nom)}" placeholder="Nom" aria-label="Nom de l'arme">
@@ -632,21 +669,21 @@ function ongCombat(p,d,e){
       <span class="deg">${esc(a.deg)}${botteHtml(a)}</span></div>`).join('')}</div>`:'<p class="muted">Aucune arme. Ajoute-en avec Modifier.</p>');
   const lienRes=r=>r.lien?itemLien(r.lien[0],r.lien[1],r.nom):esc(sansCoche(r.nom));
   const res=ed
-    ?ressources(p).map(r=>r.k==='dv'?'':`<div class="n">${esc(sansCoche(r.nom))}</div><div class="row res-ed">${r.perso!=null
+    ?ressources(p).map(r=>r.k==='dv'?'':`<div class="n n-ed">${esc(sansCoche(r.nom))}${noteEd('res',r.nom)}</div><div class="row res-ed">${r.perso!=null
         ?`<span class="muted">${r.max}</span><button class="x" data-a="supprRes" data-i="${r.perso}" aria-label="Retirer ${esc(r.nom)}">✕</button>`
         :`<input data-ovr="${esc(r.k)}" inputmode="numeric" value="${r.max}" aria-label="Maximum pour ${esc(r.nom)}"><button class="x" data-a="resOff" data-k="${esc(r.k)}" aria-label="Masquer ${esc(r.nom)}">✕</button>`}</div>`).join('')
-    :ressources(p).map(r=>`<div class="n">${lienRes(r)}</div>${cases(r.k,r.max,'',!!r.pv)}`).join('');
+    :ressources(p).map(r=>`<div class="n"><span>${lienRes(r)}${noteLue('res',r.nom)}</span></div>${cases(r.k,r.max,'',!!r.pv)}`).join('');
   const masquees=ed?ressourcesMasquees(p).map(r=>`<button data-a="resOn" data-k="${esc(r.k)}">+ ${esc(r.nom)}</button>`).join(''):'';
   const perso=new Set(e.ressPerso.map(x=>norm(x.nom)));
   const capas=d.capa.filter(x=>!capaEstRessource(d,x.nom)&&!perso.has(norm(propre(sansCoche(x.nom)))));
   /* « Magie de pacte (2 spell slots of level 2) » : les emplacements sont déjà dans l'onglet Sorts, on garde le nom seul */
   const nomCapa=x=>String(x.nom).replace(/\s*\([^)]*spell slots?[^)]*\)/i,'')+(x.max?' ('+x.max+')':'');
-  const autres=ed?capas.map(x=>`<div class="capa-ed">${itemLien('capa',x.nom,nomCapa(x))}<button data-a="capaRes" data-n="${esc(nomCapa(x))}" title="Afficher en cases">Cases</button></div>`).join('')
-    :capas.map(x=>`<li>${itemLien('capa',x.nom,nomCapa(x))}</li>`).join('');
+  const autres=ed?capas.map(x=>`<div class="capa-ed">${itemLien('capa',x.nom,nomCapa(x))}<button data-a="capaRes" data-n="${esc(nomCapa(x))}" title="Afficher en cases">Cases</button>${noteEd('capa',x.nom)}</div>`).join('')
+    :capas.map(x=>`<li><span>${itemLien('capa',x.nom,nomCapa(x))}${noteLue('capa',x.nom)}</span></li>`).join('');
   return `<section class="card pvcard">
       <div class="pvcol"><div class="lab">Points de vie</div>
         <div class="pv"><button data-a="pv" data-c="pv" data-d="-1" aria-label="Retirer 1 PV">−</button>
-        <div class="pvval"><input id="pv" data-f="pv" data-num inputmode="numeric" value="${esc(e.pv)}" aria-label="PV actuels"><span>/ ${esc(c.pvMax)}</span></div>
+        <div class="pvval"><input id="pv" data-f="pv" data-num inputmode="numeric" value="${esc(e.pv)}" aria-label="PV actuels"><span>/ ${ed?`<input class="pvmax-in" data-f="statOv.pvMax" inputmode="numeric" value="${esc(ov(e,'pvMax')??'')}" placeholder="${esc(c.pvMax)}" aria-label="PV maximum">`:pvMaxDe(p)}</span></div>
         <button data-a="pv" data-c="pv" data-d="1" aria-label="Ajouter 1 PV">+</button></div></div>
       <div class="pvcol"><div class="lab">PV temporaires</div>
         <div class="pv temp"><button data-a="pv" data-c="pvTemp" data-d="-1" aria-label="Retirer 1 PV temporaire">−</button>
@@ -663,13 +700,14 @@ function ongCombat(p,d,e){
 
 function ongCarac(p,d,e){
   const cars=d.car.map(c=>`<div class="car"><div class="lab">${c.n}</div><div class="m">${esc(c.mod)}</div><div class="v">${c.val}</div>
-    <div class="s"><span class="dot ${c.jdsM?'on':''}"></span>JS ${esc(c.jds)}</div></div>`).join('');
-  const sk=[...d.ski].sort((a,b)=>a.nom.localeCompare(b.nom,'fr')).map(s=>`<div class="skill"><span><span class="dot ${s.m?'on':''}"></span>${esc(s.nom)}</span><b>${esc(s.val)}</b></div>`).join('');
+    <div class="s">${ui.edit?`<button class="dot dot-btn ${maitrise(e,'js:'+c.n,c.jdsM)?'on':''}" data-a="maitrise" data-k="js:${c.n}" data-b="${c.jdsM?1:0}" aria-label="Maîtrise du jet de sauvegarde"></button>`:`<span class="dot ${maitrise(e,'js:'+c.n,c.jdsM)?'on':''}"></span>`}<span class="js">JS ${esc(bonusCorrige(e,d,'js:'+c.n,c.jdsM,c.jds))}${ui.edit?`<button class="av-btn ${(e.avJS||{})[c.n]?'on':''}" data-a="avJS" data-k="${c.n}" aria-pressed="${!!(e.avJS||{})[c.n]}" title="Avantage aux jets de sauvegarde">av.</button>`:(e.avJS||{})[c.n]?'<span class="av" title="Avantage aux jets de sauvegarde">av.</span>':''}</span></div></div>`).join('');
+  const pt=(cle,base)=>ui.edit?`<button class="dot dot-btn ${maitrise(e,cle,base)?'on':''}" data-a="maitrise" data-k="${cle}" data-b="${base?1:0}" aria-label="Maîtrise"></button>`:`<span class="dot ${maitrise(e,cle,base)?'on':''}"></span>`;
+  const sk=[...d.ski].sort((a,b)=>a.nom.localeCompare(b.nom,'fr')).map(s=>`<div class="skill"><span>${pt('ski:'+s.id,s.m)}${esc(s.nom)}</span><b>${esc(bonusCorrige(e,d,'ski:'+s.id,s.m,s.val))}</b></div>`).join('');
   const m=d.maitrises,arm=[['L','légères'],['I','intermédiaires'],['Lo','lourdes'],['B','boucliers']].filter(([k])=>m.armures[k]).map(x=>x[1]).join(', ');
   return `<div class="cars">${cars}</div>
     <section><h2>Compétences</h2><div class="skills">${sk}</div></section>
-    <section><h2>Traits d’espèce</h2>${ui.edit?d.traits.map(t=>itemLien('trait',t)).join(''):`<ul class="plain">${d.traits.map(t=>`<li>${itemLien('trait',t)}</li>`).join('')}</ul>`}</section>
-    <section><h2>Dons</h2>${ui.edit?d.dons.map(t=>itemLien('don',t)).join(''):`<ul class="plain">${d.dons.map(t=>`<li>${itemLien('don',t)}</li>`).join('')}</ul>`}</section>
+    <section><h2>Traits d’espèce</h2>${ui.edit?d.traits.map(t=>itemLien('trait',t)+noteEd('trait',t)).join(''):`<ul class="plain">${d.traits.map(t=>`<li><span>${itemLien('trait',t)}${noteLue('trait',t)}</span></li>`).join('')}</ul>`}</section>
+    <section><h2>Dons</h2>${ui.edit?d.dons.map(t=>itemLien('don',t)+noteEd('don',t)).join(''):`<ul class="plain">${d.dons.map(t=>`<li><span>${itemLien('don',t)}${noteLue('don',t)}</span></li>`).join('')}</ul>`}</section>
     <section><h2>Maîtrises</h2><div><b>Armures :</b> ${esc(arm||'aucune')}</div><div><b>Armes :</b> ${esc(m.armes)}</div><div><b>Outils :</b> ${esc(m.outils||'aucun')}</div><div><b>Langues :</b> ${esc(m.langues)}</div></section>`;
 }
 
@@ -686,15 +724,18 @@ function ongSorts(p,d,e){
   let reglage='';for(let l=1;l<=9;l++)reglage+=`<label>Niv ${l}<input data-f="slotsTot.${l}" data-num inputmode="numeric" value="${slotTot(p,l)||''}" placeholder="0"></label>`;
   const niv={};sortsDe(p).forEach(s=>{const k=cleS(s);if(vusS.has(k))return;vusS.add(k);(niv[num(s.niv)]=niv[num(s.niv)]||[]).push(s)});
   const badges=s=>`${s.C?'<span class="badge" title="Concentration">C</span>':''}${s.R?'<span class="badge" title="Rituel">R</span>':''}${s.M?'<span class="badge" title="Composante matérielle">M</span>':''}`;
+  const prep=s=>num(s.niv)===0||!(e.nonPrep||[]).includes(cleS(s));
   const ligneSort=s=>ed
-    ?`<div class="sort-ed"><div class="row"><span class="nom">${esc(s.nom)}${badges(s)}</span>${s.plus!=null?`<button class="${s.C?'on':''}" data-a="sortC" data-p="C" data-i="${s.plus}" aria-pressed="${!!s.C}" title="Concentration">C</button><button class="${s.R?'on':''}" data-a="sortC" data-p="R" data-i="${s.plus}" aria-pressed="${!!s.R}" title="Rituel">R</button><button class="${s.M?'on':''}" data-a="sortC" data-p="M" data-i="${s.plus}" aria-pressed="${!!s.M}" title="Composante matérielle">M</button>`:''}<button class="x" data-a="supprSort" data-k="${esc(cleS(s))}" data-i="${s.plus??''}" aria-label="Retirer ${esc(s.nom)}">✕</button></div>
+    ?`<div class="sort-ed"><div class="row">${num(s.niv)>0?`<button class="box prep ${prep(s)?'on':''}" data-a="prep" data-k="${esc(cleS(s))}" aria-pressed="${prep(s)}" title="Préparé" aria-label="Préparé"></button>`:''}<span class="nom">${esc(s.nom)}${badges(s)}</span>${s.plus!=null?`<button class="${s.C?'on':''}" data-a="sortC" data-p="C" data-i="${s.plus}" aria-pressed="${!!s.C}" title="Concentration">C</button><button class="${s.R?'on':''}" data-a="sortC" data-p="R" data-i="${s.plus}" aria-pressed="${!!s.R}" title="Rituel">R</button><button class="${s.M?'on':''}" data-a="sortC" data-p="M" data-i="${s.plus}" aria-pressed="${!!s.M}" title="Composante matérielle">M</button>`:''}<button class="x" data-a="supprSort" data-k="${esc(cleS(s))}" data-i="${s.plus??''}" aria-label="Retirer ${esc(s.nom)}">✕</button></div>
       ${s.plus!=null?`<div class="row sort-inf"><input data-f="sortsPlus.${s.plus}.inc" value="${esc(s.inc||'')}" placeholder="Incantation (ex. Action)" aria-label="Temps d'incantation"><input data-f="sortsPlus.${s.plus}.portee" value="${esc(s.portee||'')}" placeholder="Portée (ex. 18 m)" aria-label="Portée"></div>`:''}
       <input class="lien-in" data-lien="${esc('sort:'+propre(s.nom))}" value="${esc(lien('sort',s.nom,s.url))}" aria-label="Lien pour ${esc(s.nom)}"></div>`
-    :`<div class="sort"><div><a href="${esc(lien('sort',s.nom,s.url))}" target="_blank" rel="noopener">${esc(s.nom)}</a>${badges(s)}${s.niv>0&&grat[norm(s.nom)]?`<span class="grat"><span class="muted">gratuit</span>${cases('g:'+norm(s.nom),grat[norm(s.nom)])}</span>`:''}</div>
+    :`<div class="sort${prep(s)?'':' non-prep'}"><div><a href="${esc(lien('sort',s.nom,s.url))}" target="_blank" rel="noopener">${esc(s.nom)}</a>${badges(s)}${s.niv>0&&grat[norm(s.nom)]?`<span class="grat"><span class="muted">gratuit</span>${cases('g:'+norm(s.nom),grat[norm(s.nom)])}</span>`:''}</div>
       ${s.inc||s.portee||s.note?`<div class="muted">${[s.inc,s.portee,s.note].filter(Boolean).map(esc).join(' · ')}</div>`:''}</div>`;
-  const liste=Object.keys(niv).sort((a,b)=>a-b).map(n=>`<section><h2>${n==0?'Sorts mineurs':'Niveau '+n}</h2>`+niv[n].map(ligneSort).join('')+'</section>').join('');
-  const ajout=ed?`<section><h2>Ajouter un sort</h2><p class="muted">Écris le nom exact d’AideDD : le lien se fait tout seul.</p>
-    <div class="row"><input id="snv" inputmode="numeric" placeholder="Niv" aria-label="Niveau du sort (0 pour un sort mineur)" style="width:3.5rem"><input id="snom" placeholder="Nom du sort" aria-label="Nom du sort" style="flex:1"><button data-a="ajoutSort">Ajouter</button></div></section>`:'';
+  const liste=Object.keys(niv).sort((a,b)=>a-b).map(n=>`<section><h2>${n==0?'Sorts mineurs':'Niveau '+n}</h2>`+(ed?niv[n]:[...niv[n].filter(prep),...niv[n].filter(x=>!prep(x))]).map(ligneSort).join('')+'</section>').join('');
+  const ajout=ed?`<section><h2>Ajouter un sort</h2><p class="muted">Écris le nom exact d’AideDD : le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/spell/fr/" target="_blank" rel="noopener">Liste des sorts 5.5 ↗</a></p>
+    <div class="ajout-sort"><div class="row"><input id="snv" inputmode="numeric" placeholder="Niv" aria-label="Niveau du sort (0 pour un sort mineur)" style="width:3.5rem;flex:none"><input id="snom" placeholder="Nom du sort" aria-label="Nom du sort" style="flex:1"></div>
+      <div class="row sort-inf"><input id="sinc" placeholder="Incantation (ex. Action)" aria-label="Temps d'incantation"><input id="spor" placeholder="Portée (ex. 18 m)" aria-label="Portée"></div>
+      <div class="row ajout-bas">${['C','R','M'].map(k=>`<label class="case-s"><input type="checkbox" id="s${k}"><span class="losange"></span>${{C:'Concentration',R:'Rituel',M:'Matériel'}[k]}</label>`).join('')}<button data-a="ajoutSort">Ajouter</button></div></div></section>`:'';
   return `${magie}
     <section><h2>Emplacements de sort</h2>${slots||(ed?'':'<p class="muted">Aucun emplacement. Règle-les avec Modifier si ton personnage en a.</p>')}
       ${ed?`<div class="lab">Nombre d’emplacements par niveau</div><div class="grid9">${reglage}</div>`:''}</section>
@@ -712,8 +753,9 @@ function ongSac(p,d,e){
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
           <input data-f="objets.${i}.nom" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">
           <button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>
-          ${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}</div>`).join('')
-        +`<button data-a="ajoutObj">+ Ajouter un objet</button>`
+          ${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
+          <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description"></div>`).join('')
+        +`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Avec le nom exact d’AideDD, le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`
       :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
         :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
     <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
@@ -829,7 +871,8 @@ document.addEventListener('click',ev=>{
     case 'ajoutSort':{const n=document.getElementById('snom').value.trim().replace(/\s+/g,' '),v=document.getElementById('snv').value.trim();
       if(!n)throw new Error('Indique le nom du sort.');const l=Math.min(9,num(v));
       if(sortsDe(p).some(x=>norm(x.nom)===norm(n)))throw new Error('« '+n+' » est déjà dans la liste.');
-      p.etat.sortsPlus.push({niv:l,nom:n.charAt(0).toUpperCase()+n.slice(1),C:false});flash={t:'« '+n+' » ajouté'+(l?' au niveau '+l:' aux sorts mineurs')+'.'};break}
+      const g=id=>document.getElementById(id),inc=g('sinc').value.trim(),por=g('spor').value.trim();
+      p.etat.sortsPlus.push({niv:l,nom:n.charAt(0).toUpperCase()+n.slice(1),C:g('sC').checked,R:g('sR').checked,M:g('sM').checked,inc,portee:por});flash={t:'« '+n+' » ajouté'+(l?' au niveau '+l:' aux sorts mineurs')+'.'};break}
     case 'supprSort':{const i=b.dataset.i;if(i!=='')p.etat.sortsPlus.splice(num(i),1);else if(!p.etat.sortsMoins.includes(b.dataset.k))p.etat.sortsMoins.push(b.dataset.k);break}
     case 'sortC':{const x=p.etat.sortsPlus[num(b.dataset.i)],k=['M','R'].includes(b.dataset.p)?b.dataset.p:'C';x[k]=!x[k];break}
     case 'supprObj':p.etat.objets.splice(num(b.dataset.i),1);break;
@@ -849,6 +892,10 @@ document.addEventListener('click',ev=>{
     case 'lienAnnuler':liaison=null;ui.vue='liste';break;
     case 'annonceVoir':delete p.etat.annonce;ui.onglet='sac';anim='';haut=true;break;
     case 'annonceOk':delete p.etat.annonce;break;
+    case 'prep':{const k=b.dataset.k,l=p.etat.nonPrep=p.etat.nonPrep||[],i=l.indexOf(k);if(i>=0)l.splice(i,1);else l.push(k);break}
+    case 'maitrise':{const k=b.dataset.k,base=b.dataset.b==='1',o=p.etat.maitOv=p.etat.maitOv||{},cur=o[k]==null?base:o[k];
+      if(!cur===base)delete o[k];else o[k]=!cur;break}
+    case 'avJS':{const k=b.dataset.k;p.etat.avJS=p.etat.avJS||{};if(p.etat.avJS[k])delete p.etat.avJS[k];else p.etat.avJS[k]=true;break}
     case 'trouveVoir':ui.onglet='sac';anim='';haut=true;break;
     case 'trouveOk':p.etat.objets.forEach(o=>delete o.nouveau);break;
     case 'suppr':confirmSuppr=true;break;
@@ -865,6 +912,7 @@ document.addEventListener('focusin',ev=>{const f=ev.target.dataset&&ev.target.da
 document.addEventListener('input',ev=>{
   const el=ev.target,p=P();
   if(el.dataset&&el.dataset.ovr&&p){const ov=p.etat.resOv=p.etat.resOv||{},k=el.dataset.ovr;ov[k]={...(ov[k]||{}),max:el.value===''?'':Math.max(0,num(el.value))};save();return}
+  if(el.dataset&&el.dataset.note&&p){const k=el.dataset.note,v=el.value.trim();p.etat.notesL=p.etat.notesL||{};if(v)p.etat.notesL[k]=el.value;else delete p.etat.notesL[k];save();return}
   if(el.dataset&&el.dataset.lien&&p){const k=el.dataset.lien,v=el.value.trim();if(v&&v!==lienAuto(k.split(':')[0],k.slice(k.indexOf(':')+1),D(p)))p.etat.liens[k]=v;else delete p.etat.liens[k];save();return}
   const f=el.dataset&&el.dataset.f;if(!f||!p)return;
   const path=f.split('.');let o=p.etat;
@@ -875,7 +923,7 @@ document.addEventListener('input',ev=>{
 document.addEventListener('change',ev=>{
   const f=ev.target.dataset&&ev.target.dataset.f;
   if((f==='pv'||f==='pvTemp')&&avantSaisie!=null){noterDegats(avantSaisie-num(ev.target.value));avantSaisie=num(ev.target.value)}
-  if((f&&/^objets\.\d+\.nom$/.test(f))||f==='nom'||f==='pv'||f==='pvTemp'||(f&&f.startsWith('slotsTot')))render();
+  if((f&&/^objets\.\d+\.nom$/.test(f))||f==='nom'||f==='pv'||f==='pvTemp'||(f&&f.startsWith('slotsTot'))||(f&&f.startsWith('statOv.')))render();
 });
 /* glisser à gauche / droite pour changer d'onglet (en boucle) */
 let tx=null,ty=null;
