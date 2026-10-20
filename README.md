@@ -54,28 +54,46 @@ Ouvre l'adresse de l'application, puis :
 
 Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.
 
-## Bon à savoir (à lire une fois)
+## Bon à savoir : la liste à vérifier
 
-### À corriger à la main après l'import
-AideDD n'applique pas tout. En mode crayon (✎) :
-- **Doué** : onglet Caracs, touche le losange des 3 compétences choisies.
-- **Résilient** : onglet Caracs, touche le losange du jet de sauvegarde choisi.
-- **Expertise** non comptée : touche deux fois le losange de la compétence (◇ rien → ◆ maîtrise → double losange expertise → ◇).
-- **Initiative, Vitesse, PV max, CA** qui ne collent pas (don, objet…) : onglet Combat, tape la bonne valeur. Champ vide = valeur d'AideDD.
-- **Avantage** à un jet de sauvegarde : bouton « av. » à côté du jet.
+Ton perso est importé ? Passe cette liste, **livre de règles à côté**. AideDD fait l'essentiel des calculs mais pas tout, et l'app affiche ce qu'AideDD lui donne. Les corrections se font en mode crayon (✎) et sont gardées aux montées de niveau.
 
-Vérifie aussi le **nom** : AideDD garde parfois celui du perso précédent. Les **caractéristiques** (FOR, DEX…) ne se modifient pas dans l'app : elles doivent être justes dans AideDD.
+### Fiche (une fois, à la création)
+- [ ] **Nom** : AideDD garde parfois celui du perso précédent (onglet Fiche).
+- [ ] **Caractéristiques** (FOR, DEX…) : justes dans AideDD, elles ne se modifient pas dans l'app.
+- [ ] **Code du MJ** entré (Fiche → Sauvegarde en ligne), sinon la fiche n'existe que sur ce téléphone. iPhone : tout se fait dans l'app de l'écran d'accueil, pas dans Safari.
 
-### Armes
-- Les armes d'AideDD sont justes et se mettent à jour à la montée de niveau.
-- Pour en ajouter une : tape le début du nom et choisis-la dans la liste. Attaque, dégâts et botte se remplissent, maîtrise comprise (losange **Maîtrise** pour corriger).
-- À ajuster soi-même sur une arme ajoutée : style **Archerie** (+2 attaque à distance), **Duel** (+2 dégâts), arme **magique** (+1…), arme de **moine** avec DEX ou dé d'Arts martiaux, **Pacte de la lame**. Une arme retouchée à la main garde ta saisie et n'est plus recalculée ensuite.
+### Caracs : compétences et jets de sauvegarde
+Compare chaque bonus au livre. Le losange se touche pour corriger : ◇ rien → ◆ maîtrise → double losange expertise → ◇.
+- [ ] Don **Doué** : les 3 compétences choisies (AideDD ne les compte pas).
+- [ ] Don **Résilient** : le jet de sauvegarde choisi (AideDD ne le compte pas).
+- [ ] **Expertise** (Roublard, Barde, don Expert…) : déjà comptée par AideDD en général, vérifie.
+- [ ] **Avantage à un jet de sauvegarde** qui s'applique toujours : bouton « av. » à côté du jet. Exemple : **Gnome** (Ruse gnome) → av. sur INT, SAG et CHA.
+- [ ] Avantage **sous condition** (Nain contre le poison, Halfelin contre la peur, Elfe contre le charme…) : l'app ne sait pas le gérer, écris-le dans une **note** du trait.
+- [ ] Bonus de **classe** sur les jets ou compétences (Touche-à-tout du Barde, Aura de protection du Paladin…) : AideDD ne les compte pas toujours. Vérifie, et note ce qui manque.
 
-### Sorts, objets, ressources
-- Sorts, armes et objets : tape le début du nom (fautes et accents tolérés) et choisis dans la liste ; le lien AideDD et les infos se remplissent.
-- **Sorts préparés** : losange à gauche du sort (mode crayon).
-- Une capacité sans compteur peut devenir des cases : bouton **Cases** (mode crayon).
-- **Repos long** (onglet Fiche) : PV au max, cases décochées. Pas de repos court : décoche à la main.
+### Combat
+- [ ] **CA** : armure et bouclier bien choisis dans AideDD. Sinon tape la bonne CA (champ vide = valeur d'AideDD).
+- [ ] **Initiative** (don Vigilant…), **Vitesse** (don Mobile, classe…), **PV max** (don Robuste, Nain…) : vérifie, tape la bonne valeur si besoin.
+- [ ] **Résistances** (Tieffelin, Drakéide, Nain, Aasimar…) : pas de case dans l'app, note-les sur le trait.
+- [ ] **Armes d'AideDD** : justes, et elles suivent les montées de niveau.
+- [ ] **Arme ajoutée dans l'app** (tape le début du nom et choisis dans la liste) : attaque et dégâts calculés, maîtrise comprise (losange **Maîtrise** pour corriger). À ajuster à la main : style **Archerie** (+2 attaque à distance), **Duel** (+2 dégâts), arme **magique** (+1…), arme de **moine** avec DEX ou dé d'Arts martiaux, **Pacte de la lame**. Une arme retouchée à la main n'est plus recalculée ensuite.
+
+### Sorts
+- [ ] **Sorts préparés** : losange à gauche du sort (les autres passent en fin de liste).
+- [ ] Sorts toujours préparés (domaine, serment…) et sorts gagnés par un don ou une espèce : présents ? Sinon ajoute-les (tape le début du nom, le reste se remplit).
+- [ ] **Emplacements** par niveau : comme dans le livre (réglables en mode crayon).
+
+### Capacités et ressources
+- [ ] Chaque capacité à utilisations limitées a ses **cases** (sinon bouton **Cases** en mode crayon), avec le bon maximum.
+- [ ] Les effets à retenir qui n'ont pas de place ailleurs : en **note** sur la capacité.
+
+### Sac
+- [ ] Objets et quantités. Pour en ajouter : tape le début du nom et choisis dans la liste (le lien AideDD se fait tout seul).
+
+### À chaque montée de niveau
+- [ ] Onglet Fiche → **Télécharger le .xml** → monte de niveau sur AideDD → nouvel export → **Mettre à jour le personnage**.
+- [ ] Repasse la liste pour ce qui a changé : nouveau don (Doué, Résilient…), nouvelle capacité, nouveaux sorts, nouveaux emplacements.
 
 ### Ce que l'app ne fait pas
-Multiclasse, effets temporaires (Rage, bénédiction…), jets de concentration (l'app te le rappelle seulement), dés de vie : à gérer soi-même.
+Multiclasse, effets temporaires (Rage, bénédiction…), avantages sous condition, jets de concentration (l'app te le rappelle seulement), repos court (décoche les cases à la main) : à gérer toi-même.
