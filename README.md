@@ -70,7 +70,7 @@ Compare chaque bonus au livre. Le losange se touche pour corriger : ◇ rien →
 - [ ] **Expertise** (Roublard, Barde, don Expert…) : déjà comptée par AideDD en général, vérifie.
 - [ ] **Avantage à un jet de sauvegarde** qui s'applique toujours : bouton « av. » à côté du jet. Exemple : **Gnome** (Ruse gnome) → av. sur INT, SAG et CHA.
 - [ ] Avantage **sous condition** (Nain contre le poison, Halfelin contre la peur, Elfe contre le charme…) : l'app ne sait pas le gérer, écris-le dans une **note** du trait.
-- [ ] Bonus de **classe** sur les jets ou compétences (Touche-à-tout du Barde, Aura de protection du Paladin…) : AideDD ne les compte pas toujours. Vérifie, et note ce qui manque.
+- [ ] **Valeur d'un jet de sauvegarde** fausse (Aura de protection du Paladin, objet magique…) : tape la bonne valeur à côté de « JS » en mode crayon (champ vide = valeur calculée).
 
 ### Selon ton espèce
 Vérifié sur les règles 2024 d'AideDD. « Compté » = AideDD l'applique déjà, rien à faire.
@@ -87,7 +87,7 @@ Vérifié sur les règles 2024 d'AideDD. « Compté » = AideDD l'applique déj�
 ### Selon ta classe
 Vérifié sur les règles 2024 d'AideDD et sur des fiches de test (niveaux 1 à 10). Au-delà du niveau 10, vérifie toi-même.
 - [ ] **Barbare** : Sens du danger (niv. 2) → « av. » sur le jet de DEX. Instinct sauvage (niv. 7, avantage à l'initiative) → note. Défense sans armure et Déplacement rapide : comptés.
-- [ ] **Barde** : Touche-à-tout (niv. 2, +½ maîtrise aux compétences non maîtrisées) **n'est pas compté** → à ajouter de tête. Expertise : comptée. Collège du Savoir (3 maîtrises) et de la Danse (CA) : vérifie.
+- [ ] **Barde** : Touche-à-tout (niv. 2) et Expertise : comptés (Touche-à-tout est ajouté par l'app). Collège du Savoir (3 maîtrises) et de la Danse (CA) : vérifie.
 - [ ] **Clerc** : Ordre divin Thaumaturge (+SAG en Arcanes et Religion) : vérifie.
 - [ ] **Druide** : Ordre primitif Mage : compté.
 - [ ] **Ensorceleur** draconique : PV en plus et CA sans armure (Résistance draconique) : vérifie.
@@ -95,7 +95,7 @@ Vérifié sur les règles 2024 d'AideDD et sur des fiches de test (niveaux 1 à 
 - [ ] **Magicien** : Érudition (expertise) : comptée.
 - [ ] **Moine** : Défense et Déplacement sans armure : comptés. Survivant discipliné (niv. 14, maîtrise de tous les jets de sauvegarde) : vérifie, losanges si besoin.
 - [ ] **Occultiste** : une manifestation qui change la CA (Armure d'ombres) : vérifie la CA.
-- [ ] **Paladin** : Aura de protection (niv. 6, +CHA à tous tes jets de sauvegarde) : vérifie ; si absent, note-le. Serment de Gloire (niv. 7, +3 m) : vérifie la Vitesse.
+- [ ] **Paladin** : Aura de protection (niv. 6, +CHA à tous tes jets de sauvegarde) : vérifie chaque jet ; s'il manque, tape la bonne valeur dans le jet (mode crayon). Serment de Gloire (niv. 7, +3 m) : vérifie la Vitesse.
 - [ ] **Rôdeur** : Fin explorateur (expertise) et Embuscade effrayante (initiative) : comptés. Traqueur des ténèbres, Mental d'acier (niv. 7, maîtrise des JS de SAG) **n'est pas compté** → losange du jet de SAG. Arpenteur (niv. 6, +3 m) : vérifie la Vitesse.
 - [ ] **Roublard** : Expertise comptée. Esprit fuyant (niv. 15, maîtrise des JS de SAG et CHA) : vérifie, losanges si besoin.
 
