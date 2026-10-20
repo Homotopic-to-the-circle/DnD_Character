@@ -39,12 +39,13 @@ d as (select i, array_agg(pg_temp.dec(x[1]) order by ord) td from r, regexp_matc
 s as (select d.i, (regexp_match(r.t, $$/magic-item/fr/([^']+)'$$))[1] slug, td from d join r using(i))
 select 'objets_magiques', jsonb_agg(jsonb_build_array(td[2], slug, td[6], td[7]) order by td[2]), 'https://www.aidedd.org/magic-item/fr/' from s
 on conflict (cle) do update set donnees = excluded.donnees, maj = now();
--- armes [nom, dégâts, propriétés, botte] ; armures [nom, CA]
+-- armes [nom, dégâts, propriétés, botte, courante|guerre] ; armures [nom, CA]
 insert into public.ref_aidedd(cle, donnees, source)
 with p as (select content c from extensions.http_get('https://www.aidedd.org/regles-24/equipement/armes/')),
 r as (select row_number() over () i, t from p, regexp_split_to_table(c, '<tr>') t),
-d as (select i, array_agg(pg_temp.dec(x[1]) order by ord) td from r, regexp_matches(t, '<td[^>]*?>(.*?)</td>', 'g') with ordinality as m(x, ord) group by i)
-select 'armes', jsonb_agg(jsonb_build_array(td[1], td[2], td[3], td[4]) order by i), 'https://www.aidedd.org/regles-24/equipement/armes/' from d where array_length(td,1)=6
+d as (select i, array_agg(pg_temp.dec(x[1]) order by ord) td from r, regexp_matches(t, '<td[^>]*?>(.*?)</td>', 'g') with ordinality as m(x, ord) group by i),
+c as (select i, td, (select td2.td[1] from d td2 where td2.i<d.i and array_length(td2.td,1)=1 order by td2.i desc limit 1) cat from d)
+select 'armes', jsonb_agg(jsonb_build_array(td[1], td[2], td[3], td[4], case when cat ilike '%de guerre%' then 'guerre' else 'courante' end) order by i), 'https://www.aidedd.org/regles-24/equipement/armes/' from c where array_length(td,1)=6
 on conflict (cle) do update set donnees = excluded.donnees, maj = now();
 insert into public.ref_aidedd(cle, donnees, source)
 with p as (select content c from extensions.http_get('https://www.aidedd.org/regles-24/equipement/armures/')),
