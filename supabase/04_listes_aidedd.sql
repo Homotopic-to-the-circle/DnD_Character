@@ -15,13 +15,13 @@ grant execute on function public.ref_listes() to anon, authenticated;
 -- 2. exécuter le bloc ci-dessous ;  3. drop extension if exists http;
 /*
 create or replace function pg_temp.dec(t text) returns text language sql as $$ select trim(regexp_replace(replace(replace(replace(replace(replace(regexp_replace(t,'<[^>]*>','','g'),'&#039;',''''),'&quot;','"'),'&nbsp;',' '),'&rsquo;','’'),'&amp;','&'),'\s+',' ','g')) $$;
--- monstres [nom, slug, FP]
+-- monstres [nom, slug, FP, PV moyens]
 insert into public.ref_aidedd(cle, donnees, source)
 with p as (select content c from extensions.http_get('https://www.aidedd.org/monster/fr/')),
 r as (select row_number() over () i, t from p, regexp_split_to_table(c, '<tr>') t where t like '%<td class=''item''>%'),
 d as (select i, array_agg(pg_temp.dec(x[1]) order by ord) td from r, regexp_matches(t, '<td[^>]*?>(.*?)</td>', 'g') with ordinality as m(x, ord) group by i),
 s as (select d.i, (regexp_match(r.t, $$/monster/fr/([^']+)'$$))[1] slug, td from d join r using(i))
-select 'monstres', jsonb_agg(jsonb_build_array(td[2], slug, split_part(td[6],' ',1)) order by td[2]), 'https://www.aidedd.org/monster/fr/' from s
+select 'monstres', jsonb_agg(jsonb_build_array(td[2], slug, split_part(regexp_replace(td[6],'<.*$',''),' ',1), td[10]) order by td[2]), 'https://www.aidedd.org/monster/fr/' from s
 on conflict (cle) do update set donnees = excluded.donnees, maj = now();
 -- sorts [nom, slug, niveau, incantation, portée, concentration, rituel, matériel]
 insert into public.ref_aidedd(cle, donnees, source)
