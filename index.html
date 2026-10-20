@@ -136,6 +136,10 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .stat{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px 2px;min-width:0}
 .pvmax-in{width:3.2ch;font-size:inherit!important;padding:0!important;height:auto!important;border:none;border-bottom:1px solid var(--accent);border-radius:0;background:transparent;text-align:center;color:var(--muted)}
+.sugg{position:fixed;z-index:60;max-height:280px;overflow:auto;background:var(--card);border:1px solid var(--accent);border-radius:4px;box-shadow:0 4px 14px rgba(42,28,18,.3);display:flex;flex-direction:column}
+.sugg button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;text-align:left;border:none;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:9px 10px;font:inherit;font-size:1rem;color:var(--fg);height:auto;width:100%;flex:none}
+.sugg button:last-child{border-bottom:none}
+.sugg-i{font-size:.8rem;color:var(--muted);font-style:italic;white-space:nowrap}
 .stat-in{text-align:center;font-weight:700;font-size:1.2rem!important;padding:0!important;height:30px!important;margin:0 auto 2px;display:block;width:90%}
 .stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
 .stat .lab{font-size:.72rem;letter-spacing:.01em}
@@ -255,7 +259,7 @@ a.ext{text-decoration:none;color:inherit}
 
 <script>
 const EXEMPLE = {"v":1,"date":"2026-10-18T03:38:28.265Z","id":{"nom":"Character Name","historique":"Acolyte","classe":"Guerrier","sousClasse":"","espece":"Humain","niveau":"1","xp":"0","alignement":"Loyal bon","taille":"..."},"combat":{"ca":"14","pvMax":"11","dv":"1d10","maitrise":"+2","init":"+2","vitesse":"9 m","percPassive":"10"},"car":[{"n":"FOR","val":15,"mod":"+2","jds":"+4","jdsM":true},{"n":"DEX","val":14,"mod":"+2","jds":"+2","jdsM":false},{"n":"CON","val":13,"mod":"+1","jds":"+3","jdsM":true},{"n":"INT","val":9,"mod":"-1","jds":"-1","jdsM":false},{"n":"SAG","val":11,"mod":"+0","jds":"+0","jdsM":false},{"n":"CHA","val":13,"mod":"+1","jds":"+1","jdsM":false}],"ski":[{"id":0,"nom":"Acrobaties","val":"+4","m":true},{"id":1,"nom":"Dressage","val":"+0","m":false},{"id":2,"nom":"Arcanes","val":"-1","m":false},{"id":3,"nom":"Athlétisme","val":"+4","m":true},{"id":4,"nom":"Intimidation","val":"+1","m":false},{"id":5,"nom":"Histoire","val":"-1","m":false},{"id":6,"nom":"Intuition","val":"+2","m":true},{"id":7,"nom":"Persuasion","val":"+1","m":false},{"id":8,"nom":"Investigation","val":"-1","m":false},{"id":9,"nom":"Médecine","val":"+0","m":false},{"id":10,"nom":"Nature","val":"-1","m":false},{"id":11,"nom":"Perception","val":"+0","m":false},{"id":12,"nom":"Représentation","val":"+1","m":false},{"id":13,"nom":"Tromperie","val":"+1","m":false},{"id":14,"nom":"Religion","val":"+1","m":true},{"id":15,"nom":"Discrétion","val":"+2","m":false},{"id":16,"nom":"Escamotage","val":"+2","m":false},{"id":17,"nom":"Survie","val":"+0","m":false}],"armes":[{"nom":"Cimeterre","att":"+4","deg":"1d6+2 tranchant","note":"enchaînement"},{"nom":"Épée courte","att":"+4","deg":"1d6+2 perforant","note":"distraction"},{"nom":"Arc long","att":"+6","deg":"1d8+2 perforant","note":"lente"}],"capa":[{"nom":"Style de combat (Archerie)"},{"nom":"Second souffle","max":2},{"nom":"Bottes d'armes","max":3}],"traits":["Ingénieux","Compétent ✔","Polyvalent (Bagarreur de tavernes)"],"dons":["Bagarreur de tavernes","Initié à la magie (Clerc)"],"maitrises":{"armures":{"L":true,"I":true,"Lo":true,"B":true},"armes":"Armes simples, armes martiales","outils":"Matériel de calligraphe","langues":"Commun, Draconique, Halfelin"},"magie":{"carac":"","mod":"","dd":"","att":"","slots":["","","","","","","","",""]},"sorts":[{"niv":0,"nom":"Assistance","url":"https://www.aidedd.org/spell/fr/assistance","inc":"Action","portee":"Contact","C":true,"R":false,"M":false,"note":""},{"niv":0,"nom":"Mot de radiance","url":"https://www.aidedd.org/spell/fr/mot-de-radiance","inc":"Action","portee":"Perso","C":false,"R":false,"M":true,"note":""},{"niv":1,"nom":"Bénédiction","url":"https://www.aidedd.org/spell/fr/benediction","inc":"Action","portee":"9 m","C":true,"R":false,"M":true,"note":""}],"equipement":"Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d'exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe","harmo":[],"pieces":{"pc":"0","pa":"0","pe":"0","po":"19","pp":"0"},"histoire":"...","choix":{"l":"fr","class1":"5","level1":"1","voie1":"","class2":"1","level2":"0","voie2":"","species":"1","lineage":"","back":"1","align":"0","car[0]":"15","car[1]":"14","car[2]":"13","car[3]":"8","car[4]":"10","car[5]":"12","bCar[0]":"","bCar[1]":"","bCar[2]":"","bCar[3]":"+1","bCar[4]":"+1","bCar[5]":"+1","feats":"Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,","invoc":",,,,,,,,,","manoeuv":",,,,,,,,","choice":",,,,,,,,,,,,,,,,,,,,","option0":",0,,,,,,,,,,,,,,,,,,,","option1":",Assistance,,,,,,,,,,,,,,,,,,,","option2":",Mot de radiance,,,,,,,,,,,,,,,,,,,","option3":",Bénédiction,,,,,,,,,,,,,,,,,,,","option4":",,,,,,,,,,,,,,,,,,,,","option5":",,,,,,,,,,,,,,,,,,,,","option6":",,,,,,,,,,,,,,,,,,,,","ritual":",,,,,,","customNames":",,","customTrait":",,,,,,,,,,,,,,,,,,,,","skillE":"0","skillB":"6,14","skillC":"0,3,0,0","lang":"1,7,0,0,0,0,0","tool":",,Matériel de calligraphe,,,,","hp":"0,10,,,,,,,,,,,,,,,,,,,","armor":"Armure de cuir clouté,Sans bouclier","weapons":"Cimeterre,1,Épée courte,1,Arc long,1","sort1_0":",,,,,,,,,,,,,,","sort1_1":",,,,,,,,,,,,,,","sort1_2":",,,,,,,,,,,,,,","sort1_3":",,,,,,,,,,,,,,","sort1_4":",,,,,,,,,,,,,,","sort1_5":",,,,,,,,,,,,,,","sort1_6":",,,,,,,,,,,,,,","sort1_7":",,,,,,,,,,,,,,","sort1_8":",,,,,,,,,,,,,,","sort1_9":",,,,,,,,,,,,,,","sort2_0":",,,,,,,,,,,,,,","sort2_1":",,,,,,,,,,,,,,","sort2_2":",,,,,,,,,,,,,,","sort2_3":",,,,,,,,,,,,,,","sort2_4":",,,,,,,,,,,,,,","sort2_5":",,,,,,,,,,,,,,","sort2_6":",,,,,,,,,,,,,,","sort2_7":",,,,,,,,,,,,,,","sort2_8":",,,,,,,,,,,,,,","sort2_9":",,,,,,,,,,,,,,"},"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<creator>\n<version>0.8<\/version>\n<confLang>1<\/confLang>\n<name>Character Name<\/name>\n<class1>5<\/class1>\n<level1>1<\/level1>\n<voie1><\/voie1>\n<class2>1<\/class2>\n<level2>0<\/level2>\n<voie2><\/voie2>\n<className>Guerrier<\/className>\n<subClassName><\/subClassName>\n<XP>0<\/XP>\n<species>1<\/species>\n<speciesName>Humain<\/speciesName>\n<lineage><\/lineage>\n<back>1<\/back>\n<backName>Acolyte<\/backName>\n<lang>1,7,0,0,0,0,0<\/lang>\n<align>0<\/align>\n<size>...<\/size>\n<str>15<\/str><dex>14<\/dex><con>13<\/con>\n<int>8<\/int><wis>10<\/wis><cha>12<\/cha>\n<bstr><\/bstr><bdex><\/bdex><bcon><\/bcon>\n<bint>+1<\/bint><bwis>+1<\/bwis><bcha>+1<\/bcha>\n<feats>Bagarreur de tavernes,Initié à la magie,,Archerie,,,,,,,,,,,,,,,,,<\/feats>\n<invoc>,,,,,,,,,<\/invoc>\n<manoeuv>,,,,,,,,<\/manoeuv>\n<choice>,,,,,,,,,,,,,,,,,,,,<\/choice>\n<option0>,0,,,,,,,,,,,,,,,,,,,<\/option0>\n<option1>,Assistance,,,,,,,,,,,,,,,,,,,<\/option1>\n<option2>,Mot de radiance,,,,,,,,,,,,,,,,,,,<\/option2>\n<option3>,Bénédiction,,,,,,,,,,,,,,,,,,,<\/option3>\n<option4>,,,,,,,,,,,,,,,,,,,,<\/option4>\n<option5>,,,,,,,,,,,,,,,,,,,,<\/option5>\n<option6>,,,,,,,,,,,,,,,,,,,,<\/option6>\n<option7>RFU<\/option7>\n<option8>RFU<\/option8>\n<option9>RFU<\/option9>\n<ritual>,,,,,,<\/ritual>\n<customNames>,,<\/customNames>\n<customTrait>,,,,,,,,,,,,,,,,,,,,<\/customTrait>\n<skillE>0<\/skillE>\n<skillC>0,3,0,0<\/skillC>\n<skillB>6,14<\/skillB>\n<armor>Armure de cuir clouté,Sans bouclier<\/armor>\n<weapons>Cimeterre,1,Épée courte,1,Arc long,1<\/weapons>\n<tool>,,Matériel de calligraphe,,,,<\/tool>\n<cantNam1><\/cantNam1><cantBon1><\/cantBon1><cantDmg1><\/cantDmg1><cantNot1><\/cantNot1>\n<cantNam2><\/cantNam2><cantBon2><\/cantBon2><cantDmg2><\/cantDmg2><cantNot2><\/cantNot2>\n<cantNam3><\/cantNam3><cantBon3><\/cantBon3><cantDmg3><\/cantDmg3><cantNot3><\/cantNot3>\n<hp>0,10,,,,,,,,,,,,,,,,,,,<\/hp>\n<spells0>,,,,,,,,,,,,,,<\/spells0>\n<spells1>,,,,,,,,,,,,,,<\/spells1>\n<spells2>,,,,,,,,,,,,,,<\/spells2>\n<spells3>,,,,,,,,,,,,,,<\/spells3>\n<spells4>,,,,,,,,,,,,,,<\/spells4>\n<spells5>,,,,,,,,,,,,,,<\/spells5>\n<spells6>,,,,,,,,,,,,,,<\/spells6>\n<spells7>,,,,,,,,,,,,,,<\/spells7>\n<spells8>,,,,,,,,,,,,,,<\/spells8>\n<spells9>,,,,,,,,,,,,,,<\/spells9>\n<spells10>,,,,,,,,,,,,,,<\/spells10>\n<spells11>,,,,,,,,,,,,,,<\/spells11>\n<spells12>,,,,,,,,,,,,,,<\/spells12>\n<spells13>,,,,,,,,,,,,,,<\/spells13>\n<spells14>,,,,,,,,,,,,,,<\/spells14>\n<spells15>,,,,,,,,,,,,,,<\/spells15>\n<spells16>,,,,,,,,,,,,,,<\/spells16>\n<spells17>,,,,,,,,,,,,,,<\/spells17>\n<spells18>,,,,,,,,,,,,,,<\/spells18>\n<spells19>,,,,,,,,,,,,,,<\/spells19>\n<spellNote0><\/spellNote0>\n<spellNote1><\/spellNote1>\n<spellNote2><\/spellNote2>\n<spellNote3><\/spellNote3>\n<spellNote4><\/spellNote4>\n<spellNote5><\/spellNote5>\n<spellNote6><\/spellNote6>\n<spellNote7><\/spellNote7>\n<spellNote8><\/spellNote8>\n<spellNote9><\/spellNote9>\n<spellNote10><\/spellNote10>\n<spellNote11><\/spellNote11>\n<spellNote12><\/spellNote12>\n<spellNote13><\/spellNote13>\n<spellNote14><\/spellNote14>\n<spellNote15><\/spellNote15>\n<spellNote16><\/spellNote16>\n<spellNote17><\/spellNote17>\n<spellNote18><\/spellNote18>\n<spellNote19><\/spellNote19>\n<spellNote20><\/spellNote20>\n<spellNote21><\/spellNote21>\n<spellNote22><\/spellNote22>\n<spellNote23><\/spellNote23>\n<spellNote24><\/spellNote24>\n<spellNote25><\/spellNote25>\n<spellNote26><\/spellNote26>\n<spellNote27><\/spellNote27>\n<spellNote28><\/spellNote28>\n<spellNote29><\/spellNote29>\n<spellNote30><\/spellNote30>\n<spellNote31><\/spellNote31>\n<spellNote32><\/spellNote32>\n<spellNote33><\/spellNote33>\n<spellNote34><\/spellNote34>\n<spellNote35><\/spellNote35>\n<spellNote36><\/spellNote36>\n<spellNote37><\/spellNote37>\n<spellNote38><\/spellNote38>\n<spellNote39><\/spellNote39>\n<spellNote40><\/spellNote40>\n<spellNote41><\/spellNote41>\n<spellNote42><\/spellNote42>\n<spellNote43><\/spellNote43>\n<spellNote44><\/spellNote44>\n<spellNote45><\/spellNote45>\n<spellNote46><\/spellNote46>\n<spellNote47><\/spellNote47>\n<spellNote48><\/spellNote48>\n<spellNote49><\/spellNote49>\n<spellNote50><\/spellNote50>\n<spellNote51><\/spellNote51>\n<spellNote52><\/spellNote52>\n<spellNote53><\/spellNote53>\n<spellNote54><\/spellNote54>\n<spellNote55><\/spellNote55>\n<spellNote56><\/spellNote56>\n<spellNote57><\/spellNote57>\n<spellNote58><\/spellNote58>\n<spellNote59><\/spellNote59>\n<spellNote60><\/spellNote60>\n<spellNote61><\/spellNote61>\n<spellNote62><\/spellNote62>\n<spellNote63><\/spellNote63>\n<spellNote64><\/spellNote64>\n<spellNote65><\/spellNote65>\n<spellNote66><\/spellNote66>\n<spellNote67><\/spellNote67>\n<spellNote68><\/spellNote68>\n<spellNote69><\/spellNote69>\n<spellNote70><\/spellNote70>\n<spellNote71><\/spellNote71>\n<spellNote72><\/spellNote72>\n<spellNote73><\/spellNote73>\n<spellNote74><\/spellNote74>\n<br />\n<b>Warning<\/b>:  Undefined array key \"myAppearance\" in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<br />\n<b>Deprecated<\/b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>/home/aideddor/public_html/public/dnd-creator/export.php<\/b> on line <b>113<\/b><br />\n<appearance><\/appearance>\n<backstory>...<\/backstory>\n<equipment>Armure de cuir clouté, Cimeterre, Épée courte, Arc long\n\n20 flèches, carquois, sac d&#039;exploration souterraine, matériel de calligraphe, livre (prières), symbole sacré, parchemin (10 feuilles), robe<\/equipment>\n<attun1><\/attun1>\n<attun2><\/attun2>\n<attun3><\/attun3>\n<cp>0<\/cp>\n<sp>0<\/sp>\n<ep>0<\/ep>\n<gp>19<\/gp>\n<pp>0<\/pp>\n<\/creator>"};
-const VERSION='19.10.2026 à 18:43';
+const VERSION='20.10.2026 à 09:26';
 const KEY='dnd55.v1';
 const ONGLETS=[['combat','Combat'],['carac','Caracs'],['sorts','Sorts'],['sac','Sac'],['fiche','Fiche']];
 const ETATS=['À terre','Agrippé','Assourdi','Aveuglé','Charmé','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Neutralisé','Paralysé','Pétrifié'];
@@ -459,6 +463,20 @@ function cases(k,max,cls='',compteur=false){
   const ligne=max<=6?max:Math.ceil(max/2);
   return `<div class="boxes" style="grid-template-columns:repeat(${ligne},auto)">${h}</div>`;
 }
+/* choix dans les suggestions AideDD : sort → niveau, incantation, portée, C/R/M ; arme → attaque, dégâts, botte ; objet → lien */
+function armeAuto(p,x){
+  const d=D(p),mod={};d.car.forEach(c=>mod[c.n]=num(c.mod));
+  const pr=String(x[2]||''),m=/finesse/i.test(pr)?Math.max(mod.FOR||0,mod.DEX||0):/munitions/i.test(pr)?(mod.DEX||0):(mod.FOR||0);
+  const [de,...ty]=String(x[1]||'').split(' '),type=ty.join(' ').replace(/s$/,'');
+  return{nom:x[0],att:signe(m+num(d.combat.maitrise)),deg:de+(m?signe(m):'')+(type?' '+type:''),note:x[3]||''};
+}
+function refChoisi(c,it){
+  const p=P();if(!p)return;
+  if(c.id==='snom'){const x=it.d.x,g=id=>document.getElementById(id);g('snv').value=x[2];g('sinc').value=x[3]||'';g('spor').value=x[4]||'';g('sC').checked=!!x[5];g('sR').checked=!!x[6];g('sM').checked=!!x[7];return}
+  const f=c.dataset.f||'';let m;
+  if((m=f.match(/^armes\.(\d+)\.nom$/))&&p.etat.armes[+m[1]]){Object.assign(p.etat.armes[+m[1]],armeAuto(p,it.d.x));save();render();return}
+  if((m=f.match(/^objets\.(\d+)\.nom$/))&&p.etat.objets[+m[1]]){const o=p.etat.objets[+m[1]];o.nom=c.value;p.etat.liens=p.etat.liens||{};p.etat.liens['objet:'+propre(o.nom)]=it.url;save();render();return}
+}
 /* ---------- liens AideDD (automatiques, remplaçables en mode Modifier) ---------- */
 const AD='https://www.aidedd.org/';
 const propre=s=>String(s||'').replace(/\(.*?\)/g,'').replace(/✔/g,'').trim();
@@ -563,7 +581,7 @@ function render(){
   const app=document.getElementById('app');
   if(ui.vue==='liaison'&&liaison)app.innerHTML=vueLiaison();else if(ui.vue==='perso'&&P())app.innerHTML=vuePerso();else{ui.vue='liste';app.innerHTML=vueListe()}
   renderDock();
-  anim='';
+  anim='';if(refChamp&&!document.body.contains(refChamp))refFermer();
 }
 /* bandeaux flottants : rien ne décale la page.
    En haut, juste sous l'en-tête : message court (s'efface seul) puis trouvaille / révélation (jusqu'à Voir ou OK).
@@ -661,7 +679,7 @@ function ongCombat(p,d,e){
     .map(([l,v])=>champ[l]&&ed?`<div class="stat"><input class="stat-in" data-f="${champ[l][0]}" value="${esc(champ[l][1])}" placeholder="${esc(champ[l][2])}" aria-label="${l}"><span class="lab">${l}</span></div>`
       :`<div class="stat"><b>${esc(v)}</b><span class="lab">${l}</span></div>`).join('');
   const armes=ed?e.armes.map((a,i)=>`<div class="arme-ed">
-      <input data-f="armes.${i}.nom" value="${esc(a.nom)}" placeholder="Nom" aria-label="Nom de l'arme">
+      <input data-f="armes.${i}.nom" data-ref="armes" autocomplete="off" value="${esc(a.nom)}" placeholder="Nom" aria-label="Nom de l'arme">
       <input data-f="armes.${i}.att" value="${esc(a.att)}" placeholder="+0" aria-label="Bonus d'attaque">
       <button class="x" data-a="supprArme" data-i="${i}" aria-label="Retirer l'arme">✕</button>
       <div class="full"><input data-f="armes.${i}.deg" value="${esc(a.deg)}" aria-label="Dégâts" placeholder="Dégâts"><input data-f="armes.${i}.note" value="${esc(a.note)}" aria-label="Notes" placeholder="Botte / notes"></div></div>`).join('')+`<button data-a="ajoutArme">+ Ajouter une arme</button>`
@@ -732,8 +750,8 @@ function ongSorts(p,d,e){
     :`<div class="sort${prep(s)?'':' non-prep'}"><div><a href="${esc(lien('sort',s.nom,s.url))}" target="_blank" rel="noopener">${esc(s.nom)}</a>${badges(s)}${s.niv>0&&grat[norm(s.nom)]?`<span class="grat"><span class="muted">gratuit</span>${cases('g:'+norm(s.nom),grat[norm(s.nom)])}</span>`:''}</div>
       ${s.inc||s.portee||s.note?`<div class="muted">${[s.inc,s.portee,s.note].filter(Boolean).map(esc).join(' · ')}</div>`:''}</div>`;
   const liste=Object.keys(niv).sort((a,b)=>a-b).map(n=>`<section><h2>${n==0?'Sorts mineurs':'Niveau '+n}</h2>`+(ed?niv[n]:[...niv[n].filter(prep),...niv[n].filter(x=>!prep(x))]).map(ligneSort).join('')+'</section>').join('');
-  const ajout=ed?`<section><h2>Ajouter un sort</h2><p class="muted">Écris le nom exact d’AideDD : le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/spell/fr/" target="_blank" rel="noopener">Liste des sorts 5.5 ↗</a></p>
-    <div class="ajout-sort"><div class="row"><input id="snv" inputmode="numeric" placeholder="Niv" aria-label="Niveau du sort (0 pour un sort mineur)" style="width:3.5rem;flex:none"><input id="snom" placeholder="Nom du sort" aria-label="Nom du sort" style="flex:1"></div>
+  const ajout=ed?`<section><h2>Ajouter un sort</h2><p class="muted">Commence à taper le nom : choisis le sort dans la liste et le reste se remplit. <a class="ext" href="https://www.aidedd.org/spell/fr/" target="_blank" rel="noopener">Liste des sorts 5.5 ↗</a></p>
+    <div class="ajout-sort"><div class="row"><input id="snv" inputmode="numeric" placeholder="Niv" aria-label="Niveau du sort (0 pour un sort mineur)" style="width:3.5rem;flex:none"><input id="snom" data-ref="sorts" autocomplete="off" placeholder="Nom du sort" aria-label="Nom du sort" style="flex:1"></div>
       <div class="row sort-inf"><input id="sinc" placeholder="Incantation (ex. Action)" aria-label="Temps d'incantation"><input id="spor" placeholder="Portée (ex. 18 m)" aria-label="Portée"></div>
       <div class="row ajout-bas">${['C','R','M'].map(k=>`<label class="case-s"><input type="checkbox" id="s${k}"><span class="losange"></span>${{C:'Concentration',R:'Rituel',M:'Matériel'}[k]}</label>`).join('')}<button data-a="ajoutSort">Ajouter</button></div></div></section>`:'';
   return `${magie}
@@ -751,11 +769,11 @@ function ongSac(p,d,e){
     <section><h2>Équipement</h2>${ed
       ?e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
-          <input data-f="objets.${i}.nom" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">
+          <input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">
           <button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>
           ${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
           <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description"></div>`).join('')
-        +`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Avec le nom exact d’AideDD, le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`
+        +`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`
       :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
         :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
     <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
@@ -848,7 +866,7 @@ document.addEventListener('click',ev=>{
     case 'conc':p.etat.conc=p.etat.conc===b.dataset.n?'':b.dataset.n;if(!p.etat.conc)ui.degatsConc=0;break;
     case 'epuis':p.etat.epuis=Math.min(6,Math.max(0,p.etat.epuis+num(b.dataset.d)));break;
     case 'etatsVider':p.etat.etats={};p.etat.epuis=0;p.etat.conc='';break;
-    case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;
+    case 'majApp':{b.textContent='Mise à jour…';b.disabled=true;try{localStorage.removeItem('dnd55.ref')}catch(e){}
       (self.caches?caches.keys().then(k=>Promise.all(k.map(n=>caches.delete(n)))):Promise.resolve()).catch(()=>{}).then(()=>Promise.all(['./','manifest.webmanifest'].map(u=>fetch(u,{cache:'reload'}).catch(()=>{})))).finally(()=>location.reload());return}
     case 'exemple':{const q=creer(JSON.parse(JSON.stringify(EXEMPLE)),'Exemple (Guerrier)');ui.vue='perso';ui.id=q.id;ui.onglet='combat';break}
     case 'importer':flash={t:importer(document.getElementById('imp').value)};break;
@@ -872,7 +890,8 @@ document.addEventListener('click',ev=>{
       if(!n)throw new Error('Indique le nom du sort.');const l=Math.min(9,num(v));
       if(sortsDe(p).some(x=>norm(x.nom)===norm(n)))throw new Error('« '+n+' » est déjà dans la liste.');
       const g=id=>document.getElementById(id),inc=g('sinc').value.trim(),por=g('spor').value.trim();
-      p.etat.sortsPlus.push({niv:l,nom:n.charAt(0).toUpperCase()+n.slice(1),C:g('sC').checked,R:g('sR').checked,M:g('sM').checked,inc,portee:por});flash={t:'« '+n+' » ajouté'+(l?' au niveau '+l:' aux sorts mineurs')+'.'};break}
+      const sn=g('snom'),url=sn.dataset.choisi&&sn.dataset.choisi===sn.value?sn.dataset.url:undefined;
+      p.etat.sortsPlus.push({niv:l,nom:n.charAt(0).toUpperCase()+n.slice(1),C:g('sC').checked,R:g('sR').checked,M:g('sM').checked,inc,portee:por,...(url?{url}:{})});flash={t:'« '+n+' » ajouté'+(l?' au niveau '+l:' aux sorts mineurs')+'.'};break}
     case 'supprSort':{const i=b.dataset.i;if(i!=='')p.etat.sortsPlus.splice(num(i),1);else if(!p.etat.sortsMoins.includes(b.dataset.k))p.etat.sortsMoins.push(b.dataset.k);break}
     case 'sortC':{const x=p.etat.sortsPlus[num(b.dataset.i)],k=['M','R'].includes(b.dataset.p)?b.dataset.p:'C';x[k]=!x[k];break}
     case 'supprObj':p.etat.objets.splice(num(b.dataset.i),1);break;
@@ -1129,7 +1148,96 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
   if(cle)lancerLiaison(cle);
   verifier();
 })();
-render();
+/* ---------- listes AideDD 5.5 : suggestions pendant la frappe ----------
+   Monstres, sorts, objets magiques et équipement, copiés une fois depuis AideDD sur le serveur.
+   L'app les télécharge au premier lancement (puis une fois par semaine) et les garde sur l'appareil :
+   les suggestions marchent ensuite hors ligne. On peut toujours écrire un nom libre. */
+const REF_K='dnd55.ref';
+let REF=null,REF_IDX={};
+try{REF=JSON.parse(localStorage.getItem(REF_K)||'null')}catch(e){}
+async function chargerRef(){
+  if(REF&&REF.recu&&Date.now()-REF.recu<7*864e5)return;
+  try{const r=await fetch(SUPA+'/rest/v1/rpc/ref_listes',{method:'POST',headers:{apikey:CLE_PUB,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok)return;const j=await r.json();if(!j||!j.monstres)return;
+    j.recu=Date.now();REF=j;REF_IDX={};try{localStorage.setItem(REF_K,JSON.stringify(j))}catch(e){}}catch(e){}
+}
+const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+const refSlug=s=>refN(s).replace(/ /g,'-');
+const refFrag=s=>{const m=String(s).replace(/\(.*?\)/g,'').trim().split(/\s+/),k=m.findIndex(w=>/['’]/.test(w));return encodeURIComponent((k>0?m.slice(0,k):m).join(' ')).replace(/-/g,'%2D')};
+const ADR='https://www.aidedd.org/';
+/* chaque liste devient [{nom, aff, n, info, url, d}] ; « Amis|Faux amis » s'affiche « Amis / Faux amis » */
+function refListe(cle){
+  if(REF_IDX[cle])return REF_IDX[cle];if(!REF)return[];
+  const el=(nom,info,url,d)=>({nom,aff:String(nom).replace(/\|/g,' / '),n:refN(nom),info,url,d});
+  const eq=(k,page)=>(REF[k]||[]).map(x=>el(x[0],{armes:'Arme',armures:'Armure',outils:'Outil',materiel:'Équipement'}[k],ADR+'regles-24/equipement/'+page+'/#:~:text='+refFrag(x[0]),{k,x}));
+  let l=[];
+  if(cle==='monstres')l=(REF.monstres||[]).map(x=>el(x[0],'FP '+x[2],ADR+'monster/fr/'+x[1],{x}));
+  else if(cle==='sorts')l=(REF.sorts||[]).map(x=>el(x[0],x[2]?'niv. '+x[2]:'mineur',ADR+'spell/fr/'+x[1],{x}));
+  else if(cle==='armes')l=eq('armes','armes');
+  else if(cle==='objets')l=[...(REF.objets_magiques||[]).map(x=>el(x[0],x[3]||x[2],ADR+'magic-item/fr/'+x[1],{k:'magique',x})),
+    ...eq('armes','armes'),...eq('armures','armures'),...eq('outils','outils'),...eq('materiel','materiel-daventurier')];
+  return REF_IDX[cle]=l;
+}
+/* distance d'édition (fautes de frappe) */
+function refLev(a,b){if(a===b)return 0;let p=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[b.length]}
+/* chaque mot tapé doit se retrouver dans le nom : début de mot (le mieux), morceau de mot, ou à une ou deux fautes près */
+function refChercher(cle,q,max){
+  const t=refN(q);if(t.length<2)return[];const mots=t.split(' ');
+  const r=[];
+  for(const it of refListe(cle)){
+    const ws=it.n.split(' ');let s=it.n.startsWith(t)?-2:it.n===t?-3:0,ok=true;
+    for(const m of mots){
+      let b=9;
+      for(const w of ws){
+        if(w.startsWith(m)){b=0;break}
+        if(m.length>=3&&w.includes(m))b=Math.min(b,1);
+        else if(m.length>=4){const tol=m.length>=7?2:1,d=Math.min(refLev(m,w.slice(0,m.length)),refLev(m,w));if(d<=tol)b=Math.min(b,2+d)}
+      }
+      if(b===9){ok=false;break}s+=b;
+    }
+    if(ok)r.push([s,it]);
+  }
+  return r.sort((a,b)=>a[0]-b[0]||a[1].n.length-b[1].n.length||a[1].n.localeCompare(b[1].n)).slice(0,max||8).map(x=>x[1]);
+}
+/* liste déroulante sous le champ (data-ref="monstres|sorts|armes|objets") ; refChoisi(champ, élément) est défini par chaque app */
+let refBox=null,refChamp=null,refRes=[];
+function refFermer(){if(refBox)refBox.remove();refBox=null;refChamp=null;refRes=[]}
+function refOuvrir(champ){
+  refRes=refChercher(champ.dataset.ref,champ.value,8);refChamp=champ;
+  if(!refRes.length){if(refBox)refBox.remove();refBox=null;return}
+  if(!refBox){refBox=document.createElement('div');refBox.className='sugg';refBox.setAttribute('role','listbox');document.body.appendChild(refBox)}
+  refBox.innerHTML=refRes.map((it,i)=>`<button type="button" data-sugg="${i}" role="option"><span>${esc(it.aff)}</span>${it.info?`<span class="sugg-i">${esc(it.info)}</span>`:''}</button>`).join('');
+  refPlacer();
+}
+function refPlacer(){
+  if(!refBox||!refChamp)return;if(!document.body.contains(refChamp)){refFermer();return}
+  const r=refChamp.getBoundingClientRect(),w=Math.max(r.width,Math.min(300,innerWidth-16)),l=Math.max(8,Math.min(r.left,innerWidth-w-8));
+  refBox.style.left=l+'px';refBox.style.width=w+'px';
+  const vv=window.visualViewport,vb=vv?vv.offsetTop+vv.height:innerHeight;
+  refBox.style.maxHeight=Math.max(120,Math.min(280,Math.max(vb-r.bottom,r.top)-12))+'px';
+  const bas=vb-r.bottom,h=Math.min(refBox.scrollHeight,280);
+  if(bas<h+8&&r.top>bas){refBox.style.top='';refBox.style.bottom=(innerHeight-r.top+4)+'px'}else{refBox.style.bottom='';refBox.style.top=(r.bottom+4)+'px'}
+}
+document.addEventListener('input',ev=>{const c=ev.target;if(c.dataset&&c.dataset.ref){delete c.dataset.choisi;refOuvrir(c)}},true);
+document.addEventListener('focusin',ev=>{const c=ev.target;if(c.dataset&&c.dataset.ref&&c.value&&!c.dataset.choisi)refOuvrir(c)});
+document.addEventListener('focusout',ev=>{if(ev.target===refChamp)setTimeout(()=>{if(document.activeElement!==refChamp)refFermer()},200)});
+/* toucher une suggestion ne doit pas faire perdre le champ avant le choix */
+document.addEventListener('pointerdown',ev=>{if(ev.target.closest&&ev.target.closest('.sugg'))ev.preventDefault()},true);
+document.addEventListener('mousedown',ev=>{if(ev.target.closest&&ev.target.closest('.sugg'))ev.preventDefault()},true);
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest&&ev.target.closest('[data-sugg]');if(!b)return;ev.stopPropagation();
+  const it=refRes[+b.dataset.sugg],c=refChamp;refFermer();if(!it||!c)return;
+  c.value=it.nom.replace(/\|/g,' / ');c.dataset.choisi=c.value;c.dataset.url=it.url;
+  refChoisi(c,it);
+},true);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')refFermer()});
+window.addEventListener('scroll',()=>refPlacer(),{passive:true});
+window.addEventListener('resize',()=>refPlacer());
+if(window.visualViewport){visualViewport.addEventListener('resize',()=>refPlacer());visualViewport.addEventListener('scroll',()=>refPlacer())}
+
+
+render();chargerRef();
 /* cache hors ligne, seulement sur le vrai site */
 if(location.hostname.endsWith('github.io')&&'serviceWorker' in navigator)try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 </script>
