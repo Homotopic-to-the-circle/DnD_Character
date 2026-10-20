@@ -53,3 +53,29 @@ Ouvre l'adresse de l'application, puis :
 **iPhone :** l'app de l'écran d'accueil ne voit pas les données de Safari. Installe d'abord l'icône, puis importe ton personnage **dans l'app installée**.
 
 Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.
+
+## Bon à savoir (à lire une fois)
+
+### À corriger à la main après l'import
+AideDD n'applique pas tout. En mode crayon (✎) :
+- **Doué** : onglet Caracs, touche le losange des 3 compétences choisies.
+- **Résilient** : onglet Caracs, touche le losange du jet de sauvegarde choisi.
+- **Expertise** non comptée : touche deux fois le losange de la compétence (◇ rien → ◆ maîtrise → double losange expertise → ◇).
+- **Initiative, Vitesse, PV max, CA** qui ne collent pas (don, objet…) : onglet Combat, tape la bonne valeur. Champ vide = valeur d'AideDD.
+- **Avantage** à un jet de sauvegarde : bouton « av. » à côté du jet.
+
+Vérifie aussi le **nom** : AideDD garde parfois celui du perso précédent. Les **caractéristiques** (FOR, DEX…) ne se modifient pas dans l'app : elles doivent être justes dans AideDD.
+
+### Armes
+- Les armes d'AideDD sont justes et se mettent à jour à la montée de niveau.
+- Pour en ajouter une : tape le début du nom et choisis-la dans la liste. Attaque, dégâts et botte se remplissent, maîtrise comprise (losange **Maîtrise** pour corriger).
+- À ajuster soi-même sur une arme ajoutée : style **Archerie** (+2 attaque à distance), **Duel** (+2 dégâts), arme **magique** (+1…), arme de **moine** avec DEX ou dé d'Arts martiaux, **Pacte de la lame**. Une arme retouchée à la main garde ta saisie et n'est plus recalculée ensuite.
+
+### Sorts, objets, ressources
+- Sorts, armes et objets : tape le début du nom (fautes et accents tolérés) et choisis dans la liste ; le lien AideDD et les infos se remplissent.
+- **Sorts préparés** : losange à gauche du sort (mode crayon).
+- Une capacité sans compteur peut devenir des cases : bouton **Cases** (mode crayon).
+- **Repos long** (onglet Fiche) : PV au max, cases décochées. Pas de repos court : décoche à la main.
+
+### Ce que l'app ne fait pas
+Multiclasse, effets temporaires (Rage, bénédiction…), jets de concentration (l'app te le rappelle seulement), dés de vie : à gérer soi-même.
