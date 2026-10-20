@@ -72,6 +72,33 @@ Compare chaque bonus au livre. Le losange se touche pour corriger : ◇ rien →
 - [ ] Avantage **sous condition** (Nain contre le poison, Halfelin contre la peur, Elfe contre le charme…) : l'app ne sait pas le gérer, écris-le dans une **note** du trait.
 - [ ] Bonus de **classe** sur les jets ou compétences (Touche-à-tout du Barde, Aura de protection du Paladin…) : AideDD ne les compte pas toujours. Vérifie, et note ce qui manque.
 
+### Selon ton espèce
+Vérifié sur les règles 2024 d'AideDD. « Compté » = AideDD l'applique déjà, rien à faire.
+- [ ] **Drakéide** : résistance au type de ton ascendance → note sur le trait.
+- [ ] **Elfe** : avantage contre l'état Charmé → note. Sens aiguisés et vitesse de l'elfe des bois : comptés.
+- [ ] **Gnome** : bouton « av. » sur les jets de sauvegarde d'INT, SAG et CHA.
+- [ ] **Goliath** : avantage pour se libérer d'Agrippé → note. Vitesse : comptée.
+- [ ] **Halfelin** : avantage contre l'état Effrayé → note.
+- [ ] **Humain** : compétence de Compétent comptée ; vérifie les effets du don d'origine choisi.
+- [ ] **Nain** : résistance au poison et avantage contre Empoisonné → note. PV en plus (Ténacité naine) : comptés.
+- [ ] **Tieffelin** : résistance selon ton héritage (poison, nécrotique ou feu) → note.
+- Orc : rien à corriger.
+
+### Selon ta classe
+Vérifié sur les règles 2024 d'AideDD et sur des fiches de test (niveaux 1 à 10). Au-delà du niveau 10, vérifie toi-même.
+- [ ] **Barbare** : Sens du danger (niv. 2) → « av. » sur le jet de DEX. Instinct sauvage (niv. 7, avantage à l'initiative) → note. Défense sans armure et Déplacement rapide : comptés.
+- [ ] **Barde** : Touche-à-tout (niv. 2, +½ maîtrise aux compétences non maîtrisées) **n'est pas compté** → à ajouter de tête. Expertise : comptée. Collège du Savoir (3 maîtrises) et de la Danse (CA) : vérifie.
+- [ ] **Clerc** : Ordre divin Thaumaturge (+SAG en Arcanes et Religion) : vérifie.
+- [ ] **Druide** : Ordre primitif Mage : compté.
+- [ ] **Ensorceleur** draconique : PV en plus et CA sans armure (Résistance draconique) : vérifie.
+- [ ] **Guerrier** : style Archerie compté ; style Défense (+1 CA) : vérifie. Champion : avantage à l'initiative (niv. 3) → note.
+- [ ] **Magicien** : Érudition (expertise) : comptée.
+- [ ] **Moine** : Défense et Déplacement sans armure : comptés. Survivant discipliné (niv. 14, maîtrise de tous les jets de sauvegarde) : vérifie, losanges si besoin.
+- [ ] **Occultiste** : une manifestation qui change la CA (Armure d'ombres) : vérifie la CA.
+- [ ] **Paladin** : Aura de protection (niv. 6, +CHA à tous tes jets de sauvegarde) : vérifie ; si absent, note-le. Serment de Gloire (niv. 7, +3 m) : vérifie la Vitesse.
+- [ ] **Rôdeur** : Fin explorateur (expertise) et Embuscade effrayante (initiative) : comptés. Traqueur des ténèbres, Mental d'acier (niv. 7, maîtrise des JS de SAG) **n'est pas compté** → losange du jet de SAG. Arpenteur (niv. 6, +3 m) : vérifie la Vitesse.
+- [ ] **Roublard** : Expertise comptée. Esprit fuyant (niv. 15, maîtrise des JS de SAG et CHA) : vérifie, losanges si besoin.
+
 ### Combat
 - [ ] **CA** : armure et bouclier bien choisis dans AideDD. Sinon tape la bonne CA (champ vide = valeur d'AideDD).
 - [ ] **Initiative** (don Vigilant…), **Vitesse** (don Mobile, classe…), **PV max** (don Robuste, Nain…) : vérifie, tape la bonne valeur si besoin.
