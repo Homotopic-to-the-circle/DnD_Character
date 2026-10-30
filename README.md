@@ -32,7 +32,7 @@ Le même code est aussi dans le fichier [`bookmarklet-aidedd.txt`](bookmarklet-a
 
 ### 2. Exporter le personnage
 
-1. Crée ton personnage sur https://www.aidedd.org/dnd-creator/ jusqu'au bout, et appuie sur **Terminé !** pour afficher la fiche finale.
+1. Crée ton personnage sur https://www.aidedd.org/dnd-creator/fr/ jusqu'au bout, et appuie sur **Terminé !** pour afficher la fiche finale.
 2. Lance le favori :
    - **Firefox et Chrome (Android)** : touche la barre d'adresse, tape `Export AideDD`, puis touche le favori dans les suggestions (pas la recherche web).
    - **Safari (iPhone)** : ouvre les favoris et touche `Export AideDD`.
