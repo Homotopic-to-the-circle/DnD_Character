@@ -18,3 +18,5 @@ grant execute on function public.mj_archives(text) to anon, authenticated;
 grant execute on function public.mj_archives_sauver(text, jsonb) to anon, authenticated;
 -- mj_export inclut aussi campagne.archives (voir 03_rencontres.sql pour le reste de la fonction)
 -- Fonction « televerser » : en-tête x-remplace (ancienne adresse supprimée après dépôt) et x-action: supprimer.
+
+-- mj_etat renvoie aussi l'argent de chaque joueur : 'pieces', j.etat->'pieces' (converti en po dans l'app MJ)
