@@ -46,9 +46,14 @@ Dans l'application, onglet **Fiche** → **Télécharger le .xml**. Ouvre le cr�
 ## Installer l'application sur le téléphone
 
 Ouvre l'adresse de l'application, puis :
-- **Firefox (Android)** : menu ⋮ → Ajouter à l'écran d'accueil.
-- **Chrome (Android)** : menu ⋮ → Ajouter à l'écran d'accueil (ou Installer l'application).
+- **Chrome (Android)**, recommandé : menu ⋮ → **Installer l'application**.
 - **Safari (iPhone)** : bouton Partager → Sur l'écran d'accueil.
+- Firefox (Android) fonctionne aussi (menu ⋮ → Ajouter à l'écran d'accueil), mais moins fluide.
+
+### Sans pubs sur les liens AideDD (conseillé)
+Les liens de l'app ouvrent les pages AideDD, qui ont des pubs. Pour les bloquer sur tout le téléphone :
+- **Android** : Paramètres → cherche **DNS privé** → « Nom d'hôte du fournisseur » → `dns.adguard-dns.com` → Enregistrer. Aucun effet sur la vitesse. Sur un Wi-Fi d'hôtel ou de gare avec page de connexion, repasse en **Automatique** le temps de te connecter.
+- **iPhone** : installe l'app gratuite **AdGuard**, puis active-la dans Réglages → Safari → Extensions (bloqueurs de contenu).
 
 **iPhone :** l'app de l'écran d'accueil ne voit pas les données de Safari. Installe d'abord l'icône, puis importe ton personnage **dans l'app installée**.
 
