@@ -57,6 +57,12 @@ Les liens de l'app ouvrent les pages AideDD, qui ont des pubs. Pour les bloquer 
 
 **iPhone :** l'app de l'écran d'accueil ne voit pas les données de Safari. Installe d'abord l'icône, puis importe ton personnage **dans l'app installée**.
 
+### Sur ordinateur
+Même adresse, dans **Chrome** ou **Edge** : icône d'installation dans la barre d'adresse (ou menu ⋮ → Installer). Sur grand écran, Combat et Caracs restent affichés côte à côte, avec Sorts / Sac / Fiche en 3e colonne.
+
+### Retrouver son personnage sur un autre appareil
+Écran d'accueil de l'app → **Retrouver un personnage** → entre ton code joueur. Le personnage revient avec toute sa sauvegarde et reste synchronisé entre tes appareils. Un code = un personnage : demande un code par personnage à ton MJ. Code perdu ? Ton MJ le retrouve dans son app (Campagne → Joueurs).
+
 Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.
 
 ## Bon à savoir : la liste à vérifier
