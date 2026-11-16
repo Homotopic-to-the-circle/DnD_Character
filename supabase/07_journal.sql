@@ -4,3 +4,4 @@ alter table public.campagne add column if not exists journal jsonb not null defa
 alter table public.joueur add column if not exists absent boolean not null default false;
 -- Objet déjà envoyé modifié par le MJ : mj_objet_sauver ajoute pour chaque envoi une action {action:'maj', cible, nom, description, lien[, mystere]}
 -- (objet mystérieux non révélé : seul le texte visible part, le vrai texte est mis à jour dans envoi.secret pour la révélation).
+-- Joueurs : j_journal(p_cle) renvoie [{id,date,titre,resume}] ; resume = journal_resume(texte), seulement la rubrique « Résumé : » (le reste reste côté MJ)
