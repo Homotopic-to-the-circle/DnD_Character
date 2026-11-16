@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout : une colonne mobile sur parchemin, en-tête collant (nom, états, onglets), titres en petites capitales rouges soulignés d'un filet effilé comme dans les blocs de stats */
-/* Couleurs : thème commun Dal-Mor (dalmor-ui/theme.css), jour par défaut, nuit au choix (bouton « Thème »).
+/* Couleurs : thème commun Dal-Mor (dalmor-ui/theme.css), jour par défaut, nuit au choix (depuis le d20 du Portail).
    Le bloc :root ci-dessous n'est qu'un SECOURS si dalmor-ui ne charge pas : ne pas y modifier les couleurs,
    les changer dans dalmor-ui. Aucune couleur en dur ailleurs : toujours var(--…). */
 :root{
@@ -737,7 +737,7 @@ function vueListe(){
     <textarea id="imp" placeholder="Colle l’export ici"></textarea>
     <button class="pri" data-a="importer">Importer</button></section>
   <section><p class="muted">Version du ${esc(VERSION)}. Tes personnages sont gardés sur ce téléphone pendant la mise à jour.</p>
-    <button data-a="majApp">Mettre à jour l’application</button> <button data-dalmor-theme>Thème</button></section></div></div>`;
+    <button data-a="majApp">Mettre à jour l’application</button></section></div></div>`;
 }
 
 function chipsEtats(e){

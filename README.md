@@ -65,10 +65,6 @@ Même adresse, dans **Chrome** ou **Edge** : icône d'installation dans la barre
 
 Les personnages sont gardés sur le téléphone. Pour récupérer une nouvelle version, bouton **Mettre à jour l'application** sur l'écran d'accueil de l'app.
 
-## Jour ou nuit
-
-Bouton **Thème** sur l'écran d'accueil (sous « Mettre à jour l'application ») : jour (parchemin), nuit (bleu et or) ou selon l'heure. Chaque téléphone garde son choix.
-
 ## Bon à savoir : la liste à vérifier
 
 Ton perso est importé ? Passe cette liste, **livre de règles à côté**. AideDD fait l'essentiel des calculs mais pas tout, et l'app affiche ce qu'AideDD lui donne. Les corrections se font en mode crayon (✎) et sont gardées aux montées de niveau.

@@ -13,6 +13,6 @@ Les couleurs, les polices et le thème jour / nuit viennent du dépôt commun **
 - **Aucune couleur en dur** (ni dans le CSS, ni dans le HTML généré par le JS) : toujours `var(--bg)`, `var(--card)`, `var(--fg)`, `var(--muted)`, `var(--accent)`, `var(--line)`… Transparence : `color-mix(in srgb, var(--accent) 20%, transparent)`. Ombre : `rgba(var(--ombre), .3)`.
 - Les couleurs se changent **dans dalmor-ui**, jamais ici. Le bloc `:root{…}` en haut du CSS n'est qu'un **secours** si dalmor-ui ne charge pas : ne pas y toucher.
 - Il faut une variable qui n'existe pas ? L'ajouter dans `dalmor-ui/theme.css` (dans les deux thèmes) et l'utiliser ici avec une valeur de secours : `var(--nouvelle, #valeur)`.
-- Le bouton de thème est `<button data-dalmor-theme>Thème</button>` (ou `data-dalmor-theme="ico"`) : géré par theme.js, sans `data-a` / `data-act`.
+- **Le thème (jour / nuit) se change uniquement depuis le d20 du Portail**, pour cette app seulement (clé `dalmor-theme:<app>`). Ne pas ajouter de bouton ni de réglage de thème dans l'app.
 - Toujours vérifier un changement d'interface **dans les deux thèmes** (jour et nuit). Pour tester : `Dalmor.theme.set('nuit')` dans la console.
 - Exceptions assumées : visionneuse d'images plein écran (toujours sombre), pages imprimables, canvas.
