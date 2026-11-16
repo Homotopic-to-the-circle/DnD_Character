@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#efe2c2">
+<!-- Thème commun Dal-Mor (jour / nuit) : https://github.com/Homotopic-to-the-circle/dalmor-ui -->
+<script src="/dalmor-ui/theme.js"></script>
+<link rel="stylesheet" href="/dalmor-ui/theme.css">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Feuille de Perso">
@@ -17,7 +20,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout : une colonne mobile sur parchemin, en-tête collant (nom, états, onglets), titres en petites capitales rouges soulignés d'un filet effilé comme dans les blocs de stats */
-/* Thème unique, assumé : parchemin clair (lisible en jeu, même dans un téléphone en mode sombre) */
+/* Couleurs : thème commun Dal-Mor (dalmor-ui/theme.css), jour par défaut, nuit au choix (bouton « Thème »).
+   Le bloc :root ci-dessous n'est qu'un SECOURS si dalmor-ui ne charge pas : ne pas y modifier les couleurs,
+   les changer dans dalmor-ui. Aucune couleur en dur ailleurs : toujours var(--…). */
 :root{
   --bg:#efe2c2;--card:#f6ecd4;--fg:#2a1c12;--muted:#6e5a44;--line:#cdb68c;
   --accent:#7a1c12;--accent-soft:#ecd3b8;--on-accent:#fbf4e4;--danger:#7a1c12;--danger-soft:#ecd3b8;
@@ -82,7 +87,7 @@ input,textarea{font:inherit;color:var(--fg);background:var(--card);border:1px so
 textarea{min-height:90px;resize:vertical}
 a{color:var(--accent)}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 1px 3px rgba(80,50,20,.12)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px;box-shadow:var(--card-sh,0 1px 0 rgba(255,255,255,.6) inset,0 1px 3px rgba(80,50,20,.12))}
 .texte{white-space:pre-wrap;overflow-wrap:anywhere}
 .lab{font-family:var(--disp);font-size:.85rem;letter-spacing:.04em;color:var(--muted)}
 /* en-tête */
@@ -136,7 +141,7 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .stat{text-align:center;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:2px;padding:6px 2px;min-width:0}
 .pvmax-in{width:3.2ch;font-size:inherit!important;padding:0!important;height:auto!important;border:none;border-bottom:1px solid var(--accent);border-radius:0;background:transparent;text-align:center;color:var(--muted)}
-.sugg{position:fixed;z-index:60;max-height:280px;overflow:auto;background:var(--card);border:1px solid var(--accent);border-radius:4px;box-shadow:0 4px 14px rgba(42,28,18,.3);display:flex;flex-direction:column}
+.sugg{position:fixed;z-index:60;max-height:280px;overflow:auto;background:var(--card);border:1px solid var(--accent);border-radius:4px;box-shadow:0 4px 14px rgba(var(--ombre,42,28,18),.3);display:flex;flex-direction:column}
 .sugg button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;text-align:left;border:none;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:9px 10px;font:inherit;font-size:1rem;color:var(--fg);height:auto;width:100%;flex:none}
 .sugg button:last-child{border-bottom:none}
 .sugg-i{font-size:.8rem;color:var(--muted);font-style:italic;white-space:nowrap}
@@ -240,7 +245,7 @@ a.ext{text-decoration:none;color:inherit}
 .perso{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;color:var(--fg);border-color:var(--line)}
 .perso .t{font-family:var(--disp);font-size:1.3rem;color:var(--accent)}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;flex-direction:column;gap:6px;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
-.dock>*{pointer-events:auto;width:100%;max-width:608px;margin:0 auto;box-sizing:border-box;box-shadow:0 3px 12px rgba(42,28,18,.28)}
+.dock>*{pointer-events:auto;width:100%;max-width:608px;margin:0 auto;box-sizing:border-box;box-shadow:0 3px 12px rgba(var(--ombre,42,28,18),.28)}
 .dock .alerte.trouve{background:var(--card);border-color:var(--accent)}
 .etats-dock{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:6px 8px}
 .toast{cursor:pointer}
@@ -732,7 +737,7 @@ function vueListe(){
     <textarea id="imp" placeholder="Colle l’export ici"></textarea>
     <button class="pri" data-a="importer">Importer</button></section>
   <section><p class="muted">Version du ${esc(VERSION)}. Tes personnages sont gardés sur ce téléphone pendant la mise à jour.</p>
-    <button data-a="majApp">Mettre à jour l’application</button></section></div></div>`;
+    <button data-a="majApp">Mettre à jour l’application</button> <button data-dalmor-theme>Thème</button></section></div></div>`;
 }
 
 function chipsEtats(e){
