@@ -1143,10 +1143,15 @@ let syncTimer=null;const enCours=new Set();
 function planifierSync(){if(!relies().length)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncTout,2500)}
 async function syncTout(){for(const p of relies())if(aEnvoyer(p))await envoyer(p.id)}
 function erreurCloud(q,e){q.cloud.err=e&&e.serveur?(/cle_invalide/.test(e.message)?'Code joueur refusé par le serveur.':'Erreur du serveur.'):'Hors ligne : sauvegarde en attente.'}
+/* CA et perception passive telles qu'affichées sur la fiche (corrections comprises), pour l'app du MJ */
+function majVueMJ(p){try{const e=p.etat,d=D(p),c=d.combat||{},sp=(d.ski||[]).find(x=>/^perception$/i.test(x.nom));
+  const ca=e.ca!=null&&e.ca!==''?e.ca:c.ca,pp=sp?num(c.percPassive)+num(bonusComp(e,d,sp))-num(sp.val):c.percPassive;
+  const v={ca:String(ca??''),pp:String(pp??'')};if(!e.vue||e.vue.ca!==v.ca||e.vue.pp!==v.pp)e.vue=v}catch(er){}}
 async function envoyer(id,force){
   if(enCours.has(id))return;enCours.add(id);
   try{
     let p=db.persos[id];if(!p||!p.cloud)return;
+    majVueMJ(p);
     const vs=sigVersions(p),es=sigEtat(p),avecV=force||p.cloud.vsig!==vs;
     let res;
     try{res=await rpc('j_sauver',{p_cle:p.cloud.cle,p_perso_id:p.id,p_etat:p.etat,p_versions:avecV?p.versions:null,p_versions_sig:vs,p_base:p.cloud.base||null,p_force:!!force})}
