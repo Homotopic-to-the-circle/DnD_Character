@@ -76,6 +76,7 @@ ul.plain li>span{display:block}
 .regle-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
 .regle-barre b{font-size:1.1em}.regle-barre button{flex:none}
 .regle-corps{padding:10px 14px 16px}.regle-corps p{margin:.5em 0}.regle-corps .muted{font-size:.9em}
+.regle-corps table{border-collapse:collapse;margin:.5em 0}.regle-corps td,.regle-corps th{border:1px solid var(--line);padding:2px 6px}
 .vis-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;color:#f6ecd4;font-family:var(--disp);font-size:1.1rem}
 .vis-barre button{flex:none;color:#f6ecd4;border-color:#f6ecd4;height:36px;width:36px;padding:0}
 .vis-zone{flex:1;overflow:hidden;display:flex;align-items:center;touch-action:none}
@@ -1407,6 +1408,73 @@ async function chargerRef(){
     if(!r.ok)return;const j=await r.json();if(!j||!j.monstres)return;
     j.recu=Date.now();j.v=REF_V;REF=j;REF_IDX={};try{localStorage.setItem(REF_K,JSON.stringify(j))}catch(e){}}catch(e){}
 }
+/* ---------- textes AideDD dans l'app : sorts, dons, états ----------
+   Les textes complets sont copiés une fois depuis AideDD sur le serveur (table ref_textes).
+   L'app les télécharge toute seule (premier lancement, puis une fois par semaine) et les garde
+   dans le cache du navigateur (pas dans localStorage, réservé aux fiches) : ils marchent hors ligne.
+   Tout lien AideDD vers un sort, un don ou un état connu s'ouvre alors dans la fenêtre intégrée ;
+   sinon (texte absent, pas encore téléchargé) le lien s'ouvre sur AideDD comme avant. */
+const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=1;
+let TEXTES=null;
+async function chargerTextes(){
+  let c=null;try{c=await caches.open(TXT_CACHE);const r=await c.match(TXT_URL);if(r){const j=await r.json();if(j&&j.v===TXT_V)TEXTES=j}}catch(e){}
+  if(TEXTES&&TEXTES.recu&&Date.now()-TEXTES.recu<7*864e5)return;
+  try{const r=await fetch(SUPA+'/rest/v1/rpc/ref_textes',{method:'POST',headers:{apikey:CLE_PUB,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok)return;const j=await r.json();if(!j||!j.maj)return;
+    j.recu=Date.now();j.v=TXT_V;TEXTES=j;
+    if(c)await c.put(TXT_URL,new Response(JSON.stringify(j),{headers:{'Content-Type':'application/json'}}))}catch(e){}
+}
+/* lien AideDD → clé du texte (« sort:benediction », « don:vigilant », « etat:a-terre ») */
+function cleTexte(href){
+  let u;try{u=new URL(href,location.href)}catch(e){return null}
+  if(!/(^|\.)aidedd\.org$/.test(u.hostname))return null;
+  let m=u.pathname.match(/^\/spell\/fr\/([^/]+)\/?$/);if(m)return 'sort:'+decodeURIComponent(m[1]);
+  m=u.pathname.match(/^\/feat\/fr\/([^/]+)\/?$/);if(m)return 'don:'+decodeURIComponent(m[1]);
+  if(/^\/regles-24\/glossaire\/etats\/?$/.test(u.pathname)&&u.hash.length>1)return 'etat:'+decodeURIComponent(u.hash.slice(1));
+  return null;
+}
+/* le texte vient d'AideDD : on ne garde que la mise en forme simple, sans attributs */
+const TXT_OK=new Set(['P','BR','STRONG','EM','B','I','TABLE','TBODY','THEAD','TR','TD','TH','UL','OL','LI','H4']);
+function texteSur(html){
+  const t=document.createElement('template');t.innerHTML=String(html||'');
+  const net=n=>{for(const x of [...n.childNodes]){
+    if(x.nodeType===3)continue;
+    if(x.nodeType!==1){x.remove();continue}
+    net(x);
+    if(/^(SCRIPT|STYLE|TEMPLATE|IFRAME|OBJECT|SVG|MATH)$/i.test(x.tagName)){x.remove();continue}
+    if(!TXT_OK.has(x.tagName)){x.replaceWith(...x.childNodes);continue}
+    for(const a of [...x.attributes])x.removeAttribute(a.name)}};
+  net(t.content);const d=document.createElement('div');d.appendChild(t.content);return d.innerHTML;
+}
+/* secours : même type, même titre (si le lien ne suit pas l'adresse exacte d'AideDD) */
+const txtN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+function texteParTitre(type,titre){
+  const n=txtN(titre);if(!TEXTES||!n)return null;
+  for(const k in TEXTES)if(k.startsWith(type+':')&&Array.isArray(TEXTES[k])&&txtN(TEXTES[k][0])===n)return k;return null;
+}
+function voirTexte(k,href,titreLien){
+  if(TEXTES&&!TEXTES[k])k=texteParTitre(k.split(':')[0],titreLien)||k;
+  const e=TEXTES&&TEXTES[k];if(!Array.isArray(e))return false;
+  const titre=e[0]||titreLien||'';
+  const sous={sort:'Sort',don:'Don',etat:'État'}[k.split(':')[0]]||'';
+  const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
+  o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(sous)} · <a class="ext" href="${esc(href)}" target="_blank" rel="noopener" data-direct>AideDD ↗</a></span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${texteSur(e[1])}</div></div>`;
+  const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};
+  let retour=()=>history.back();
+  o.querySelector('button').onclick=()=>retour();
+  o.addEventListener('click',ev=>{if(ev.target===o)retour()});
+  document.body.appendChild(o);
+  try{history.pushState({regle:1},'');window.addEventListener('popstate',fermer)}catch(e){retour=fermer}
+  return true;
+}
+/* capture : passe avant les autres gestionnaires de clic ; en mode Modifier, les liens restent des liens */
+document.addEventListener('click',ev=>{
+  const a=ev.target.closest&&ev.target.closest('a[href]');if(!a||a.hasAttribute('data-direct'))return;
+  if(typeof ui!=='undefined'&&ui.edit)return;
+  if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button)return;
+  const k=cleTexte(a.getAttribute('href'));if(!k)return;
+  if(voirTexte(k,a.href,a.textContent.trim())){ev.preventDefault();ev.stopPropagation()}
+},true);
 const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const refSlug=s=>refN(s).replace(/ /g,'-');
 const refFrag=s=>{const m=String(s).replace(/\(.*?\)/g,'').trim().split(/\s+/),k=m.findIndex(w=>/['’]/.test(w));return encodeURIComponent((k>0?m.slice(0,k):m).join(' ')).replace(/-/g,'%2D')};
@@ -1483,7 +1551,7 @@ window.addEventListener('resize',()=>refPlacer());
 if(window.visualViewport){visualViewport.addEventListener('resize',()=>refPlacer());visualViewport.addEventListener('scroll',()=>refPlacer())}
 
 
-render();chargerRef();
+render();chargerRef();chargerTextes();
 /* cache hors ligne, seulement sur le vrai site */
 if(location.hostname.endsWith('github.io')&&'serviceWorker' in navigator)try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 </script>

@@ -16,3 +16,6 @@ Les couleurs, les polices et le thème jour / nuit viennent du dépôt commun **
 - **Le thème (jour / nuit) se change uniquement depuis le d20 du Portail**, pour cette app seulement (clé `dalmor-theme:<app>`). Ne pas ajouter de bouton ni de réglage de thème dans l'app.
 - Toujours vérifier un changement d'interface **dans les deux thèmes** (jour et nuit). Pour tester : `Dalmor.theme.set('nuit')` dans la console.
 - Exceptions assumées : visionneuse d'images plein écran (toujours sombre), pages imprimables, canvas.
+
+## Textes AideDD intégrés (sorts, dons, états)
+Les textes complets sont dans Supabase (`ref_textes`, fonction `ref_textes()`, script `DnD_Character/supabase/08_textes_aidedd.sql`). `chargerTextes()` les télécharge (1×/semaine) dans le cache du navigateur `dalmor-textes` (jamais dans localStorage, réservé aux fiches). Un écouteur de clic en capture ouvre tout lien AideDD `spell/fr/…`, `feat/fr/…` ou `glossaire/etats/#…` dans la fenêtre `.regle-fen` ; texte absent → lien AideDD normal. Le HTML est nettoyé (`texteSur`) avant affichage. Bloc identique dans les deux dépôts.
