@@ -44,6 +44,8 @@ h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
 /* titre avec un bouton à droite (Repos long) */
 .h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
+.h2b .repos{display:flex;gap:6px}.gestion~section h2{font-size:1.05rem;border-bottom-width:1px}.bandeau{line-height:1.35}.bandeau b{font-size:1.05rem}
+.gestion-t{display:flex;justify-content:space-between;align-items:baseline;width:100%;height:auto;min-height:0;padding:0 0 4px;border:none;border-bottom:2px solid var(--accent);border-radius:0;background:transparent;font-family:var(--disp);font-size:1.25rem;letter-spacing:.02em;color:var(--accent);text-align:left;cursor:pointer}
 .err-t{color:var(--danger)}
 /* notes par ligne, sorts non préparés, avantage aux sauvegardes */
 .note-l{display:block;font-size:.88rem;font-style:italic;color:var(--muted)}
@@ -854,7 +856,7 @@ function ongCombat(p,d,e){
       <div class="mort"><span class="lab">Jets contre<br>la mort</span><div class="mort-g"><span class="lab">Succès</span>${cases('jm:s',3)}<span class="lab">Échecs</span>${cases('jm:e',3,'e')}</div></div></section>
     <div class="stats">${stats}</div>
     <section><h2>Armes et attaques</h2>${armes}</section>
-    <section><h2>Ressources</h2>${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}${ed?'<div class="lab">Maximum de chaque ressource (modifiable)</div>':''}<div class="res">${res}</div>
+    <section><h2 class="h2b"><span>Ressources</span><span class="repos">${[['reposC','Repos court'],['repos','Repos long']].map(([k,l])=>`<button class="${conf===k?'on':''}" data-a="${k}">${conf===k?'Confirmer ?':l}</button>`).join('')}</span></h2>${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}${ed?'<div class="lab">Maximum de chaque ressource (modifiable)</div>':''}<div class="res">${res}</div>
       ${masquees?`<div class="lab">Ressources masquées</div><div class="row">${masquees}</div>`:''}</section>
     ${autres?`<section><h2>Capacités</h2>${ed?`<div class="lab">Liens vers AideDD (modifiables) · « Cases » la transforme en ressource</div>${autres}`:`<ul class="plain">${autres}</ul>`}</section>`:''}`;
 }
@@ -926,6 +928,7 @@ function ongSac(p,d,e){
 /* Journal de campagne : seulement les résumés de session écrits par le MJ (le reste de ses notes ne quitte pas le serveur) */
 async function chargerJournalJ(p,force){
   if(!p||!p.cloud||!navigator.onLine)return;if(!force&&p.journal&&Date.now()-p.journal.t<60000)return;
+  rpc('j_repos_court',{p_cle:p.cloud.cle}).then(r=>{if(r&&typeof r==='object'&&!Array.isArray(r)&&JSON.stringify(r)!==JSON.stringify(p.reposCourt||{})){p.reposCourt=r;save()}}).catch(()=>{});
   try{const [l,n]=await Promise.all([rpc('j_journal',{p_cle:p.cloud.cle}),rpc('j_pnj',{p_cle:p.cloud.cle}).catch(()=>p.journal&&p.journal.pnj)]);if(!Array.isArray(l))return;
     const avant=JSON.stringify(p.journal&&[p.journal.l,p.journal.pnj]),pnj=Array.isArray(n)?n:[];
     p.journal={l,pnj,t:Date.now()};save();if(avant!==JSON.stringify([l,pnj])&&ui.vue==='perso'&&ui.id===p.id&&(ui.onglet==='fiche'||grandEcran())){const a=document.activeElement;if(!(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)))render()}}catch(e){}
@@ -950,8 +953,13 @@ function pnjSection(p){const l=(p.journal&&p.journal.pnj)||[];if(!l.length)retur
   return `<section><h2>PNJ rencontrés</h2>${G.map(cat).join('')}</section>`}
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
-  return `${journalJoueur(p)}${pnjSection(p)}
-    <section><h2>Monter de niveau</h2>
+  const g=ui.gestion;
+  return `<section class="bandeau">${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:''}
+      ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
+        :`<div><b>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</b></div><div>${itemLien('espece',d.id.espece)} · ${itemLien('historique',d.id.historique)}${d.id.alignement?` · <span class="muted">${esc(d.id.alignement)}</span>`:''}</div>`}</section>
+    ${journalJoueur(p)}${pnjSection(p)}
+    <section class="gestion"><button class="gestion-t" data-a="gestion" aria-expanded="${!!g}"><span>Gestion du personnage</span><span class="muted">${g?'▾':'▸'}</span></button></section>
+    ${g?`    <section><h2>Monter de niveau</h2>
       <p class="muted">1. Télécharge le fichier .xml ci-dessous. 2. Ouvre le créateur AideDD, importe ce fichier et monte de niveau. 3. Sur la fiche finale, lance le favori « Export AideDD » et colle le résultat ici. Tes cases cochées, armes, sorts ajoutés et notes sont conservés.</p>
       <button data-a="telXml">Télécharger le .xml</button>
       <textarea id="maj" placeholder="Colle le nouvel export ici">${esc(conf==='maj'?majTexte:'')}</textarea>
@@ -964,15 +972,12 @@ function ongFiche(p,d,e){
         :`<button data-a="retour">Revenir à la version précédente</button>`):''}</section>
     ${sortieTexte?`<section><p class="muted">La copie automatique n’a pas marché : sélectionne ce texte et copie-le.</p><textarea readonly id="sortie">${esc(sortieTexte)}</textarea></section>`:''}
     ${sectionCloud(p)}
-    <section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
-      ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
-        :`<div>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</div><div>Espèce : ${itemLien('espece',d.id.espece)} · Historique : ${itemLien('historique',d.id.historique)}</div><div class="muted">${esc(d.id.alignement)}</div>`}</section>
     <section><h2>Copie de secours</h2>
       <p class="muted">Une copie à garder de ton côté (notes, messages). Elle se recolle dans « Importer » sur l’écran d’accueil.</p>
       <div class="row"><button data-a="copierSauv">Copier la sauvegarde</button><button data-a="telSauv">Télécharger</button></div></section>
     <section><h2>Historique des imports</h2><ul class="plain">${hist}</ul></section>
     <section>${confirmSuppr?`<p>Supprimer définitivement ${esc(e.nom||'ce personnage')} de ce téléphone ?${p.cloud?' La sauvegarde en ligne est conservée.':''}</p><div class="row"><button class="dgr" data-a="supprOui">Oui, supprimer</button><button data-a="supprNon">Annuler</button></div>`
-      :`<button class="dgr" data-a="suppr">Supprimer ce personnage</button>`}</section>`;
+      :`<button class="dgr" data-a="suppr">Supprimer ce personnage</button>`}</section>`:''}`;
 }
 
 /* ---------- interactions ---------- */
@@ -1049,10 +1054,12 @@ document.addEventListener('click',ev=>{
     case 'retour':armerConf('retour');break;
     case 'retourOui':conf='';if(p.versions.length>1)flash={t:revenir(p)};break;
     case 'repos':if(conf==='repos'){conf='';flash={t:reposLong(p)}}else armerConf('repos');break;
+    case 'reposC':if(conf==='reposC'){conf='';flash={t:reposCourt(p)}}else armerConf('reposC');break;
     case 'pv':{const c=b.dataset.c,av=num(p.etat[c]);p.etat[c]=Math.max(0,av+num(b.dataset.d));noterDegats(av-num(p.etat[c]));break}
     case 'concOk':ui.degatsConc=0;break;
     case 'cpt':{const k=b.dataset.k,m=num(b.dataset.max);p.etat.used[k]=Math.min(m,Math.max(0,Math.min(p.etat.used[k]||0,m)+num(b.dataset.d)));break}
     case 'case':{const k=b.dataset.k,i=num(b.dataset.i),u=Math.min(p.etat.used[k]||0,num(b.dataset.max));p.etat.used[k]=i<u?i:i+1;break}
+    case 'gestion':ui.gestion=!ui.gestion;break;
     case 'jrnJ':ui.jrnJ=ui.jrnJ||{};ui.jrnJ[b.dataset.id]=!ui.jrnJ[b.dataset.id];break;
     case 'mains':{const a=p.etat.armes[num(b.dataset.i)];if(a)a.deux=!a.deux;break}
     case 'ajoutArme':p.etat.armes.unshift({nom:'',att:'',deg:'',note:'',wid:rid()});ui.focus='armes.0.nom';break;
@@ -1162,7 +1169,21 @@ function erreurCloud(q,e){q.cloud.err=e&&e.serveur?(/cle_invalide/.test(e.messag
 /* CA et perception passive telles qu'affichées sur la fiche (corrections comprises), pour l'app du MJ */
 function majVueMJ(p){try{const e=p.etat,d=D(p),c=d.combat||{},sp=(d.ski||[]).find(x=>/^perception$/i.test(x.nom));
   const ca=e.ca!=null&&e.ca!==''?e.ca:c.ca,pp=sp?num(c.percPassive)+num(bonusComp(e,d,sp))-num(sp.val):c.percPassive;
-  const v={ca:String(ca??''),pp:String(pp??'')};if(!e.vue||e.vue.ca!==v.ca||e.vue.pp!==v.pp)e.vue=v}catch(er){}}
+  const v={ca:String(ca??''),pp:String(pp??''),cases:casesPerso(p)};if(JSON.stringify(e.vue||{})!==JSON.stringify(v))e.vue=v}catch(er){}}
+/* toutes les cases à cocher du personnage (hors dés de vie et jets contre la mort) : clé, nom, nombre ; servent aux règles du repos court */
+function casesPerso(p){const d=D(p),l=[];
+  ressources(p).forEach(r=>{if(r.k!=='dv'&&r.max>0)l.push({k:r.k,nom:sansCoche(r.nom),max:r.max})});
+  try{for(let n=1;n<=9;n++){const t=slotTot(p,n);if(t>0)l.push({k:'s:'+n,nom:'Emplacements de niveau '+n,max:t})}}catch(er){}
+  const pa=pacte(d);if(pa)l.push({k:'s:pacte',nom:'Emplacements de pacte (niv '+pa.niv+')',max:pa.n});
+  Object.entries(sortsGratuits(d)).forEach(([k,n])=>l.push({k:'g:'+k,nom:'Sort gratuit : '+k,max:n}));
+  return l}
+/* Repos court : règles par personnage écrites par le MJ (colonne joueur.repos_court) : {"clé": 1..99 | "tout"}.
+   Sans règle : seuls les emplacements de pacte reviennent. Ne touche ni aux PV ni aux dés de vie. */
+function reposCourt(p){const e=p.etat,R=Object.assign({'s:pacte':'tout'},p.reposCourt||{}),noms={},fait=[];
+  casesPerso(p).forEach(x=>noms[x.k]=x.nom);
+  Object.entries(R).forEach(([k,v])=>{const u=num(e.used[k]);if(!u||!(k in noms))return;
+    const n=v==='tout'?u:Math.min(u,Math.max(0,num(v)));if(!n)return;e.used[k]=u-n;fait.push(noms[k]+(v==='tout'?' au max':' +'+n))});
+  return fait.length?'Repos court : '+fait.join(', ')+'.':'Repos court : rien à récupérer.'}
 async function envoyer(id,force){
   if(enCours.has(id))return;enCours.add(id);
   try{
