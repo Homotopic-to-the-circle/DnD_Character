@@ -687,7 +687,8 @@ function itemLien(type,nom,label,extra){
   /* capacité de classe : la fenêtre intégrée cherche le texte par classe, sous-classe et nom (lien AideDD gardé en secours) */
   const perso=!((P().etat.liens||{})[type+':'+propre(nom)]),d=D(P()),n=sansCoche(propre(nom));
   const dc=!perso?'':type==='capa'?` data-capa="${esc([d.id.classe,d.id.sousClasse,n].join('|'))}"`
-    :/^(trait|espece|historique)$/.test(type)?` data-orig="${esc([type,d.id.espece,n].join('|'))}"`:'';
+    :/^(trait|espece|historique)$/.test(type)?` data-orig="${esc([type,d.id.espece,n].join('|'))}"`
+    :/^(objet|arme)$/.test(type)?` data-equip="${esc(n)}"`:'';
   return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener"${dc}>${esc(label)}</a>`;
 }
 
@@ -707,7 +708,7 @@ function botteHtml(a){
   if(!BOTTE_MOT[mot])return ` <span class="muted">· ${esc(note)}</span>`;
   const b=BOTTE_ARME[slug(a.nom).replace(/-/g,' ')]||BOTTE_MOT[mot];
   const u=AD+'regles-24/equipement/armes/#:~:text='+encodeURIComponent(b)+',-'+encodeURIComponent(DEBUT_BOTTE[b]||'Si vous touchez');
-  return ` <span class="muted">· <a class="ext" href="${esc(u)}" target="_blank" rel="noopener">${esc(b.toLowerCase())}</a></span>`;
+  return ` <span class="muted">· <a class="ext" href="${esc(u)}" target="_blank" rel="noopener" data-botte="${esc(b)}">${esc(b.toLowerCase())}</a></span>`;
 }
 /* sorts : ceux de l'import AideDD, moins ceux retirés, plus ceux ajoutés dans l'app (gardés à la montée de niveau) */
 const cleS=s=>num(s.niv)+'|'+norm(s.nom);
@@ -1420,7 +1421,7 @@ async function chargerRef(){
    dans le cache du navigateur (pas dans localStorage, réservé aux fiches) : ils marchent hors ligne.
    Tout lien AideDD vers un sort, un don ou un état connu s'ouvre alors dans la fenêtre intégrée ;
    sinon (texte absent, pas encore téléchargé) le lien s'ouvre sur AideDD comme avant. */
-const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=3;   /* TXT_V : à augmenter quand le serveur reçoit de nouveaux textes (force le retéléchargement) */
+const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=4;   /* TXT_V : à augmenter quand le serveur reçoit de nouveaux textes (force le retéléchargement) */
 let TEXTES=null;
 async function chargerTextes(){
   let c=null;try{c=await caches.open(TXT_CACHE);const r=await c.match(TXT_URL);if(r){const j=await r.json();if(j&&j.v===TXT_V)TEXTES=j}}catch(e){}
@@ -1436,6 +1437,7 @@ function cleTexte(href){
   if(!/(^|\.)aidedd\.org$/.test(u.hostname))return null;
   let m=u.pathname.match(/^\/spell\/fr\/([^/]+)\/?$/);if(m)return 'sort:'+decodeURIComponent(m[1]);
   m=u.pathname.match(/^\/feat\/fr\/([^/]+)\/?$/);if(m)return 'don:'+decodeURIComponent(m[1]);
+  m=u.pathname.match(/^\/magic-item\/fr\/([^/]+)\/?$/);if(m)return 'objmag:'+decodeURIComponent(m[1]);
   if(/^\/regles-24\/glossaire\/etats\/?$/.test(u.pathname)&&u.hash.length>1)return 'etat:'+decodeURIComponent(u.hash.slice(1));
   return null;
 }
@@ -1473,11 +1475,17 @@ function cleOrig(v){
   if(Array.isArray(TEXTES['trait:'+capaN(esp)+':'+n]))return 'trait:'+capaN(esp)+':'+n;
   for(const k in TEXTES)if(k.startsWith('trait:')&&k.endsWith(':'+n)&&Array.isArray(TEXTES[k]))return k;return null;
 }
+/* équipement : « equip:<nom> » (armes, armures, outils, matériel), sinon un objet magique du même nom ; bottes : « botte:<nom> » */
+function cleEquip(nom){
+  if(!TEXTES||!nom)return null;const k='equip:'+capaN(nom);
+  return Array.isArray(TEXTES[k])?k:texteParTitre('objmag',nom);
+}
+const cleBotte=b=>TEXTES&&Array.isArray(TEXTES['botte:'+capaN(b)])?'botte:'+capaN(b):null;
 function voirTexte(k,href,titreLien){
   if(TEXTES&&!TEXTES[k])k=texteParTitre(k.split(':')[0],titreLien)||k;
   const e=TEXTES&&TEXTES[k];if(!Array.isArray(e))return false;
   const titre=e[0]||titreLien||'';
-  const sous=e[2]||{sort:'Sort',don:'Don',etat:'État',capa:'Capacité',trait:'Trait',espece:'Espèce',historique:'Historique'}[k.split(':')[0]]||'';
+  const sous=e[2]||{sort:'Sort',don:'Don',etat:'État',capa:'Capacité',trait:'Trait',espece:'Espèce',historique:'Historique',equip:'Équipement',botte:'Botte d’arme',objmag:'Objet magique'}[k.split(':')[0]]||'';
   const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
   o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(sous)} · <a class="ext" href="${esc(href)}" target="_blank" rel="noopener" data-direct>AideDD ↗</a></span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${texteSur(e[1])}</div></div>`;
   const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};
@@ -1493,7 +1501,7 @@ document.addEventListener('click',ev=>{
   const a=ev.target.closest&&ev.target.closest('a[href]');if(!a||a.hasAttribute('data-direct'))return;
   if(typeof ui!=='undefined'&&ui.edit)return;
   if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button)return;
-  const k=(a.dataset.capa&&cleCapa(a.dataset.capa))||(a.dataset.orig&&cleOrig(a.dataset.orig))||cleTexte(a.getAttribute('href'));if(!k)return;
+  const x=a.dataset,k=(x.capa&&cleCapa(x.capa))||(x.orig&&cleOrig(x.orig))||(x.equip&&cleEquip(x.equip))||(x.botte&&cleBotte(x.botte))||cleTexte(a.getAttribute('href'));if(!k)return;
   if(voirTexte(k,a.href,a.textContent.trim())){ev.preventDefault();ev.stopPropagation()}
 },true);
 const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();

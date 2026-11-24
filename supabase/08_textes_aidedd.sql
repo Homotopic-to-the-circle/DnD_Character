@@ -17,6 +17,7 @@ grant execute on function public.ref_textes() to anon, authenticated;
 -- 3. drop extension if exists http;
 -- Clés : 'sort:<slug AideDD>', 'don:<slug AideDD>', 'etat:<ancre AideDD>',
 --        'espece:<nom>', 'trait:<espèce>:<nom>', 'historique:<nom>',
+--        'equip:<nom>' (armes, armures, outils, matériel), 'prop:<nom>', 'botte:<nom>', 'objmag:<slug AideDD>',
 --        'capa:<classe>:<sous-classe>:<nom>' (sous-classe vide = capacité de base ; mots normalisés par kn(), comme capaN() dans les apps).
 -- Les capacités « Voir le Manuel des Joueurs » ne sont pas copiées : l'app garde le lien AideDD (ou REGLES écrit à la main).
 /*
@@ -132,5 +133,95 @@ do $$ declare pg text; typ text; c text; sec text; nom text; morceau text; tn te
         end loop;
       end if;
     end loop;
+  end loop; end $$;
+-- équipement : armes (ligne + propriétés + botte), armures, outils, matériel d'aventurier
+create or replace function pg_temp.ok(cle text, titre text, html text, sous text, src text) returns void language sql as $$
+  insert into public.ref_textes(cle,titre,html,sous,source) values(cle,titre,html,sous,src)
+  on conflict (cle) do update set titre=excluded.titre, html=excluded.html, sous=excluded.sous, maj=now()
+$$;
+do $$ declare
+  base text := 'https://www.aidedd.org/regles-24/equipement/';
+  c text; ch text; sect text; nom text; corps text; tr text; td text[]; cat text; props jsonb := '{}'; bottes jsonb := '{}'; h text; p text; m text[];
+begin
+  -- ===== armes : propriétés, bottes, puis une fiche par arme (ligne du tableau + ses propriétés + sa botte)
+  select content into c from extensions.http_get(base||'armes/');
+  c := substr(c, strpos(c,'<div class="content v24">'), strpos(c,'<div id="Breadcrumbs">')-strpos(c,'<div class="content v24">'));
+  sect := '';
+  for ch in select x from regexp_split_to_table(c, '(?=<h[34][ >])') x loop
+    if ch ~ '^<h3' then sect := coalesce((regexp_match(ch,'^<h3[^>]*>\s*<a id="([^"]+)"'))[1],''); continue; end if;
+    if ch !~ '^<h4' then continue; end if;
+    if strpos(ch,'<table')>0 then ch := substr(ch,1,strpos(ch,'<table')-1); end if;
+    nom := pg_temp.net((regexp_match(ch,'^<h4[^>]*>([^<]*)</h4>'))[1]);
+    corps := pg_temp.net(substr(ch, strpos(ch,'</h4>')+5));
+    if sect='proprietes' then props := props || jsonb_build_object(pg_temp.kn(nom), jsonb_build_array(nom,corps)); perform pg_temp.ok('prop:'||pg_temp.kn(nom), nom, corps, 'Propriété d''arme', base||'armes/#proprietes');
+    elsif sect='botte' then bottes := bottes || jsonb_build_object(pg_temp.kn(nom), jsonb_build_array(nom,corps)); perform pg_temp.ok('botte:'||pg_temp.kn(nom), nom, corps, 'Botte d''arme', base||'armes/#botte'); end if;
+  end loop;
+  cat := '';
+  for tr in select x from regexp_split_to_table(substr(c, strpos(c,'<h3>Armes</h3>')), '<tr>') x loop
+    select array_agg(pg_temp.net(y[1]) order by o) into td from regexp_matches(tr, '<td[^>]*?>(.*?)</td>', 'g') with ordinality z(y,o);
+    if td is null then continue; end if;
+    if array_length(td,1)=1 then cat := td[1]; continue; end if;
+    if array_length(td,1)<>6 then continue; end if;
+    h := '<p><strong>Dégâts</strong> : '||td[2]||'</p><p><strong>Propriétés</strong> : '||td[3]||'</p><p><strong>Botte</strong> : '||td[4]||'</p><p><strong>Poids</strong> : '||td[5]||' · <strong>Prix</strong> : '||td[6]||'</p>';
+    foreach p in array regexp_split_to_array(td[3], '\s*,\s*') loop
+      p := pg_temp.kn(regexp_replace(p,'\s*\(.*$',''));
+      if props ? p then h := h||'<h4>'||(props->p->>0)||'</h4>'||(props->p->>1); end if;
+    end loop;
+    if bottes ? pg_temp.kn(td[4]) then h := h||'<h4>Botte : '||(bottes->pg_temp.kn(td[4])->>0)||'</h4>'||(bottes->pg_temp.kn(td[4])->>1); end if;
+    perform pg_temp.ok('equip:'||pg_temp.kn(td[1]), td[1], h, coalesce(nullif(cat,''),'Arme'), base||'armes/');
+  end loop;
+  -- ===== armures : une fiche par ligne (+ catégorie)
+  select content into c from extensions.http_get(base||'armures/');
+  c := substr(c, strpos(c,'<div class="content v24">'), strpos(c,'<div id="Breadcrumbs">')-strpos(c,'<div class="content v24">'));
+  cat := '';
+  for tr in select x from regexp_split_to_table(substr(c, strpos(c,'<table')), '<tr>') x loop
+    select array_agg(pg_temp.net(y[1]) order by o) into td from regexp_matches(tr, '<td[^>]*?>(.*?)</td>', 'g') with ordinality z(y,o);
+    if td is null then continue; end if;
+    if array_length(td,1)=1 then cat := td[1]; continue; end if;
+    if array_length(td,1)<>6 then continue; end if;
+    perform pg_temp.ok('equip:'||pg_temp.kn(td[1]), td[1],
+      '<p><strong>Classe d’armure</strong> : '||td[2]||'</p><p><strong>Force</strong> : '||td[3]||'</p><p><strong>Discrétion</strong> : '||td[4]||'</p><p><strong>Poids</strong> : '||td[5]||' · <strong>Coût</strong> : '||td[6]||'</p>',
+      coalesce(nullif(cat,''),'Armure'), base||'armures/');
+  end loop;
+  -- ===== outils et matériel d'aventurier : une fiche par <h4> « Nom (prix) »
+  foreach p in array array['outils','materiel-daventurier'] loop
+    select content into c from extensions.http_get(base||p||'/');
+    c := substr(c, strpos(c,'<div class="content v24">'), strpos(c,'<div id="Breadcrumbs">')-strpos(c,'<div class="content v24">'));
+    for ch in select x from regexp_split_to_table(c, '(?=<h[234][ >])') x where x ~ '^<h4' loop
+      if strpos(ch,'<table')>0 then ch := substr(ch,1,strpos(ch,'<table')-1); end if;
+      ch := regexp_replace(ch, '<img[^>]*>', '', 'g');
+      nom := pg_temp.net((regexp_match(ch,'^<h4[^>]*>(.*?)</h4>'))[1]);
+      m := regexp_match(nom, '^(.*?)\s*\(([^()]*)\)\s*$');
+      corps := pg_temp.net(substr(ch, strpos(ch,'</h4>')+5));
+      if length(corps)<10 then continue; end if;
+      if m is not null then nom := m[1]; corps := '<p><strong>Prix</strong> : '||m[2]||'</p>'||corps; end if;
+      perform pg_temp.ok('equip:'||pg_temp.kn(nom), nom, corps, case when p='outils' then 'Outil' else 'Équipement' end, base||p||'/');
+    end loop;
+  end loop;
+end $$;
+-- catégories sans balises ; armures : temps pour enfiler/retirer dans le texte
+update public.ref_textes set sous = trim(regexp_replace(sous,'<[^>]+>','','g')) where cle like 'equip:%' and sous ~ '<';
+update public.ref_textes set html = html || '<p>' || upper(left(m[2],1)) || substr(m[2],2) || '.</p>', sous = m[1]
+from (select cle k, regexp_match(sous, '^(.*?)\s*\((.*)\)\s*$') m from public.ref_textes where cle like 'equip:%' and source like '%armures/%') x
+where cle = x.k and x.m is not null;
+-- noms utilisés par l'export AideDD (créateur 2014) → fiches 2024
+insert into public.ref_textes(cle,titre,html,sous,source)
+select 'equip:'||a, t, html, sous, source from public.ref_textes, (values ('fleche','Flèches'),('carreau','Carreaux'),('carreaux d arbalete','Carreaux'),('bille de fronde','Billes de fronde'),('aiguille','Aiguilles'),('aiguille de sarbacane','Aiguilles'),('balle de mousquet','Balles')) v(a,t)
+where cle='equip:munition' on conflict (cle) do nothing;
+insert into public.ref_textes(cle,titre,html,sous,source)
+select 'equip:sac '||substr(cle, 17), 'Sac '||substr(titre, 11), html, sous, source from public.ref_textes where cle like 'equip:paquetage %' on conflict (cle) do nothing;
+insert into public.ref_textes(cle,titre,html,sous,source)
+select 'equip:'||v.a, v.t, r.html, r.sous, r.source from (values ('faucille','Faucille','serpe'),('marmite en fer','Marmite en fer','pot en fer'),('vetement de voyage','Vêtements de voyage','tenue de voyage'),('vetement fin','Vêtements fins','beaux habit')) v(a,t,src)
+join public.ref_textes r on r.cle='equip:'||v.src on conflict (cle) do nothing;
+-- objets magiques : une page par objet (liste dans ref_aidedd 'objets_magiques')
+do $$ declare s jsonb; c text; begin
+  for s in select x from public.ref_aidedd, jsonb_array_elements(donnees) x where cle='objets_magiques' order by x->>0 loop
+    begin
+      select content into c from extensions.http_get('https://www.aidedd.org/magic-item/fr/'||(s->>1));
+      if strpos(c, '<div class=''source''>')>0 and strpos(c, 'not available')=0 then
+        insert into public.ref_textes(cle,titre,html,sous,source) values('objmag:'||(s->>1), s->>0, pg_temp.fiche(regexp_replace(c,'<img[^>]*>','','g')), 'Objet magique', 'https://www.aidedd.org/magic-item/fr/'||(s->>1))
+        on conflict (cle) do update set titre=excluded.titre, html=excluded.html, sous=excluded.sous, maj=now();
+      end if;
+    exception when others then raise notice 'objet % : %', s->>1, sqlerrm; end;
   end loop; end $$;
 */
