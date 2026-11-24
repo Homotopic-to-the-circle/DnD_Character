@@ -70,6 +70,12 @@ ul.plain li>span{display:block}
 .harmo{display:inline-block;margin-left:6px;color:var(--accent);font-size:1rem;line-height:1}
 /* visionneuse plein écran pour les lettres et cartes envoyées en image (zoom à deux doigts, glisser pour se déplacer) */
 .visionneuse{position:fixed;inset:0;z-index:50;background:#1d130b;display:flex;flex-direction:column}
+/* règles intégrées (capacités absentes d'AideDD) : fenêtre façon page, fermée par ✕, le fond ou « retour » */
+.regle-fen{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--fg) 45%,transparent);display:flex;align-items:center;justify-content:center;padding:14px}
+.regle-fen>div{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;width:100%;max-width:600px;max-height:88vh;overflow:auto;box-shadow:0 10px 30px rgba(var(--ombre),.35)}
+.regle-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+.regle-barre b{font-size:1.1em}.regle-barre button{flex:none}
+.regle-corps{padding:10px 14px 16px}.regle-corps p{margin:.5em 0}.regle-corps .muted{font-size:.9em}
 .vis-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;color:#f6ecd4;font-family:var(--disp);font-size:1.1rem}
 .vis-barre button{flex:none;color:#f6ecd4;border-color:#f6ecd4;height:36px;width:36px;padding:0}
 .vis-zone{flex:1;overflow:hidden;display:flex;align-items:center;touch-action:none}
@@ -437,7 +443,7 @@ const RES_CLASSE={
   'Ensorceleur':[{n:'Réserve arcanique',a:['Points de sorcellerie'],m:c=>c.niv>=2?c.niv:0},{n:'Sorcellerie innée',m:()=>2}],
   'Guerrier':[{n:'Second souffle',m:c=>c.niv>=10?4:c.niv>=4?3:2},{n:'Fougue',m:c=>c.niv>=17?2:c.niv>=2?1:0},{n:'Inflexible',a:['Indomptable'],m:c=>c.niv>=17?3:c.niv>=13?2:c.niv>=9?1:0}],
   'Magicien':[{n:'Restauration magique',a:['Restauration arcanique'],m:()=>1}],
-  'Moine':[{n:'Points de crédo',a:['Credo du moine'],m:c=>c.niv>=2?c.niv:0},{n:'Métabolisme surnaturel',m:c=>c.niv>=2?1:0}],
+  'Moine':[{n:'Points de crédo',a:['Credo du moine'],l:'Credo du moine',m:c=>c.niv>=2?c.niv:0},{n:'Métabolisme surnaturel',m:c=>c.niv>=2?1:0}],
   'Occultiste':[{n:'Rouerie magique',m:c=>c.niv>=2?1:0}],
   'Paladin':[{n:'Imposition des mains',m:c=>5*c.niv,pv:1},{n:'Conduit divin',m:c=>c.niv>=11?3:c.niv>=3?2:0}],
   'Rôdeur':[{n:'Ennemi juré',m:c=>c.niv>=17?6:c.niv>=13?5:c.niv>=9?4:c.niv>=5?3:2}],
@@ -481,8 +487,8 @@ function ressourcesBrutes(d){
   const c=contexte(d),r=[],vus=new Set();
   const ajoute=(o)=>{const ks=[o.nom,...(o.a||[])].map(norm);if(ks.some(k=>vus.has(k))||!(o.max>0))return;ks.forEach(k=>vus.add(k));r.push(o)};
   ajoute({k:'r:inspiration-heroique',nom:'Inspiration héroïque',max:1});
-  (RES_CLASSE[d.id.classe]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),pv:x.pv,lien:['capa',x.n]}));
-  (RES_SOUSCLASSE[d.id.sousClasse]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),lien:['capa',x.n]}));
+  (RES_CLASSE[d.id.classe]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),pv:x.pv,lien:['capa',x.l||x.n]}));
+  (RES_SOUSCLASSE[d.id.sousClasse]||[]).forEach(x=>ajoute({k:'r:'+norm(x.n),nom:x.n,a:x.a,max:x.m(c),lien:['capa',x.l||x.n]}));
   d.traits.forEach(t=>{const n=propre(sansCoche(t)),f=RES_TRAIT[n];if(f)ajoute({k:'r:'+norm(n),nom:n,max:f(c),lien:['trait',n]})});
   d.dons.forEach(t=>{const n=propre(t),f=RES_DON[n];if(f)ajoute({k:'r:'+norm(f.n),nom:f.n,max:f.m(c),lien:['don',n]})});
   d.capa.forEach(x=>{const n=propre(sansCoche(x.nom));if(PAS_RESSOURCE.has(norm(n)))return;const u=usagesTexte(x.nom);
@@ -646,7 +652,33 @@ function bonusCorrige(e,d,cle,base,val){const B=+base,L=niveau(e,cle,B);return L
 /* valeurs corrigées à la main (crayon) : la saisie remplace la valeur d'AideDD, un champ vide la rétablit */
 const ov=(e,k)=>{const v=(e.statOv||{})[k];return v!=null&&String(v).trim()!==''?v:null};
 const pvMaxDe=p=>num(ov(p.etat,'pvMax')??D(p).combat.pvMax);
+/* ---------- règles intégrées : capacités que AideDD ne détaille pas (renvoi au Manuel des Joueurs) ----------
+   Texte résumé avec nos mots. Clé = nom normalisé (norm). c = contexte(d) du perso (niveau, modificateurs). */
+const deArts=c=>'1d'+(c.niv>=17?12:c.niv>=11?10:c.niv>=5?8:6);
+const pourToi=c=>`${deArts(c)}${c.mod.SAG>=0?'+':''}${c.mod.SAG}`;
+const REGLES={
+  'main-meurtrissante':{s:'Credo de la Miséricorde · niveau 3',t:c=>`<p>Une fois par tour, quand tu touches une créature avec une <b>frappe à mains nues</b> et lui infliges des dégâts, tu peux dépenser <b>1 point de crédo</b> pour lui infliger en plus des dégâts <b>nécrotiques</b> égaux à un jet de ton dé d'arts martiaux + ton modificateur de Sagesse.</p><p class="muted">Pour toi : +${pourToi(c)} nécrotiques.</p>`},
+  'main-guerisseuse':{s:'Credo de la Miséricorde · niveau 3',t:c=>`<p><b>Action Magie</b> : tu dépenses <b>1 point de crédo</b> et touches une créature, qui récupère un nombre de PV égal à un jet de ton dé d'arts martiaux + ton modificateur de Sagesse.</p><p>Quand tu utilises <b>Déluge de coups</b>, tu peux remplacer une des frappes à mains nues par un usage de cette capacité, sans dépenser de point de crédo pour ce soin.</p><p class="muted">Pour toi : ${pourToi(c)} PV.</p>`},
+  'instruments-de-charite':{s:'Credo de la Miséricorde · niveau 3',t:()=>`<p>Tu gagnes la maîtrise des compétences <b>Intuition</b> et <b>Médecine</b>, et du <b>matériel d'herboriste</b>.</p><p class="muted">Capacité passive : déjà comptée sur la fiche.</p>`},
+  'toucher-du-medecin':{s:'Credo de la Miséricorde · niveau 6',t:()=>`<p><b>Main meurtrissante</b> : tu peux aussi infliger l'état <b>Empoisonné</b> à la créature jusqu'à la fin de ton prochain tour.</p><p><b>Main guérisseuse</b> : tu peux aussi mettre fin à un de ces états sur la créature soignée : Aveuglé, Assourdi, Paralysé, Empoisonné ou Étourdi.</p>`},
+  'deluge-de-soins-et-de-souffrance':{s:'Credo de la Miséricorde · niveau 11',t:c=>`<p>Quand tu utilises <b>Déluge de coups</b>, tu peux remplacer chacune des frappes à mains nues par un usage de Main guérisseuse, sans dépenser de point de crédo pour ces soins.</p><p>Tu peux aussi utiliser Main meurtrissante sur une de ces frappes sans dépenser de point de crédo (toujours une fois par tour).</p><p class="muted">Utilisable ${Math.max(1,c.mod.SAG)} fois (modificateur de Sagesse, minimum 1) ; tout revient après un repos long.</p>`},
+  'main-de-misericorde-ultime':{s:'Credo de la Miséricorde · niveau 17',t:c=>`<p><b>Action Magie</b> : tu touches le cadavre d'une créature morte depuis moins de 24 heures et dépenses <b>5 points de crédo</b>. Elle revient à la vie avec ${'4d10'}${c.mod.SAG>=0?'+':''}${c.mod.SAG} PV (4d10 + ton modificateur de Sagesse), et les états Aveuglé, Assourdi, Paralysé, Empoisonné et Étourdi prennent fin.</p><p class="muted">Une fois par repos long.</p>`}
+};
+function regleLocale(type,nom){if(type!=='capa')return null;const k=norm(sansCoche(nom));return REGLES[k]?k:null}
+function voirRegle(k,titre){
+  const r=REGLES[k];if(!r)return;const p=P();const c=p?contexte(D(p)):{niv:1,pb:2,mod:{SAG:0}};
+  const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
+  o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(r.s)}</span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${r.t(c)}</div></div>`;
+  const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};
+  let retour=()=>history.back();
+  o.querySelector('button').onclick=()=>retour();
+  o.addEventListener('click',ev=>{if(ev.target===o)retour()});
+  document.body.appendChild(o);
+  try{history.pushState({regle:1},'');window.addEventListener('popstate',fermer)}catch(e){retour=fermer}
+}
 function itemLien(type,nom,label,extra){
+  const rk=regleLocale(type,nom);
+  if(rk&&!ui.edit&&!((P().etat.liens||{})[type+':'+propre(nom)]))return `<a class="ext" href="#" data-regle="${esc(rk)}" data-titre="${esc(sansCoche(propre(nom)))}">${esc(sansCoche(label??nom))}</a>`;
   const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
   return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`;
@@ -1023,6 +1055,7 @@ function voirImage(src,titre){
 }
 document.addEventListener('click',ev=>{
   const tt=ev.target.closest&&ev.target.closest('[data-toast]');if(tt){tt.remove();return}
+  const rg=ev.target.closest&&ev.target.closest('a[data-regle]');if(rg){ev.preventDefault();voirRegle(rg.dataset.regle,rg.dataset.titre);return}
   /* les liens vers une image (lettres, cartes) s'ouvrent dans l'app */
   const lk=ev.target.closest&&ev.target.closest('a[href]');
   if(lk&&IMAGE.test(lk.getAttribute('href'))&&!ui.edit){ev.preventDefault();voirImage(lk.href,lk.textContent.trim())}
