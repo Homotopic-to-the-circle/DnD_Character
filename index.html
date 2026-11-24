@@ -180,6 +180,7 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .jrn-j-t .muted{font-weight:normal;font-style:italic;font-size:.88rem;white-space:nowrap}
 .jrn-j-c{padding:0 0 8px}.jrn-j-c p{margin:4px 0}.jrn-j-c ul{margin:4px 0;padding-left:20px}
 .pnj-j{padding:6px 0;border-top:1px solid var(--line);font-size:.95rem}.pnj-j:first-child{border-top:none}.pnj-j-n .muted{font-style:italic;font-size:.88rem}.pnj-j-n{display:block;width:100%;height:auto;min-height:0;padding:0;border:none;background:transparent;text-align:left;font:inherit;color:var(--fg);cursor:pointer}.pnj-j.replie{padding:4px 0}.pnj-j-p{margin:2px 0}
+.pnj-g-t{display:flex;justify-content:space-between;align-items:baseline;width:100%;height:auto;min-height:0;padding:6px 0 2px;border:none;border-bottom:1px solid var(--line);background:transparent;font:inherit;font-variant:small-caps;letter-spacing:.04em;color:var(--accent);cursor:pointer;text-align:left}.pnj-g+.pnj-g{margin-top:6px}.pnj-g-t+.pnj-j{border-top:none}
 .pnj-j-c{padding-left:12px;position:relative}.pnj-j-c::before{content:'–';position:absolute;left:0;color:var(--muted)}.pnj-j-c.ok{text-decoration:line-through;color:var(--muted)}
 .arme .mains{float:right;margin-left:8px;padding:2px 10px;font-size:.85rem}
 .arme-ed{display:grid;grid-template-columns:1fr 4.2rem auto;gap:6px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
@@ -940,9 +941,13 @@ function journalJoueur(p){
 /* PNJ rencontrés : seulement ce que le MJ a choisi de dire (nom connu, physique, vêtements, lieu, contexte ; « [x] » = réglé, barré) */
 function pnjRencontres(l){if(!l.length)return '';const o=ui.jrnJ['_pnj'];
   const ctx=t=>String(t||'').split('\n').map(x=>({ok:/^\s*\[[xX]\]/.test(x),t:x.replace(/^\s*\[[ xX]?\]\s*/,'').trim()})).filter(x=>x.t);
-  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${l.map(x=>{const r=!ui.jrnJ['p:'+x.id];return `<div class="pnj-j${r?' replie':''}">
+  const carte=x=>{const r=!ui.jrnJ['p:'+x.id];return `<div class="pnj-j${r?' replie':''}">
     <button class="pnj-j-n" data-a="jrnJ" data-id="p:${esc(x.id)}" aria-expanded="${!r}"><b>${esc(x.nom)}</b>${x.role?` <span class="muted">${esc(x.role)}</span>`:''}</button>${r?'':`${x.phrase?`<div class="pnj-j-p">${esc(x.phrase)}</div>`:''}
-    ${ctx(x.contexte).map(c=>`<div class="pnj-j-c${c.ok?' ok':''}">${esc(c.t)}</div>`).join('')}`}</div>`}).join('')}</div>`:''}</div>`}
+    ${ctx(x.contexte).map(c=>`<div class="pnj-j-c${c.ok?' ok':''}">${esc(c.t)}</div>`).join('')}`}</div>`};
+  /* par catégorie (la région du MJ, sous le nom choisi pour les joueurs), la plus récente en haut ; chaque catégorie se replie */
+  const G=[];l.forEach(x=>{const n=x.groupe||'Ailleurs';let g=G.find(y=>y.n===n);if(!g)G.push(g={n,l:[]});g.l.push(x)});
+  const cat=g=>{const f=ui.jrnJ['g:'+g.n];return `<div class="pnj-g"><button class="pnj-g-t" data-a="jrnJ" data-id="g:${esc(g.n)}" aria-expanded="${!f}"><span>${esc(g.n)}</span><span class="muted">${g.l.length} ${f?'▸':'▾'}</span></button>${f?'':g.l.map(carte).join('')}</div>`};
+  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${G.map(cat).join('')}</div>`:''}</div>`}
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
   return `<section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
