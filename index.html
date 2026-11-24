@@ -1418,7 +1418,7 @@ async function chargerRef(){
    dans le cache du navigateur (pas dans localStorage, réservé aux fiches) : ils marchent hors ligne.
    Tout lien AideDD vers un sort, un don ou un état connu s'ouvre alors dans la fenêtre intégrée ;
    sinon (texte absent, pas encore téléchargé) le lien s'ouvre sur AideDD comme avant. */
-const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=1;
+const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=2;   /* TXT_V : à augmenter quand le serveur reçoit de nouveaux textes (force le retéléchargement) */
 let TEXTES=null;
 async function chargerTextes(){
   let c=null;try{c=await caches.open(TXT_CACHE);const r=await c.match(TXT_URL);if(r){const j=await r.json();if(j&&j.v===TXT_V)TEXTES=j}}catch(e){}
