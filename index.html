@@ -179,6 +179,8 @@ main.ed .cpt button{width:34px;height:34px;padding:0;font-size:1.2rem}
 .jrn-j-t{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;height:auto;min-height:38px;padding:6px 0;border:none;background:transparent;text-align:left;font:inherit;color:var(--fg);font-weight:700}
 .jrn-j-t .muted{font-weight:normal;font-style:italic;font-size:.88rem;white-space:nowrap}
 .jrn-j-c{padding:0 0 8px}.jrn-j-c p{margin:4px 0}.jrn-j-c ul{margin:4px 0;padding-left:20px}
+.pnj-j{padding:6px 0;border-top:1px solid var(--line);font-size:.95rem}.pnj-j:first-child{border-top:none}.pnj-j-n .muted{font-style:italic;font-size:.88rem}
+.pnj-j-c{padding-left:12px;position:relative}.pnj-j-c::before{content:'–';position:absolute;left:0;color:var(--muted)}.pnj-j-c.ok{text-decoration:line-through;color:var(--muted)}
 .arme .mains{float:right;margin-left:8px;padding:2px 10px;font-size:.85rem}
 .arme-ed{display:grid;grid-template-columns:1fr 4.2rem auto;gap:6px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
 .arme-ed .full{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -920,18 +922,26 @@ function ongSac(p,d,e){
 
 /* Journal de campagne : seulement les résumés de session écrits par le MJ (le reste de ses notes ne quitte pas le serveur) */
 async function chargerJournalJ(p,force){
-  if(!p||!p.cloud||!navigator.onLine)return;if(!force&&p.journal&&Date.now()-p.journal.t<300000)return;
-  try{const l=await rpc('j_journal',{p_cle:p.cloud.cle});if(!Array.isArray(l))return;const avant=JSON.stringify(p.journal&&p.journal.l);
-    p.journal={l,t:Date.now()};save();if(avant!==JSON.stringify(l)&&ui.vue==='perso'&&ui.id===p.id&&(ui.onglet==='fiche'||grandEcran())){const a=document.activeElement;if(!(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)))render()}}catch(e){}
+  if(!p||!p.cloud||!navigator.onLine)return;if(!force&&p.journal&&Date.now()-p.journal.t<60000)return;
+  try{const [l,n]=await Promise.all([rpc('j_journal',{p_cle:p.cloud.cle}),rpc('j_pnj',{p_cle:p.cloud.cle}).catch(()=>p.journal&&p.journal.pnj)]);if(!Array.isArray(l))return;
+    const avant=JSON.stringify(p.journal&&[p.journal.l,p.journal.pnj]),pnj=Array.isArray(n)?n:[];
+    p.journal={l,pnj,t:Date.now()};save();if(avant!==JSON.stringify([l,pnj])&&ui.vue==='perso'&&ui.id===p.id&&(ui.onglet==='fiche'||grandEcran())){const a=document.activeElement;if(!(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)))render()}}catch(e){}
 }
 function journalJoueur(p){
-  const l=(p.journal&&p.journal.l)||[];if(!l.length)return '';ui.jrnJ=ui.jrnJ||{};
+  const l=(p.journal&&p.journal.l)||[],pn=(p.journal&&p.journal.pnj)||[];if(!l.length&&!pn.length)return '';ui.jrnJ=ui.jrnJ||{};
   const dt=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString('fr-FR',{day:'numeric',month:'long'}):''};
   const txt=t=>{let h='',ul=false;for(const l0 of String(t||'').split('\n')){const x=l0.trim(),li=x.match(/^[-•*]\s+(.*)$/);
     if(li){if(!ul){h+='<ul>';ul=true}h+=`<li>${esc(li[1])}</li>`;continue}if(ul){h+='</ul>';ul=false}if(x)h+=`<p>${esc(x)}</p>`}return h+(ul?'</ul>':'')};
   return `<section><h2>Journal de campagne</h2>${l.map(x=>{const o=ui.jrnJ[x.id];
-    return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="${esc(x.id)}" aria-expanded="${!!o}"><span>${esc(x.titre||'Session')}</span><span class="muted">${esc(dt(x.date))} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${txt(x.resume)}</div>`:''}</div>`}).join('')}</section>`;
+    return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="${esc(x.id)}" aria-expanded="${!!o}"><span>${esc(x.titre||'Session')}</span><span class="muted">${esc(dt(x.date))} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${txt(x.resume)}</div>`:''}</div>`}).join('')}${pnjRencontres(pn)}</section>`;
 }
+/* PNJ rencontrés : seulement ce que le MJ a choisi de dire (nom connu, physique, vêtements, lieu, contexte ; « [x] » = réglé, barré) */
+function pnjRencontres(l){if(!l.length)return '';const o=ui.jrnJ['_pnj'];
+  const ctx=t=>String(t||'').split('\n').map(x=>({ok:/^\s*\[[xX]\]/.test(x),t:x.replace(/^\s*\[[ xX]?\]\s*/,'').trim()})).filter(x=>x.t);
+  const f=(k,v)=>v?`<div><span class="muted">${k} :</span> ${esc(v)}</div>`:'';
+  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${l.map(x=>`<div class="pnj-j">
+    <div class="pnj-j-n"><b>${esc(x.nom)}</b>${x.role?` <span class="muted">${esc(x.role)}</span>`:''}</div>${f('Physique',x.physique)}${f('Vêtements',x.vetement)}${f('Rencontré',x.lieu)}
+    ${ctx(x.contexte).map(c=>`<div class="pnj-j-c${c.ok?' ok':''}">${esc(c.t)}</div>`).join('')}</div>`).join('')}</div>`:''}</div>`}
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
   return `<section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
