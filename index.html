@@ -76,6 +76,8 @@ ul.plain li>span{display:block}
 .regle-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
 .regle-barre b{font-size:1.1em}.regle-barre button{flex:none}
 .regle-corps{padding:10px 14px 16px}.regle-corps p{margin:.5em 0}.regle-corps .muted{font-size:.9em}
+/* pas de rectangle bleu de Chrome Android sur le lien touché (il restait visible sous la fenêtre qui s'ouvre) */
+a{-webkit-tap-highlight-color:transparent}
 .regle-corps table{border-collapse:collapse;margin:.5em 0}.regle-corps td,.regle-corps th{border:1px solid var(--line);padding:2px 6px}
 .vis-barre{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;color:#f6ecd4;font-family:var(--disp);font-size:1.1rem}
 .vis-barre button{flex:none;color:#f6ecd4;border-color:#f6ecd4;height:36px;width:36px;padding:0}
