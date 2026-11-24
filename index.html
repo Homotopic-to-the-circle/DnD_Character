@@ -684,7 +684,9 @@ function itemLien(type,nom,label,extra){
   if(rk&&!ui.edit&&!((P().etat.liens||{})[type+':'+propre(nom)]))return `<a class="ext" href="#" data-regle="${esc(rk)}" data-titre="${esc(sansCoche(propre(nom)))}">${esc(sansCoche(label??nom))}</a>`;
   const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
-  return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+  /* capacité de classe : la fenêtre intégrée cherche le texte par classe, sous-classe et nom (lien AideDD gardé en secours) */
+  const dc=type==='capa'&&!((P().etat.liens||{})[type+':'+propre(nom)])?(()=>{const d=D(P());return ` data-capa="${esc([d.id.classe,d.id.sousClasse,sansCoche(propre(nom))].join('|'))}"`})():'';
+  return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener"${dc}>${esc(label)}</a>`;
 }
 
 /* ---------- armes : type de dégâts et botte cliquables ---------- */
@@ -1454,11 +1456,19 @@ function texteParTitre(type,titre){
   const n=txtN(titre);if(!TEXTES||!n)return null;
   for(const k in TEXTES)if(k.startsWith(type+':')&&Array.isArray(TEXTES[k])&&txtN(TEXTES[k][0])===n)return k;return null;
 }
+/* capacités de classe : clé « capa:<classe>:<sous-classe>:<nom> », mots normalisés et sans s final (comme sur le serveur) */
+const capaN=s=>String(s||'').toLowerCase().replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\b(\w{3,})s\b/g,'$1');
+function cleCapa(v){
+  const [cl,sc,nom]=String(v||'').split('|');if(!TEXTES||!cl||!nom)return null;
+  const c=txtN(cl).replace(/ /g,'-'),n=capaN(nom);
+  for(const k of ['capa:'+c+':'+capaN(sc)+':'+n,'capa:'+c+'::'+n])if(Array.isArray(TEXTES[k]))return k;
+  return null;
+}
 function voirTexte(k,href,titreLien){
   if(TEXTES&&!TEXTES[k])k=texteParTitre(k.split(':')[0],titreLien)||k;
   const e=TEXTES&&TEXTES[k];if(!Array.isArray(e))return false;
   const titre=e[0]||titreLien||'';
-  const sous={sort:'Sort',don:'Don',etat:'État'}[k.split(':')[0]]||'';
+  const sous=e[2]||{sort:'Sort',don:'Don',etat:'État',capa:'Capacité'}[k.split(':')[0]]||'';
   const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
   o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(sous)} · <a class="ext" href="${esc(href)}" target="_blank" rel="noopener" data-direct>AideDD ↗</a></span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${texteSur(e[1])}</div></div>`;
   const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};
@@ -1474,7 +1484,7 @@ document.addEventListener('click',ev=>{
   const a=ev.target.closest&&ev.target.closest('a[href]');if(!a||a.hasAttribute('data-direct'))return;
   if(typeof ui!=='undefined'&&ui.edit)return;
   if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button)return;
-  const k=cleTexte(a.getAttribute('href'));if(!k)return;
+  const k=(a.dataset.capa&&cleCapa(a.dataset.capa))||cleTexte(a.getAttribute('href'));if(!k)return;
   if(voirTexte(k,a.href,a.textContent.trim())){ev.preventDefault();ev.stopPropagation()}
 },true);
 const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
