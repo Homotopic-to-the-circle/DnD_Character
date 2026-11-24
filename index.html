@@ -685,7 +685,9 @@ function itemLien(type,nom,label,extra){
   const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
   /* capacité de classe : la fenêtre intégrée cherche le texte par classe, sous-classe et nom (lien AideDD gardé en secours) */
-  const dc=type==='capa'&&!((P().etat.liens||{})[type+':'+propre(nom)])?(()=>{const d=D(P());return ` data-capa="${esc([d.id.classe,d.id.sousClasse,sansCoche(propre(nom))].join('|'))}"`})():'';
+  const perso=!((P().etat.liens||{})[type+':'+propre(nom)]),d=D(P()),n=sansCoche(propre(nom));
+  const dc=!perso?'':type==='capa'?` data-capa="${esc([d.id.classe,d.id.sousClasse,n].join('|'))}"`
+    :/^(trait|espece|historique)$/.test(type)?` data-orig="${esc([type,d.id.espece,n].join('|'))}"`:'';
   return `<a class="ext" href="${esc(u)}" target="_blank" rel="noopener"${dc}>${esc(label)}</a>`;
 }
 
@@ -1418,7 +1420,7 @@ async function chargerRef(){
    dans le cache du navigateur (pas dans localStorage, réservé aux fiches) : ils marchent hors ligne.
    Tout lien AideDD vers un sort, un don ou un état connu s'ouvre alors dans la fenêtre intégrée ;
    sinon (texte absent, pas encore téléchargé) le lien s'ouvre sur AideDD comme avant. */
-const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=2;   /* TXT_V : à augmenter quand le serveur reçoit de nouveaux textes (force le retéléchargement) */
+const TXT_CACHE='dalmor-textes',TXT_URL=location.origin+'/__textes-aidedd.json',TXT_V=3;   /* TXT_V : à augmenter quand le serveur reçoit de nouveaux textes (force le retéléchargement) */
 let TEXTES=null;
 async function chargerTextes(){
   let c=null;try{c=await caches.open(TXT_CACHE);const r=await c.match(TXT_URL);if(r){const j=await r.json();if(j&&j.v===TXT_V)TEXTES=j}}catch(e){}
@@ -1464,11 +1466,18 @@ function cleCapa(v){
   for(const k of ['capa:'+c+':'+capaN(sc)+':'+n,'capa:'+c+'::'+n])if(Array.isArray(TEXTES[k]))return k;
   return null;
 }
+/* origines : « trait:<espèce>:<nom> » (sinon le même trait d'une autre espèce), « espece:<nom> », « historique:<nom> » */
+function cleOrig(v){
+  const [t,esp,nom]=String(v||'').split('|');if(!TEXTES||!t||!nom)return null;const n=capaN(nom);
+  if(t!=='trait')return Array.isArray(TEXTES[t+':'+n])?t+':'+n:null;
+  if(Array.isArray(TEXTES['trait:'+capaN(esp)+':'+n]))return 'trait:'+capaN(esp)+':'+n;
+  for(const k in TEXTES)if(k.startsWith('trait:')&&k.endsWith(':'+n)&&Array.isArray(TEXTES[k]))return k;return null;
+}
 function voirTexte(k,href,titreLien){
   if(TEXTES&&!TEXTES[k])k=texteParTitre(k.split(':')[0],titreLien)||k;
   const e=TEXTES&&TEXTES[k];if(!Array.isArray(e))return false;
   const titre=e[0]||titreLien||'';
-  const sous=e[2]||{sort:'Sort',don:'Don',etat:'État',capa:'Capacité'}[k.split(':')[0]]||'';
+  const sous=e[2]||{sort:'Sort',don:'Don',etat:'État',capa:'Capacité',trait:'Trait',espece:'Espèce',historique:'Historique'}[k.split(':')[0]]||'';
   const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
   o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(sous)} · <a class="ext" href="${esc(href)}" target="_blank" rel="noopener" data-direct>AideDD ↗</a></span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${texteSur(e[1])}</div></div>`;
   const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};
@@ -1484,7 +1493,7 @@ document.addEventListener('click',ev=>{
   const a=ev.target.closest&&ev.target.closest('a[href]');if(!a||a.hasAttribute('data-direct'))return;
   if(typeof ui!=='undefined'&&ui.edit)return;
   if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button)return;
-  const k=(a.dataset.capa&&cleCapa(a.dataset.capa))||cleTexte(a.getAttribute('href'));if(!k)return;
+  const k=(a.dataset.capa&&cleCapa(a.dataset.capa))||(a.dataset.orig&&cleOrig(a.dataset.orig))||cleTexte(a.getAttribute('href'));if(!k)return;
   if(voirTexte(k,a.href,a.textContent.trim())){ev.preventDefault();ev.stopPropagation()}
 },true);
 const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();

@@ -16,6 +16,7 @@ grant execute on function public.ref_textes() to anon, authenticated;
 -- 2. exécuter le bloc ci-dessous (les sorts en plusieurs fois si le délai est dépassé : changer offset) ;
 -- 3. drop extension if exists http;
 -- Clés : 'sort:<slug AideDD>', 'don:<slug AideDD>', 'etat:<ancre AideDD>',
+--        'espece:<nom>', 'trait:<espèce>:<nom>', 'historique:<nom>',
 --        'capa:<classe>:<sous-classe>:<nom>' (sous-classe vide = capacité de base ; mots normalisés par kn(), comme capaN() dans les apps).
 -- Les capacités « Voir le Manuel des Joueurs » ne sont pas copiées : l'app garde le lien AideDD (ou REGLES écrit à la main).
 /*
@@ -106,4 +107,30 @@ update public.ref_textes s set html = s.html || '<h4>Options de manœuvre</h4>' 
 from public.ref_textes o
 where s.cle = 'capa:guerrier:maitre de guerre:superiorite martiale' and o.cle = 'capa:guerrier:maitre de guerre:option de manoeuvre'
   and strpos(s.html, '<h4>Options de manœuvre') = 0;
+-- espèces (section entière + un texte par trait) et historiques (pg_temp.net et pg_temp.kn ci-dessus)
+do $$ declare pg text; typ text; c text; sec text; nom text; morceau text; tn text; begin
+  foreach pg in array array['description-des-especes','description-des-historiques'] loop
+    typ := case when pg like '%especes' then 'espece' else 'historique' end;
+    select content into c from extensions.http_get('https://www.aidedd.org/regles-24/origines-des-personnages/'||pg||'/');
+    c := substr(c, strpos(c,'<div class="content v24">'), strpos(c,'<div id="Breadcrumbs">')-strpos(c,'<div class="content v24">'));
+    for sec in select x from regexp_split_to_table(c, '(?=<h2[ >])') x where x ~ '^<h2' loop
+      nom := pg_temp.net((regexp_match(sec,'^<h2[^>]*>(.*?)</h2>'))[1]);
+      if nom is null or nom = '' then continue; end if;
+      sec := regexp_replace(sec, '<img[^>]*>', '', 'g');
+      insert into public.ref_textes(cle,titre,html,sous,source)
+      values(typ||':'||pg_temp.kn(nom), nom, pg_temp.net(substr(sec, strpos(sec,'</h2>')+5)), case when typ='espece' then 'Espèce' else 'Historique' end,
+             'https://www.aidedd.org/regles-24/origines-des-personnages/'||pg||'/#'||coalesce((regexp_match(sec,'id="([^"]+)"'))[1],''))
+      on conflict (cle) do update set titre=excluded.titre, html=excluded.html, sous=excluded.sous, maj=now();
+      if typ='espece' then
+        for morceau in select x from regexp_split_to_table(substr(sec, strpos(sec,'</h2>')+5), '(?=<p>\s*<strong>)') x where x ~ '^<p>\s*<strong>' loop
+          tn := trim(regexp_replace(pg_temp.net((regexp_match(morceau,'^<p>\s*<strong>([^<]*)'))[1]), '[\s:.]+$', ''));
+          if tn ~* '^(Type de créature|Taille|Vitesse)$' or tn ~ '^(nbsp)?$' or tn ~ '^&' then continue; end if;
+          insert into public.ref_textes(cle,titre,html,sous,source)
+          values('trait:'||pg_temp.kn(nom)||':'||pg_temp.kn(tn), tn, pg_temp.net(morceau), 'Trait · '||nom,
+                 'https://www.aidedd.org/regles-24/origines-des-personnages/'||pg||'/#'||coalesce((regexp_match(sec,'id="([^"]+)"'))[1],''))
+          on conflict (cle) do update set titre=excluded.titre, html=excluded.html, sous=excluded.sous, maj=now();
+        end loop;
+      end if;
+    end loop;
+  end loop; end $$;
 */
