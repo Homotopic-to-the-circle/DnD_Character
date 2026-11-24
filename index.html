@@ -939,7 +939,7 @@ function journalJoueur(p){
 function pnjRencontres(l){if(!l.length)return '';const o=ui.jrnJ['_pnj'];
   const ctx=t=>String(t||'').split('\n').map(x=>({ok:/^\s*\[[xX]\]/.test(x),t:x.replace(/^\s*\[[ xX]?\]\s*/,'').trim()})).filter(x=>x.t);
   const f=(k,v)=>v?`<div><span class="muted">${k} :</span> ${esc(v)}</div>`:'';
-  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${l.map(x=>{const r=ui.jrnJ['p:'+x.id];return `<div class="pnj-j${r?' replie':''}">
+  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${l.map(x=>{const r=!ui.jrnJ['p:'+x.id];return `<div class="pnj-j${r?' replie':''}">
     <button class="pnj-j-n" data-a="jrnJ" data-id="p:${esc(x.id)}" aria-expanded="${!r}"><b>${esc(x.nom)}</b>${x.role?` <span class="muted">${esc(x.role)}</span>`:''}</button>${r?'':`${f('Physique',x.physique)}${f('Vêtements',x.vetement)}${f('Rencontré',x.lieu)}
     ${ctx(x.contexte).map(c=>`<div class="pnj-j-c${c.ok?' ok':''}">${esc(c.t)}</div>`).join('')}`}</div>`}).join('')}</div>`:''}</div>`}
 function ongFiche(p,d,e){
