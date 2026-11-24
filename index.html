@@ -44,7 +44,7 @@ h2{font-size:1.25rem;letter-spacing:.02em;padding-bottom:4px;border:none;
 /* titre avec un bouton à droite (Repos long) */
 .h2b{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .h2b button{font-family:var(--body);font-size:.95rem;letter-spacing:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;line-height:1;margin-bottom:4px}
-.h2b .repos{display:flex;gap:6px}.gestion~section h2{font-size:1.05rem;border-bottom-width:1px}.bandeau{line-height:1.35}.bandeau b{font-size:1.05rem}
+.bandeau{display:flex;flex-direction:row;gap:12px;align-items:center;justify-content:space-between}.bandeau-id{min-width:0;flex:1}.bandeau .repos{display:flex;flex-direction:column;gap:6px;flex:none}.bandeau .repos button{height:32px;min-height:0;padding:0 12px;font-size:.92rem;white-space:nowrap}.gestion~section h2{font-size:1.05rem;border-bottom-width:1px}.bandeau{line-height:1.35}.bandeau b{font-size:1.05rem}
 .gestion-t{display:flex;justify-content:space-between;align-items:baseline;width:100%;height:auto;min-height:0;padding:0 0 4px;border:none;border-bottom:2px solid var(--accent);border-radius:0;background:transparent;font-family:var(--disp);font-size:1.25rem;letter-spacing:.02em;color:var(--accent);text-align:left;cursor:pointer}
 .err-t{color:var(--danger)}
 /* notes par ligne, sorts non préparés, avantage aux sauvegardes */
@@ -856,7 +856,7 @@ function ongCombat(p,d,e){
       <div class="mort"><span class="lab">Jets contre<br>la mort</span><div class="mort-g"><span class="lab">Succès</span>${cases('jm:s',3)}<span class="lab">Échecs</span>${cases('jm:e',3,'e')}</div></div></section>
     <div class="stats">${stats}</div>
     <section><h2>Armes et attaques</h2>${armes}</section>
-    <section><h2 class="h2b"><span>Ressources</span><span class="repos">${[['reposC','Repos court'],['repos','Repos long']].map(([k,l])=>`<button class="${conf===k?'on':''}" data-a="${k}">${conf===k?'Confirmer ?':l}</button>`).join('')}</span></h2>${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}${ed?'<div class="lab">Maximum de chaque ressource (modifiable)</div>':''}<div class="res">${res}</div>
+    <section><h2>Ressources</h2>${ed?`<div class="row"><input id="rnom" placeholder="Nouvelle ressource" style="flex:1"><input id="rmax" inputmode="numeric" placeholder="Max" style="width:4.5rem"><button data-a="ajoutRes">Ajouter</button></div>`:''}${ed?'<div class="lab">Maximum de chaque ressource (modifiable)</div>':''}<div class="res">${res}</div>
       ${masquees?`<div class="lab">Ressources masquées</div><div class="row">${masquees}</div>`:''}</section>
     ${autres?`<section><h2>Capacités</h2>${ed?`<div class="lab">Liens vers AideDD (modifiables) · « Cases » la transforme en ressource</div>${autres}`:`<ul class="plain">${autres}</ul>`}</section>`:''}`;
 }
@@ -954,9 +954,9 @@ function pnjSection(p){const l=(p.journal&&p.journal.pnj)||[];if(!l.length)retur
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
   const g=ui.gestion;
-  return `<section class="bandeau">${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:''}
+  return `<section class="bandeau"><div class="bandeau-id">${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:''}
       ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
-        :`<div><b>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</b></div><div>${itemLien('espece',d.id.espece)} · ${itemLien('historique',d.id.historique)}${d.id.alignement?` · <span class="muted">${esc(d.id.alignement)}</span>`:''}</div>`}</section>
+        :`<div><b>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</b></div><div>${itemLien('espece',d.id.espece)} · ${itemLien('historique',d.id.historique)}${d.id.alignement?` · <span class="muted">${esc(d.id.alignement)}</span>`:''}</div>`}</div><div class="repos">${[['reposC','Repos court'],['repos','Repos long']].map(([k,l])=>`<button class="${conf===k?'on':''}" data-a="${k}">${conf===k?'Confirmer ?':l}</button>`).join('')}</div></section>
     ${journalJoueur(p)}${pnjSection(p)}
     <section class="gestion"><button class="gestion-t" data-a="gestion" aria-expanded="${!!g}"><span>Gestion du personnage</span><span class="muted">${g?'▾':'▸'}</span></button></section>
     ${g?`    <section><h2>Monter de niveau</h2>
