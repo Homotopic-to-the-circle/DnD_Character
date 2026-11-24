@@ -931,15 +931,15 @@ async function chargerJournalJ(p,force){
     p.journal={l,pnj,t:Date.now()};save();if(avant!==JSON.stringify([l,pnj])&&ui.vue==='perso'&&ui.id===p.id&&(ui.onglet==='fiche'||grandEcran())){const a=document.activeElement;if(!(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)))render()}}catch(e){}
 }
 function journalJoueur(p){
-  const l=(p.journal&&p.journal.l)||[],pn=(p.journal&&p.journal.pnj)||[];if(!l.length&&!pn.length)return '';ui.jrnJ=ui.jrnJ||{};
+  const l=(p.journal&&p.journal.l)||[];if(!l.length)return '';ui.jrnJ=ui.jrnJ||{};
   const dt=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString('fr-FR',{day:'numeric',month:'long'}):''};
   const txt=t=>{let h='',ul=false;for(const l0 of String(t||'').split('\n')){const x=l0.trim(),li=x.match(/^[-•*]\s+(.*)$/);
     if(li){if(!ul){h+='<ul>';ul=true}h+=`<li>${esc(li[1])}</li>`;continue}if(ul){h+='</ul>';ul=false}if(x)h+=`<p>${esc(x)}</p>`}return h+(ul?'</ul>':'')};
   return `<section><h2>Journal de campagne</h2>${l.map(x=>{const o=ui.jrnJ[x.id];
-    return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="${esc(x.id)}" aria-expanded="${!!o}"><span>${esc(x.titre||'Session')}</span><span class="muted">${esc(dt(x.date))} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${txt(x.resume)}</div>`:''}</div>`}).join('')}${pnjRencontres(pn)}</section>`;
+    return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="${esc(x.id)}" aria-expanded="${!!o}"><span>${esc(x.titre||'Session')}</span><span class="muted">${esc(dt(x.date))} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${txt(x.resume)}</div>`:''}</div>`}).join('')}</section>`;
 }
 /* PNJ rencontrés : seulement ce que le MJ a choisi de dire (nom connu, physique, vêtements, lieu, contexte ; « [x] » = réglé, barré) */
-function pnjRencontres(l){if(!l.length)return '';const o=ui.jrnJ['_pnj'];
+function pnjSection(p){const l=(p.journal&&p.journal.pnj)||[];if(!l.length)return '';ui.jrnJ=ui.jrnJ||{};
   const ctx=t=>String(t||'').split('\n').map(x=>({ok:/^\s*\[[xX]\]/.test(x),t:x.replace(/^\s*\[[ xX]?\]\s*/,'').trim()})).filter(x=>x.t);
   const carte=x=>{const r=!ui.jrnJ['p:'+x.id];return `<div class="pnj-j${r?' replie':''}">
     <button class="pnj-j-n" data-a="jrnJ" data-id="p:${esc(x.id)}" aria-expanded="${!r}"><b>${esc(x.nom)}</b>${x.role?` <span class="muted">${esc(x.role)}</span>`:''}</button>${r?'':`${x.phrase?`<div class="pnj-j-p">${esc(x.phrase)}</div>`:''}
@@ -947,13 +947,10 @@ function pnjRencontres(l){if(!l.length)return '';const o=ui.jrnJ['_pnj'];
   /* par catégorie (la région du MJ, sous le nom choisi pour les joueurs), la plus récente en haut ; chaque catégorie se replie */
   const G=[];l.forEach(x=>{const n=x.groupe||'Ailleurs';let g=G.find(y=>y.n===n);if(!g)G.push(g={n,l:[]});g.l.push(x)});
   const cat=g=>{const f=ui.jrnJ['g:'+g.n];return `<div class="pnj-g"><button class="pnj-g-t" data-a="jrnJ" data-id="g:${esc(g.n)}" aria-expanded="${!f}"><span>${esc(g.n)}</span><span class="muted">${g.l.length} ${f?'▸':'▾'}</span></button>${f?'':g.l.map(carte).join('')}</div>`};
-  return `<div class="jrn-j"><button class="jrn-j-t" data-a="jrnJ" data-id="_pnj" aria-expanded="${!!o}"><span>PNJ rencontrés</span><span class="muted">${l.length} ${o?'▾':'▸'}</span></button>${o?`<div class="jrn-j-c">${G.map(cat).join('')}</div>`:''}</div>`}
+  return `<section><h2>PNJ rencontrés</h2>${G.map(cat).join('')}</section>`}
 function ongFiche(p,d,e){
   const hist=[...p.versions].reverse().map(v=>`<li>${new Date(v.date).toLocaleDateString('fr-CH')} : ${esc(v.data.id.classe)} niv ${esc(v.data.id.niveau)}</li>`).join('');
-  return `<section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
-      ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
-        :`<div>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</div><div>Espèce : ${itemLien('espece',d.id.espece)} · Historique : ${itemLien('historique',d.id.historique)}</div><div class="muted">${esc(d.id.alignement)}</div>`}</section>
-    ${journalJoueur(p)}
+  return `${journalJoueur(p)}${pnjSection(p)}
     <section><h2>Monter de niveau</h2>
       <p class="muted">1. Télécharge le fichier .xml ci-dessous. 2. Ouvre le créateur AideDD, importe ce fichier et monte de niveau. 3. Sur la fiche finale, lance le favori « Export AideDD » et colle le résultat ici. Tes cases cochées, armes, sorts ajoutés et notes sont conservés.</p>
       <button data-a="telXml">Télécharger le .xml</button>
@@ -967,6 +964,9 @@ function ongFiche(p,d,e){
         :`<button data-a="retour">Revenir à la version précédente</button>`):''}</section>
     ${sortieTexte?`<section><p class="muted">La copie automatique n’a pas marché : sélectionne ce texte et copie-le.</p><textarea readonly id="sortie">${esc(sortieTexte)}</textarea></section>`:''}
     ${sectionCloud(p)}
+    <section><h2 class="h2b"><span>Personnage</span><button class="${conf==='repos'?'on':''}" data-a="repos">${conf==='repos'?'Confirmer ?':'Repos long'}</button></h2>${ui.edit?`<label class="lab">Nom<input data-f="nom" value="${esc(e.nom)}" placeholder="Nom du personnage"></label>`:`<div><b>${esc(e.nom||'Sans nom')}</b></div>`}
+      ${ui.edit?itemLien('espece',d.id.espece,'Espèce : '+d.id.espece)+itemLien('historique',d.id.historique,'Historique : '+d.id.historique)
+        :`<div>${esc(d.id.classe)}${d.id.sousClasse?' ('+esc(d.id.sousClasse)+')':''} · niveau ${esc(d.id.niveau)}</div><div>Espèce : ${itemLien('espece',d.id.espece)} · Historique : ${itemLien('historique',d.id.historique)}</div><div class="muted">${esc(d.id.alignement)}</div>`}</section>
     <section><h2>Copie de secours</h2>
       <p class="muted">Une copie à garder de ton côté (notes, messages). Elle se recolle dans « Importer » sur l’écran d’accueil.</p>
       <div class="row"><button data-a="copierSauv">Copier la sauvegarde</button><button data-a="telSauv">Télécharger</button></div></section>
