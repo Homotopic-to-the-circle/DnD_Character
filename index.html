@@ -249,7 +249,7 @@ ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;di
 .don-l{display:flex;gap:8px;align-items:center;justify-content:space-between}.don-l input{flex:1;min-width:0}.don-aide{margin:0 10px 4px auto;font-family:var(--body);font-size:.85rem;letter-spacing:0;color:var(--muted);font-style:italic;font-variant:normal;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .objet.choix{width:100%;height:auto;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;font:inherit;color:var(--fg);cursor:pointer;padding:5px 6px}
 .objet.choix.on{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--fg);border-left:3px solid var(--accent)}
-.obj-mj{align-self:center;min-width:0}
+.obj-mj{align-self:center;min-width:0}.conf-x{height:auto;min-height:32px;padding:0 8px;font-size:.85rem;white-space:nowrap}
 .qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
 .obj-ed input{padding:4px 6px}
@@ -973,7 +973,7 @@ function ongSac(p,d,e){
       ?`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`+e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
           ${o.mj?`<span class="obj-mj">${esc(o.nom)} <span class="muted">· objet du MJ</span></span>`:`<input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">`}
-          <button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>
+          ${ui.confObj===i?`<button class="dgr conf-x" data-a="supprObj" data-i="${i}">Retirer ?</button>`:`<button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>`}
           ${armeConnue(o.nom)&&!e.armes.some(a=>refN(a.nom)===refN(o.nom))?`<button class="vers-att" data-a="versAttaque" data-i="${i}">+ aux attaques</button>`:''}
           ${o.mj?'':`${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
           <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description">`}</div>`).join('')
@@ -1178,7 +1178,7 @@ document.addEventListener('click',ev=>{
       p.etat.sortsPlus.push({niv:l,nom:n.charAt(0).toUpperCase()+n.slice(1),C:g('sC').checked,R:g('sR').checked,M:g('sM').checked,inc,portee:por,...(url?{url}:{})});flash={t:'« '+n+' » ajouté'+(l?' au niveau '+l:' aux sorts mineurs')+'.'};break}
     case 'supprSort':{const i=b.dataset.i;if(i!=='')p.etat.sortsPlus.splice(num(i),1);else if(!p.etat.sortsMoins.includes(b.dataset.k))p.etat.sortsMoins.push(b.dataset.k);break}
     case 'sortC':{const x=p.etat.sortsPlus[num(b.dataset.i)],k=['M','R'].includes(b.dataset.p)?b.dataset.p:'C';x[k]=!x[k];break}
-    case 'supprObj':p.etat.objets.splice(num(b.dataset.i),1);break;
+    case 'supprObj':{const i=num(b.dataset.i),o=p.etat.objets[i];if(o&&o.nom&&ui.confObj!==i){ui.confObj=i;break}ui.confObj=null;p.etat.objets.splice(i,1);if(o&&o.nom)flash={t:'« '+o.nom+' » retiré du sac.'};break}
     case 'versAttaque':{const o=p.etat.objets[num(b.dataset.i)],x=o&&armeConnue(o.nom);if(!x)break;flash={t:'« '+x[0]+' » ajouté aux attaques (onglet Combat).'};p.etat.armes.push({...armeAuto(p,x),wid:rid()});break}
     case 'ajoutRes':{const n=document.getElementById('rnom').value.trim(),m=num(document.getElementById('rmax').value);
       if(!n||m<1)throw new Error('Indique un nom et un maximum (au moins 1).');p.etat.ressPerso.push({nom:n,max:Math.min(m,99)});break}
@@ -1478,6 +1478,8 @@ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.clos
   const n={p:p.id,t:a==='donPc'?'pc':'obj'};
   ui.don=ui.don&&ui.don.t===n.t?null:n;render();if(ui.don)chargerCompagnons(p)},true);
 document.addEventListener('input',ev=>{if(ev.target.id==='donVal'&&ui.don)ui.don.v=ev.target.value});
+/* « Retirer ? » : un autre geste annule la confirmation */
+document.addEventListener('click',ev=>{if(ui.confObj!=null&&!(ev.target.closest&&ev.target.closest('[data-a=supprObj]'))){ui.confObj=null;if(!(ev.target.closest&&ev.target.closest('[data-a]')))render()}},true);
 /* le MJ révèle un objet mystérieux, ou marque une harmonisation (✦) */
 function appliquerAction(e,c){
   /* pièces données par un autre joueur (ou ajoutées / retirées par le MJ), en pièces de cuivre */
