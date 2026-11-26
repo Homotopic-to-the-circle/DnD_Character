@@ -240,7 +240,11 @@ ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;di
 .qte{display:flex;align-items:center;gap:6px;flex:none}
 .qte button{padding:0;width:30px;height:30px;line-height:1;font-size:1.1rem}
 .objet .obj-n{flex:1;min-width:0}
-.don-f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 8px}.don-f select.large{flex-basis:100%}.don-f select{flex:2;min-width:8em;height:40px;padding:0 8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:inherit}.don-f input{flex:1;min-width:6em}.don-f p{flex-basis:100%;margin:0}
+.don-f{display:flex;flex-direction:column;gap:8px;margin:6px 0 10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.don-qui{display:flex;flex-wrap:wrap;gap:6px}.don-qui button{height:34px;padding:0 12px;font-size:.95rem}
+.don-l{display:flex;gap:8px;align-items:center;justify-content:space-between}.don-l input{flex:1;min-width:0}.don-aide{margin:6px 0 2px;color:var(--accent);font-style:italic}
+.objet.choix{width:100%;height:auto;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;font:inherit;color:var(--fg);cursor:pointer;padding:5px 6px}
+.objet.choix.on{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--fg);border-left:3px solid var(--accent)}
 .obj-mj{align-self:center;min-width:0}
 .qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
@@ -954,14 +958,14 @@ function ongSorts(p,d,e){
 }
 
 function ongSac(p,d,e){
-  const ed=ui.edit,C=C_PIECES,cl=!!p.cloud&&!ed,dn=ui.don&&ui.don.p===p.id?ui.don:null;
+  const ed=ui.edit,C=C_PIECES,cl=!!p.cloud&&!ed,dn=ui.don&&ui.don.p===p.id&&!ed?ui.don:null,pick=dn&&dn.t==='obj';
   const coins=ed?C.map(([k,l])=>`<label>${l}<input data-f="pieces.${k}" inputmode="numeric" value="${esc(e.pieces[k])}"></label>`).join('')
     :C.map(([k,l])=>`<div class="coin"><b>${esc(e.pieces[k]||0)}</b>${l}</div>`).join('');
   const harmo=e.harmo.filter(Boolean);
   const tot=totalPc(e),mix=C.filter(([k])=>num(e.pieces[k])).length>1;
   return `<section><h2 class="h2b"><span>Pièces</span>${cl?`<button class="${dn&&dn.t==='pc'?'on':''}" data-a="donPc">Donner</button>`:''}</h2><div class="coins">${coins}</div>
     ${!ed&&mix?`<p class="muted">En tout : ${esc(fmtPc(tot))}</p>`:''}${dn&&dn.t==='pc'?formDon(p,'pc'):''}</section>
-    <section><h2 class="h2b"><span>Équipement</span>${cl&&e.objets.some(o=>o.nom)?`<button class="${dn&&dn.t==='obj'?'on':''}" data-a="donObj">Donner</button>`:''}</h2>${dn&&dn.t==='obj'?formDon(p,'obj'):''}${ed
+    <section><h2 class="h2b"><span>Équipement</span>${cl&&e.objets.some(o=>o.nom)?`<button class="${dn&&dn.t==='obj'?'on':''}" data-a="donObj">Donner</button>`:''}</h2>${pick&&dn.i==null?'<p class="don-aide">Touche l’objet à donner.</p>':''}${ed
       ?`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`+e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
           ${o.mj?`<span class="obj-mj">${esc(o.nom)} <span class="muted">· objet du MJ</span></span>`:`<input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">`}
@@ -969,7 +973,7 @@ function ongSac(p,d,e){
           ${armeConnue(o.nom)&&!e.armes.some(a=>refN(a.nom)===refN(o.nom))?`<button class="vers-att" data-a="versAttaque" data-i="${i}">+ aux attaques</button>`:''}
           ${o.mj?'':`${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
           <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description">`}</div>`).join('')
-      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
+      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':pick?`<button class="objet choix${dn.i===i?' on':''}" data-a="donChoisir" data-i="${i}" aria-pressed="${dn.i===i}"><span class="obj-n">${esc(o.nom)}${o.harmonise?'<span class="harmo">✦</span>':''}</span>${num(o.qte)!==1?`<b>${esc(o.qte)}</b>`:''}</button>${dn.i===i?formDon(p,'obj',o):''}`:`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
         :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
     <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
 }
@@ -1390,23 +1394,23 @@ function payer(e,n){if(totalPc(e)<n)return false;let r=n;
 function recevoirPc(e,n){for(const d of ['po','pa','pc']){const q=Math.floor(n/V_PIECE[d]);if(q){e.pieces[d]=String(num(e.pieces[d])+q);n-=q*V_PIECE[d]}}}
 const compagnons={};
 async function chargerCompagnons(p){if(compagnons[p.id]||!p.cloud)return;try{const l=await rpc('j_compagnons',{p_cle:p.cloud.cle});compagnons[p.id]=Array.isArray(l)?l:[]}catch(e){compagnons[p.id]=null;flash={err:1,t:'Liste des personnages indisponible (connexion ?).'}}render()}
-function formDon(p,t,o){const l=compagnons[p.id];
+function formDon(p,t,o){const l=compagnons[p.id],d=ui.don;
   if(l===undefined)return '<p class="muted don-f">Chargement des personnages…</p>';
   if(!l||!l.length)return '<p class="muted don-f">Aucun autre personnage relié dans la campagne.</p>';
-  const sel=`<select id="donDest" aria-label="À qui ?">${l.map(x=>`<option value="${esc(x.id)}">${esc(x.nom)}</option>`).join('')}</select>`;
-  const objs=p.etat.objets.map((x,i)=>x.nom?`<option value="${i}">${esc(x.nom)}${num(x.qte)>1?' ×'+esc(x.qte):''}${x.harmonise?' ✦':''}</option>`:'').join('');
-  return `<div class="don-f">${t==='obj'?`<select id="donObj" class="large" aria-label="Quel objet ?">${objs}</select>`:''}${sel}${t==='pc'
-    ?`<input id="donVal" inputmode="decimal" placeholder="PO (ex. 0,5)" aria-label="Montant en pièces d’or" autocomplete="off">`
-    :`<input id="donVal" inputmode="numeric" value="1" aria-label="Quantité" title="Quantité" style="width:4.5em;min-width:0;flex:none">`}
-    <button class="on" data-a="donOk">Donner</button><button data-a="donNon" aria-label="Annuler">✕</button></div>`}
-async function donner(p){const d=ui.don,e=p.etat,dest=(document.getElementById('donDest')||{}).value,v=(document.getElementById('donVal')||{}).value;
+  const max=t==='obj'?Math.max(1,num(o.qte)||1):0,n=Math.min(max,d.n||1);
+  return `<div class="don-f"><div class="don-qui">${l.map(x=>`<button class="${d.dest===x.id?'on':''}" data-a="donQui" data-id="${esc(x.id)}" aria-pressed="${d.dest===x.id}">${esc(x.nom)}</button>`).join('')}</div>
+    <div class="don-l">${t==='pc'
+      ?`<input id="donVal" inputmode="decimal" value="${esc(d.v||'')}" placeholder="Montant en po (ex. 0,5)" aria-label="Montant en pièces d’or" autocomplete="off">`
+      :max>1?`<span class="qte"><button data-a="donQte" data-d="-1" aria-label="Moins"${n<=1?' disabled':''}>−</button><b>${n}</b><button data-a="donQte" data-d="1" aria-label="Plus"${n>=max?' disabled':''}>+</button></span>`:'<span></span>'}
+    <span class="row"><button class="on" data-a="donOk"${d.dest?'':' disabled'}>Donner</button><button data-a="donNon" aria-label="Annuler">✕</button></span></div></div>`}
+async function donner(p){const d=ui.don,e=p.etat,dest=d.dest,v=d.v;
   const qui=((compagnons[p.id]||[]).find(x=>x.id===dest)||{}).nom||'';if(!dest)return;
   const avant=JSON.stringify({pieces:e.pieces,objets:e.objets,harmo:e.harmo});let contenu,txt;
   if(d.t==='pc'){const n=Math.round(parseFloat(String(v||'').replace(',','.'))*100);
     if(!(n>0)){flash={err:1,t:'Indique un montant en pièces d’or (ex. 0,5 ou 2).'};return render()}
     if(!payer(e,n)){flash={err:1,t:'Pas assez dans ta bourse ('+fmtPc(totalPc(e))+').'};return render()}
     contenu={pc:n};txt=fmtPc(n)+' donnés à '+qui+'.'}
-  else{const o=e.objets[num((document.getElementById('donObj')||{}).value)];if(!o)return;d.i=e.objets.indexOf(o);const n=Math.max(1,Math.min(num(o.qte)||1,Math.round(num(v)||1)));
+  else{const o=e.objets[d.i];if(!o)return;const n=Math.max(1,Math.min(num(o.qte)||1,d.n||1));
     contenu={nom:o.nom,qte:n,description:o.desc||'',lien:o.lien||e.liens['objet:'+propre(o.nom)]||'',type:o.type||'',mystere:!!o.mystere,envoi:o.envoi||''};
     if(n>=(num(o.qte)||1)){e.objets.splice(d.i,1);if(!e.objets.some(x=>x.nom===o.nom))e.harmo=e.harmo.map(h=>h===o.nom?'':h)}else o.qte=num(o.qte)-n;
     txt='« '+o.nom+' »'+(n>1?' ×'+n:'')+' donné à '+qui+(o.harmonise?' (harmonisation rompue)':'')+'.'}
@@ -1415,12 +1419,16 @@ async function donner(p){const d=ui.don,e=p.etat,dest=(document.getElementById('
   catch(er){Object.assign(e,JSON.parse(avant));save();flash={err:1,t:'Don annulé : '+(/destinataire/.test(er.message)?'ce personnage n’est plus dans la campagne.':/montant|nom_manquant|contenu/.test(er.message)?'don refusé par le serveur.':'pas de connexion, rien n’a été donné.')}}
   render()}
 document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,p=P();
-  if(!p||!/^don(Pc|Obj|Ok|Non)$/.test(a))return;ev.stopPropagation();
+  if(!p||!/^don(Pc|Obj|Ok|Non|Choisir|Qui|Qte)$/.test(a))return;ev.stopPropagation();
   if(a==='donNon'){ui.don=null;return render()}
+  if(a==='donChoisir'){const i=num(b.dataset.i);ui.don.i=ui.don.i===i?null:i;ui.don.n=1;return render()}
+  if(a==='donQui'){ui.don.dest=b.dataset.id;render();const x=document.getElementById('donVal');if(x&&!x.value)x.focus();return}
+  if(a==='donQte'){ui.don.n=Math.max(1,(ui.don.n||1)+num(b.dataset.d));return render()}
   if(a==='donOk')return donner(p);
   if(!navigator.onLine){flash={err:1,t:'Il faut une connexion pour donner.'};return render()}
   const n={p:p.id,t:a==='donPc'?'pc':'obj'};
-  ui.don=ui.don&&ui.don.t===n.t?null:n;render();if(ui.don){chargerCompagnons(p);setTimeout(()=>{const x=document.getElementById('donVal');if(x&&n.t==='pc')x.focus()},50)}},true);
+  ui.don=ui.don&&ui.don.t===n.t?null:n;render();if(ui.don)chargerCompagnons(p)},true);
+document.addEventListener('input',ev=>{if(ev.target.id==='donVal'&&ui.don)ui.don.v=ev.target.value});
 /* le MJ révèle un objet mystérieux, ou marque une harmonisation (✦) */
 function appliquerAction(e,c){
   /* pièces données par un autre joueur (ou ajoutées / retirées par le MJ), en pièces de cuivre */
