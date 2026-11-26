@@ -71,7 +71,7 @@ ul.plain li>span{display:block}
 /* visionneuse de documents (images, PDF) : fenêtre de l'app, comme les règles */
 .vd-fen{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--fg) 45%,transparent);display:flex;align-items:center;justify-content:center;padding:14px}
 .vd-carte{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;width:100%;max-width:900px;height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 30px rgba(var(--ombre),.35)}
-.vd-carte.plein{max-width:none;height:100%;border-radius:0}.vd-fen:has(.plein){padding:0}
+.vd-carte.plein{max-width:none;width:100%!important;height:100%!important;border-radius:0}.vd-fen:has(.plein){padding:0}
 .vd-barre{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}.vd-barre b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--disp);color:var(--accent);font-size:1.05rem}
 .vd-pg{font-size:.85rem;white-space:nowrap}.vd-b{flex:none;width:34px;height:34px;padding:0;line-height:1;font-size:1.05rem}
 .vd-scene{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--bg);cursor:grab}.vd-tr{position:absolute;left:0;top:0;transform-origin:0 0}
@@ -1082,7 +1082,7 @@ async function vdPdf(url){const lib=await vdPdfJs(),data=await (await vdFetch(ur
   for(let i=1;i<=n;i++){const pg=await doc.getPage(i);vps.push(pg.getViewport({scale:1}))}
   const W=Math.max(...vps.map(v=>v.width)),gap=12;let y=0;
   vps.forEach((v,i)=>{const c=document.createElement('canvas');c.className='vd-page';c.dataset.p=i+1;c.style.width=v.width+'px';c.style.height=v.height+'px';c.style.left=(W-v.width)/2+'px';c.style.top=y+'px';y+=v.height+gap;tr.appendChild(c)});
-  vd.w=W;vd.h=y-gap;tr.style.width=W+'px';tr.style.height=vd.h+'px';
+  vd.w=W;vd.h=y-gap;vd.h1=vps[0].height;vd.n=n;tr.style.width=W+'px';tr.style.height=vd.h+'px';
   if(doc.numPages>1)vd.o.querySelector('.vd-pg').textContent=doc.numPages+' pages';
   vdRendre()}
 /* rendu des pages visibles, net jusqu'à ~3× (au-delà : la page est rendue à nouveau, plus fine) */
@@ -1093,10 +1093,15 @@ async function vdRendre(){if(!vd||!vd.doc||vd.enCours)return;vd.enCours=true;try
     const pg=await vd.doc.getPage(+c.dataset.p),vp=pg.getViewport({scale:k}),t=document.createElement('canvas');t.width=Math.floor(vp.width);t.height=Math.floor(vp.height);
     await pg.render({canvasContext:t.getContext('2d'),viewport:vp}).promise;if(!vd)return;c.width=t.width;c.height=t.height;c.getContext('2d').drawImage(t,0,0);c.dataset.k=k}
   }finally{if(vd)vd.enCours=false}}
-function vdAjuster(){if(!vd||!vd.w)return;const s=vd.o.querySelector('.vd-scene').getBoundingClientRect();
-  vd.z=vd.doc?Math.min(s.width/vd.w,4):Math.min(s.width/vd.w,s.height/vd.h,4);vd.x=(s.width-vd.w*vd.z)/2;vd.y=vd.doc?0:(s.height-vd.h*vd.z)/2;vdPoser()}
+/* la fenêtre prend la forme du document : une carte en paysage s'élargit au lieu d'occuper toute la hauteur */
+function vdTaille(){if(!vd||!vd.w)return;const c=vd.o.querySelector('.vd-carte');if(c.classList.contains('plein'))return;
+  const ch=vd.o.querySelector('.vd-barre').offsetHeight+vd.o.querySelector('.vd-ext').offsetHeight+2,mw=Math.min(innerWidth-28,1400),mh=innerHeight*.9-ch;
+  const h1=vd.doc?Math.min(vd.h,vd.h1||vd.h):vd.h,k=Math.min(mw/vd.w,mh/h1,vd.doc?9:3);
+  c.style.maxWidth='none';c.style.width=Math.max(Math.min(320,mw),vd.w*k)+'px';c.style.height=(vd.doc&&vd.n>1?innerHeight*.9:Math.max(160,h1*k+ch))+'px'}
+function vdAjuster(){if(!vd||!vd.w)return;vdTaille();const s=vd.o.querySelector('.vd-scene').getBoundingClientRect();
+  vd.z=vd.doc&&vd.n>1?Math.min(s.width/vd.w,4):Math.min(s.width/vd.w,s.height/vd.h,4);vd.x=(s.width-vd.w*vd.z)/2;vd.y=vd.doc&&vd.n>1?0:(s.height-vd.h*vd.z)/2;vdPoser()}
 function vdPoser(){if(!vd)return;const s=vd.o.querySelector('.vd-scene').getBoundingClientRect(),W=vd.w*vd.z,H=vd.h*vd.z;
-  vd.x=W<=s.width?(s.width-W)/2:Math.min(0,Math.max(s.width-W,vd.x));vd.y=H<=s.height?(vd.doc?0:(s.height-H)/2):Math.min(0,Math.max(s.height-H,vd.y));
+  vd.x=W<=s.width?(s.width-W)/2:Math.min(0,Math.max(s.width-W,vd.x));vd.y=H<=s.height?(vd.doc&&vd.n>1?0:(s.height-H)/2):Math.min(0,Math.max(s.height-H,vd.y));
   vd.o.querySelector('.vd-tr').style.transform=`translate(${vd.x}px,${vd.y}px) scale(${vd.z})`;clearTimeout(vd.tm);vd.tm=setTimeout(vdRendre,180)}
 function vdZoom(f,cx,cy){if(!vd)return;const s=vd.o.querySelector('.vd-scene').getBoundingClientRect();cx=cx??s.width/2;cy=cy??s.height/2;
   const z=Math.min(12,Math.max(0.1,vd.z*f));vd.x=cx-(cx-vd.x)*z/vd.z;vd.y=cy-(cy-vd.y)*z/vd.z;vd.z=z;vdPoser()}
@@ -1104,7 +1109,7 @@ function vdRetour(){window.removeEventListener('popstate',vdRetour);vdFermer(tru
 function vdFermer(sansHisto){if(!vd)return;vd.o.remove();vd=null;if(!sansHisto){window.removeEventListener('popstate',vdRetour);try{if(history.state&&history.state.vd)history.back()}catch(e){}}}
 document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-vd]');if(!b||!vd)return;const k=b.dataset.vd;
   if(k==='fermer')vdFermer();else if(k==='plus')vdZoom(1.4);else if(k==='moins')vdZoom(1/1.4);
-  else if(k==='plein'){const c=vd.o.querySelector('.vd-carte');c.classList.toggle('plein');b.setAttribute('aria-pressed',c.classList.contains('plein'));setTimeout(vdAjuster,30)}});
+  else if(k==='plein'){const c=vd.o.querySelector('.vd-carte');c.classList.toggle('plein');b.setAttribute('aria-pressed',c.classList.contains('plein'));setTimeout(vdAjuster,200)}});
 document.addEventListener('keydown',ev=>{if(vd&&ev.key==='Escape')vdFermer()});
 document.addEventListener('wheel',ev=>{if(!vd||!ev.target.closest('.vd-scene'))return;ev.preventDefault();const s=vd.o.querySelector('.vd-scene').getBoundingClientRect();
   if(ev.ctrlKey||!vd.doc)vdZoom(Math.exp(-ev.deltaY*(ev.ctrlKey?0.0025:0.0015)),ev.clientX-s.left,ev.clientY-s.top);else{vd.y-=ev.deltaY;vd.x-=ev.deltaX;vdPoser()}},{passive:false});
