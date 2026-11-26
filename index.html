@@ -239,6 +239,9 @@ ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;di
 .alerte.trouve{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}.alerte .row{flex-wrap:nowrap;gap:6px}
 .qte{display:flex;align-items:center;gap:6px;flex:none}
 .qte button{padding:0;width:30px;height:30px;line-height:1;font-size:1.1rem}
+.objet .obj-n{flex:1;min-width:0}.don-o{flex:none;padding:0;width:30px;height:30px;line-height:1;font-size:1rem;color:var(--muted)}.don-o.on{color:var(--on-accent)}
+.don-f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 8px}.don-f select{flex:2;min-width:8em;height:40px;padding:0 8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:inherit}.don-f input{flex:1;min-width:6em}.don-f p{flex-basis:100%;margin:0}
+.obj-mj{align-self:center;min-width:0}
 .qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
 .obj-ed input{padding:4px 6px}
@@ -333,6 +336,7 @@ const num=v=>{const n=parseInt(v,10);return isNaN(n)?0:n};
 /* ---------- import / fusion ---------- */
 function estFiche(o){return o&&o.v===1&&o.combat&&o.car}
 const rid=()=>Math.random().toString(36).slice(2,10);
+const C_PIECES=[['pc','PC'],['pa','PA'],['pe','PE'],['po','PO'],['pp','PP']],V_PIECE={pc:1,pa:10,pe:50,po:100,pp:1000};
 /* armes de l'export avec leur clé d'origine : « Dague#1 », « Dague#2 »… (suit l'arme même renommée dans l'app) */
 function armesSrc(d){const n={};return (d.armes||[]).map(a=>{n[a.nom]=(n[a.nom]||0)+1;return{...a,src:a.nom+'#'+n[a.nom]}})}
 function initEtat(d){
@@ -356,7 +360,7 @@ function migrer(p){const e=p.etat;e.etats=e.etats||{};e.epuis=e.epuis||0;e.conc=
   if(e.armes.some(a=>!a.wid)){const pris=new Set(e.armes.map(a=>a.src).filter(Boolean));
     e.armes.forEach(a=>{if(!a.wid)a.wid=rid();if(a.src||a.auto)return;const x=armesSrc(D(p)).find(x=>x.nom===a.nom&&!pris.has(x.src));if(x){a.src=x.src;pris.add(x.src)}})}
   if(!e.objets)e.objets=lireObjets(e.equipement);
-  e.objets=e.objets.map(o=>num(o.qte)===1&&/\(\d+/.test(o.nom)?lireObjet(o.nom):o);e.objets.forEach(o=>{if(num(o.qte)!==1)o.compte=true});return p}
+  e.objets=e.objets.map(o=>num(o.qte)===1&&/\(\d+/.test(o.nom)?lireObjet(o.nom):o);e.objets.forEach(o=>{if(num(o.qte)!==1)o.compte=true;if(!o.uid)o.uid=rid();if(o.mj===undefined&&o.recu&&o.envoi&&!o.de)o.mj=true});return p}
 function creer(d,nom){
   const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const p={id,versions:[{date:new Date().toISOString(),data:d}],etat:initEtat(d)};
@@ -762,6 +766,9 @@ function bandeauxHaut(){
   return `${e.annonce?`<div class="alerte trouve" role="alert"><span>${e.annonce.a==='harmoniser'?`<b>✦ Harmonisation :</b> ${esc(e.annonce.nom)} s’éveille.`
         :e.annonce.a==='maj'?`<b>Le MJ a modifié :</b> ${e.annonce.avant?esc(e.annonce.avant)+' → ':''}« ${esc(e.annonce.nom)} ».`
         :e.annonce.a==='reveler'?`<b>Révélé :</b> ${e.annonce.avant?esc(e.annonce.avant)+' était ':''}« ${esc(e.annonce.nom)} ».`
+        :e.annonce.a==='don'?`<b>${esc(e.annonce.de)} te donne :</b> ${esc(e.annonce.nom)}${e.annonce.n>1?' ×'+esc(e.annonce.n):''}.`
+        :e.annonce.a==='pieces'?(e.annonce.pc>0?`<b>${e.annonce.de==='MJ'?'Le MJ':esc(e.annonce.de)} te donne</b> ${esc(fmtPc(e.annonce.pc))}.`:`<b>Le MJ retire</b> ${esc(fmtPc(-e.annonce.pc))} de ta bourse.`)
+        :e.annonce.a==='retire'?`<b>Le MJ a retiré :</b> « ${esc(e.annonce.nom)} ».`
         :`<b>Harmonisation rompue :</b> ${esc(e.annonce.nom)}.`}</span><span class="row"><button data-a="annonceVoir">Voir</button><button data-a="annonceOk">OK</button></span></div>`:''}${!e.annonce&&ui.onglet!=='sac'&&e.objets.some(o=>o.nouveau)?`<div class="alerte trouve" role="alert"><span><b>Tu as trouvé :</b> ${esc(e.objets.filter(o=>o.nouveau).map(o=>o.nom).join(', '))}</span><span class="row"><button data-a="trouveVoir">Voir</button><button data-a="trouveOk">OK</button></span></div>`:''}`;
 }
 function bandeauxBas(){
@@ -947,20 +954,22 @@ function ongSorts(p,d,e){
 }
 
 function ongSac(p,d,e){
-  const ed=ui.edit,C=[['pc','PC'],['pa','PA'],['pe','PE'],['po','PO'],['pp','PP']];
+  const ed=ui.edit,C=C_PIECES,cl=!!p.cloud&&!ed,dn=ui.don&&ui.don.p===p.id?ui.don:null;
   const coins=ed?C.map(([k,l])=>`<label>${l}<input data-f="pieces.${k}" inputmode="numeric" value="${esc(e.pieces[k])}"></label>`).join('')
     :C.map(([k,l])=>`<div class="coin"><b>${esc(e.pieces[k]||0)}</b>${l}</div>`).join('');
   const harmo=e.harmo.filter(Boolean);
-  return `<section><h2>Pièces</h2><div class="coins">${coins}</div></section>
+  const tot=totalPc(e),mix=C.filter(([k])=>num(e.pieces[k])).length>1;
+  return `<section><h2 class="h2b"><span>Pièces</span>${cl?`<button class="${dn&&dn.t==='pc'?'on':''}" data-a="donPc">Donner</button>`:''}</h2><div class="coins">${coins}</div>
+    ${!ed&&mix?`<p class="muted">En tout : ${esc(fmtPc(tot))}</p>`:''}${dn&&dn.t==='pc'?formDon(p,'pc'):''}</section>
     <section><h2>Équipement</h2>${ed
       ?`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`+e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
-          <input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">
+          ${o.mj?`<span class="obj-mj">${esc(o.nom)} <span class="muted">· objet du MJ</span></span>`:`<input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">`}
           <button class="x" data-a="supprObj" data-i="${i}" aria-label="Retirer ${esc(o.nom)}">✕</button>
           ${armeConnue(o.nom)&&!e.armes.some(a=>refN(a.nom)===refN(o.nom))?`<button class="vers-att" data-a="versAttaque" data-i="${i}">+ aux attaques</button>`:''}
-          ${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
-          <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description"></div>`).join('')
-      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
+          ${o.mj?'':`${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
+          <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description">`}</div>`).join('')
+      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}${cl?`<button class="don-o${dn&&dn.t==='obj'&&dn.i===i?' on':''}" data-a="donObj" data-i="${i}" title="Donner à un autre personnage" aria-label="Donner ${esc(o.nom)}">↗</button>`:''}</div>${dn&&dn.t==='obj'&&dn.i===i?formDon(p,'obj',o):''}`).join('')}</div>`
         :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
     <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
 }
@@ -1208,7 +1217,7 @@ function planifierSync(){if(!relies().length)return;clearTimeout(syncTimer);sync
 async function syncTout(){for(const p of relies())if(aEnvoyer(p))await envoyer(p.id)}
 function erreurCloud(q,e){q.cloud.err=e&&e.serveur?(/cle_invalide/.test(e.message)?'Code joueur refusé par le serveur.':'Erreur du serveur.'):'Hors ligne : sauvegarde en attente.'}
 /* CA et perception passive telles qu'affichées sur la fiche (corrections comprises), pour l'app du MJ */
-function majVueMJ(p){try{const e=p.etat,d=D(p),c=d.combat||{},sp=(d.ski||[]).find(x=>/^perception$/i.test(x.nom));
+function majVueMJ(p){try{(p.etat.objets||[]).forEach(o=>{if(!o.uid)o.uid=rid()})}catch(er){}try{const e=p.etat,d=D(p),c=d.combat||{},sp=(d.ski||[]).find(x=>/^perception$/i.test(x.nom));
   const ca=e.ca!=null&&e.ca!==''?e.ca:c.ca,pp=sp?num(c.percPassive)+num(bonusComp(e,d,sp))-num(sp.val):c.percPassive;
   const v={ca:String(ca??''),pp:String(pp??''),cases:casesPerso(p)};if(JSON.stringify(e.vue||{})!==JSON.stringify(v))e.vue=v}catch(er){}}
 /* toutes les cases à cocher du personnage (hors dés de vie et jets contre la mort) : clé, nom, nombre ; servent aux règles du repos court */
@@ -1345,7 +1354,7 @@ async function relever(){
     for(const p0 of relies()){
       const id=p0.id;let l;
       chargerJournalJ(db.persos[id]);
-      try{l=await rpc('j_envois',{p_cle:p0.cloud.cle})}catch(e){continue}
+      try{l=await rpc('j_envois2',{p_cle:p0.cloud.cle})}catch(e){continue}
       if(!l||!l.length)continue;
       const p=db.persos[id];if(!p||!p.cloud)continue;
       const e=p.etat;e.recus=e.recus||[];const ids=[];
@@ -1360,15 +1369,69 @@ async function relever(){
 function ajouterRecu(e,c,id){
   if(c.action)return appliquerAction(e,c);
   const nom=String(c.nom||'Objet').trim(),n=Math.max(1,num(c.qte)||1),desc=String(c.description||'').trim(),lien=String(c.lien||'').trim();
-  const meme=!c.mystere&&!desc&&!lien&&e.objets.find(o=>norm(o.nom)===norm(nom)&&!o.desc&&!o.mystere);
+  const mj=!!c.mj||!c.de;if(c.de)e.annonce={a:'don',nom,de:c.de,n};
+  const meme=!c.mystere&&!desc&&!lien&&!c.mj&&e.objets.find(o=>norm(o.nom)===norm(nom)&&!o.desc&&!o.mystere&&!o.mj);
   if(meme){meme.qte=num(meme.qte)+n;meme.compte=true;meme.nouveau=true;return}
-  const o={nom:nom.charAt(0).toUpperCase()+nom.slice(1),qte:n,compte:n>1,recu:true,nouveau:true};
+  const o={nom:nom.charAt(0).toUpperCase()+nom.slice(1),qte:n,compte:n>1,recu:true,nouveau:true,uid:rid()};
+  if(mj&&id)o.mj=true;if(c.de)o.de=c.de;
   if(desc)o.desc=desc;if(lien){o.lien=lien;e.liens['objet:'+propre(o.nom)]=lien}
   if(c.type)o.type=c.type;if(c.mystere)o.mystere=true;if(id)o.envoi=id;
   e.objets.push(o);
 }
+/* ---------- Bourse et dons entre personnages ----------
+   Les pièces voyagent en pièces de cuivre : 1 po = 10 pa = 100 pc (1 pe = 50 pc, 1 pp = 1000 pc).
+   Donner : on paie d'abord avec les petites pièces, la monnaie revient en po / pa / pc. Recevoir : en po, pa, pc. */
+const totalPc=e=>C_PIECES.reduce((t,[k])=>t+Math.max(0,num(e.pieces[k]))*V_PIECE[k],0);
+const fmtPc=n=>(n/100).toLocaleString('fr-CH',{maximumFractionDigits:2})+' po';
+function payer(e,n){if(totalPc(e)<n)return false;let r=n;
+  for(const [k] of C_PIECES){if(r<=0)break;const h=Math.max(0,num(e.pieces[k])),t=Math.min(h,Math.ceil(r/V_PIECE[k]));if(!t)continue;e.pieces[k]=String(h-t);r-=t*V_PIECE[k];
+    if(r<0){let m=-r;r=0;for(const d of ['po','pa','pc']){if(V_PIECE[d]>=V_PIECE[k])continue;const q=Math.floor(m/V_PIECE[d]);if(q){e.pieces[d]=String(num(e.pieces[d])+q);m-=q*V_PIECE[d]}}}}
+  return true}
+function recevoirPc(e,n){for(const d of ['po','pa','pc']){const q=Math.floor(n/V_PIECE[d]);if(q){e.pieces[d]=String(num(e.pieces[d])+q);n-=q*V_PIECE[d]}}}
+const compagnons={};
+async function chargerCompagnons(p){if(compagnons[p.id]||!p.cloud)return;try{const l=await rpc('j_compagnons',{p_cle:p.cloud.cle});compagnons[p.id]=Array.isArray(l)?l:[]}catch(e){compagnons[p.id]=null;flash={err:1,t:'Liste des personnages indisponible (connexion ?).'}}render()}
+function formDon(p,t,o){const l=compagnons[p.id];
+  if(l===undefined)return '<p class="muted don-f">Chargement des personnages…</p>';
+  if(!l||!l.length)return '<p class="muted don-f">Aucun autre personnage relié dans la campagne.</p>';
+  const sel=`<select id="donDest" aria-label="À qui ?">${l.map(x=>`<option value="${esc(x.id)}">${esc(x.nom)}</option>`).join('')}</select>`;
+  return `<div class="don-f">${sel}${t==='pc'
+    ?`<input id="donVal" inputmode="decimal" placeholder="PO (ex. 0,5)" aria-label="Montant en pièces d’or" autocomplete="off">`
+    :num(o.qte)>1?`<input id="donVal" inputmode="numeric" value="1" aria-label="Quantité" style="max-width:4.5em">`:''}
+    <button class="on" data-a="donOk">Donner</button><button data-a="donNon" aria-label="Annuler">✕</button>
+    ${t==='obj'&&o.harmonise?'<p class="muted">L’harmonisation sera rompue.</p>':''}</div>`}
+async function donner(p){const d=ui.don,e=p.etat,dest=(document.getElementById('donDest')||{}).value,v=(document.getElementById('donVal')||{}).value;
+  const qui=((compagnons[p.id]||[]).find(x=>x.id===dest)||{}).nom||'';if(!dest)return;
+  const avant=JSON.stringify({pieces:e.pieces,objets:e.objets,harmo:e.harmo});let contenu,txt;
+  if(d.t==='pc'){const n=Math.round(parseFloat(String(v||'').replace(',','.'))*100);
+    if(!(n>0)){flash={err:1,t:'Indique un montant en pièces d’or (ex. 0,5 ou 2).'};return render()}
+    if(!payer(e,n)){flash={err:1,t:'Pas assez dans ta bourse ('+fmtPc(totalPc(e))+').'};return render()}
+    contenu={pc:n};txt=fmtPc(n)+' donnés à '+qui+'.'}
+  else{const o=e.objets[d.i];if(!o)return;const n=Math.max(1,Math.min(num(o.qte)||1,Math.round(num(v)||1)));
+    contenu={nom:o.nom,qte:n,description:o.desc||'',lien:o.lien||e.liens['objet:'+propre(o.nom)]||'',type:o.type||'',mystere:!!o.mystere,envoi:o.envoi||''};
+    if(n>=(num(o.qte)||1)){e.objets.splice(d.i,1);if(!e.objets.some(x=>x.nom===o.nom))e.harmo=e.harmo.map(h=>h===o.nom?'':h)}else o.qte=num(o.qte)-n;
+    txt='« '+o.nom+' »'+(n>1?' ×'+n:'')+' donné à '+qui+'.'}
+  ui.don=null;save();render();
+  try{await rpc('j_donner',{p_cle:p.cloud.cle,p_dest:dest,p_contenu:contenu});flash={t:txt}}
+  catch(er){Object.assign(e,JSON.parse(avant));save();flash={err:1,t:'Don annulé : '+(/destinataire/.test(er.message)?'ce personnage n’est plus dans la campagne.':/montant|nom_manquant|contenu/.test(er.message)?'don refusé par le serveur.':'pas de connexion, rien n’a été donné.')}}
+  render()}
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,p=P();
+  if(!p||!/^don(Pc|Obj|Ok|Non)$/.test(a))return;ev.stopPropagation();
+  if(a==='donNon'){ui.don=null;return render()}
+  if(a==='donOk')return donner(p);
+  if(!navigator.onLine){flash={err:1,t:'Il faut une connexion pour donner.'};return render()}
+  const n=a==='donPc'?{p:p.id,t:'pc'}:{p:p.id,t:'obj',i:num(b.dataset.i)};
+  ui.don=ui.don&&ui.don.t===n.t&&ui.don.i===n.i?null:n;render();if(ui.don){chargerCompagnons(p);setTimeout(()=>{const x=document.getElementById('donVal');if(x&&n.t==='pc')x.focus()},50)}},true);
 /* le MJ révèle un objet mystérieux, ou marque une harmonisation (✦) */
 function appliquerAction(e,c){
+  /* pièces données par un autre joueur (ou ajoutées / retirées par le MJ), en pièces de cuivre */
+  if(c.action==='pieces'){const n=Math.round(num(c.pc));if(!n)return;if(n>0)recevoirPc(e,n);else if(!payer(e,-n))C_PIECES.forEach(([k])=>e.pieces[k]='0');
+    e.annonce={a:'pieces',de:c.de||'MJ',pc:n};return}
+  /* le MJ corrige un objet du sac (nom, quantité, description ; quantité 0 = retiré) */
+  if(c.action==='corriger'){const i=e.objets.findIndex(x=>x.uid&&x.uid===c.uid);if(i<0)return;const x=e.objets[i],avant=x.nom;
+    if(num(c.qte)<=0){e.objets.splice(i,1);e.annonce={a:'retire',nom:avant};return}
+    if(String(c.nom||'').trim())x.nom=String(c.nom).trim();x.qte=num(c.qte);if(x.qte!==1)x.compte=true;
+    const d=String(c.desc||'').trim();if(d)x.desc=d;else delete x.desc;
+    e.annonce={a:'maj',nom:x.nom,avant:avant!==x.nom?avant:''};return}
   let o=e.objets.find(x=>x.envoi&&x.envoi===c.cible);
   /* le MJ a modifié l'objet après l'envoi : nom, description et lien suivent (rien si le joueur l'a jeté) */
   if(c.action==='maj'){if(!o)return;const avant=o.nom;
