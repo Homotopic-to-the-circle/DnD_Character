@@ -692,12 +692,13 @@ function voirRegle(k,titre){
   try{history.pushState({regle:1},'');window.addEventListener('popstate',fermer)}catch(e){retour=fermer}
 }
 function itemLien(type,nom,label,extra){
-  const rk=regleLocale(type,nom);
-  if(rk&&!ui.edit&&!((P().etat.liens||{})[type+':'+propre(nom)]))return `<a class="ext" href="#" data-regle="${esc(rk)}" data-titre="${esc(sansCoche(propre(nom)))}">${esc(sansCoche(label??nom))}</a>`;
+  /* lien enregistré vers AideDD (saisie automatique) = pas un lien personnel : le texte intégré reste prioritaire */
+  const rk=regleLocale(type,nom),lp=(P().etat.liens||{})[type+':'+propre(nom)],auto=!lp||/aidedd\.org/i.test(lp);
+  if(rk&&!ui.edit&&auto)return `<a class="ext" href="#" data-regle="${esc(rk)}" data-titre="${esc(sansCoche(propre(nom)))}">${esc(sansCoche(label??nom))}</a>`;
   const u=lien(type,nom,extra);label=sansCoche(label??nom);
   if(ui.edit)return `<div class="lien-ed"><span>${esc(label)}</span><input data-lien="${esc(type+':'+propre(nom))}" value="${esc(u)}" aria-label="Lien pour ${esc(label)}"></div>`;
   /* capacité de classe : la fenêtre intégrée cherche le texte par classe, sous-classe et nom (lien AideDD gardé en secours) */
-  const perso=!((P().etat.liens||{})[type+':'+propre(nom)]),d=D(P()),n=sansCoche(propre(nom));
+  const perso=auto,d=D(P()),n=sansCoche(propre(nom));
   const dc=!perso?'':type==='capa'?` data-capa="${esc([d.id.classe,d.id.sousClasse,n].join('|'))}"`
     :/^(trait|espece|historique)$/.test(type)?` data-orig="${esc([type,d.id.espece,n].join('|'))}"`
     :/^(objet|arme)$/.test(type)?` data-equip="${esc(n)}"`:'';
@@ -1603,6 +1604,12 @@ function cleEquip(nom){
   return Array.isArray(TEXTES[k])?k:texteParTitre('objmag',nom);
 }
 const cleBotte=b=>TEXTES&&Array.isArray(TEXTES['botte:'+capaN(b)])?'botte:'+capaN(b):null;
+function voirNote(titre,sous,texte,href){
+  const o=document.createElement('div');o.className='regle-fen';o.setAttribute('role','dialog');o.setAttribute('aria-label',titre);
+  o.innerHTML=`<div><div class="regle-barre"><span><b>${esc(titre)}</b><br><span class="muted">${esc(sous)}${href&&!/^#/.test(href)?` · <a class="ext" href="${esc(href)}" target="_blank" rel="noopener" data-direct>lien ↗</a>`:''}</span></span><button aria-label="Fermer">✕</button></div><div class="regle-corps">${String(texte).split(/\n+/).map(l=>`<p>${esc(l)}</p>`).join('')}</div></div>`;
+  const fermer=()=>{o.remove();window.removeEventListener('popstate',fermer)};let retour=()=>history.back();
+  o.querySelector('button').onclick=()=>retour();o.addEventListener('click',ev=>{if(ev.target===o)retour()});document.body.appendChild(o);
+  try{history.pushState({regle:1},'');window.addEventListener('popstate',fermer)}catch(e){retour=fermer}}
 function voirTexte(k,href,titreLien){
   if(TEXTES&&!TEXTES[k])k=texteParTitre(k.split(':')[0],titreLien)||k;
   const e=TEXTES&&TEXTES[k];if(!Array.isArray(e))return false;
@@ -1623,7 +1630,11 @@ document.addEventListener('click',ev=>{
   const a=ev.target.closest&&ev.target.closest('a[href]');if(!a||a.hasAttribute('data-direct'))return;
   if(typeof ui!=='undefined'&&ui.edit)return;
   if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button)return;
-  const x=a.dataset,k=(x.capa&&cleCapa(x.capa))||(x.orig&&cleOrig(x.orig))||(x.equip&&cleEquip(x.equip))||(x.botte&&cleBotte(x.botte))||cleTexte(a.getAttribute('href'));if(!k)return;
+  const x=a.dataset,k=(x.capa&&cleCapa(x.capa))||(x.orig&&cleOrig(x.orig))||(x.equip&&cleEquip(x.equip))||(x.botte&&cleBotte(x.botte))||cleTexte(a.getAttribute('href'));
+  /* objet sans texte de référence mais avec une description dans le sac : la description dans la même fenêtre */
+  if(!k&&x.equip){const pe=typeof P==='function'&&P(),o=pe&&pe.etat&&(pe.etat.objets||[]).find(y=>refN(y.nom)===refN(x.equip));
+    if(o&&o.desc){ev.preventDefault();ev.stopPropagation();voirNote(o.nom,'Objet',o.desc)}return}
+  if(!k)return;
   if(voirTexte(k,a.href,a.textContent.trim())){ev.preventDefault();ev.stopPropagation()}
 },true);
 const refN=s=>String(s||'').toLowerCase().replace(/['’]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
