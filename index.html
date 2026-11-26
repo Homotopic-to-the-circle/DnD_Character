@@ -967,8 +967,8 @@ function ongSac(p,d,e){
     :C.map(([k,l])=>`<div class="coin"><b>${esc(e.pieces[k]||0)}</b>${l}</div>`).join('');
   const harmo=e.harmo.filter(Boolean);
   const tot=totalPc(e),mix=C.filter(([k])=>num(e.pieces[k])).length>1;
-  return `<section><h2 class="h2b"><span>Pièces</span>${cl?`<button class="${dn&&dn.t==='pc'?'on':''}" data-a="donPc">Donner</button>`:''}</h2><div class="coins">${coins}</div>
-    ${!ed&&mix?`<p class="muted">En tout : ${esc(fmtPc(tot))}</p>`:''}${dn&&dn.t==='pc'?formDon(p,'pc'):''}</section>
+  return `<section><h2 class="h2b"><span>Pièces</span>${!ed&&mix?`<span class="don-aide">en tout ${esc(fmtPc(tot))}</span>`:''}${cl?`<button class="${dn&&dn.t==='pc'?'on':''}" data-a="donPc">Donner</button>`:''}</h2><div class="coins">${coins}</div>
+    ${dn&&dn.t==='pc'?formDon(p,'pc'):''}</section>
     <section><h2 class="h2b"><span>Équipement</span>${cl&&e.objets.some(o=>o.nom)?`${pick&&dn.i==null?'<span class="don-aide">Touche l’objet à donner</span>':''}<button class="${dn&&dn.t==='obj'?'on':''}" data-a="donObj">Donner</button>`:''}</h2>${ed
       ?`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`+e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
