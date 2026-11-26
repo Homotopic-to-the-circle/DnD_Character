@@ -239,8 +239,8 @@ ul.plain li{padding:5px 0;border-bottom:1px solid var(--line);min-height:40px;di
 .alerte.trouve{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}.alerte .row{flex-wrap:nowrap;gap:6px}
 .qte{display:flex;align-items:center;gap:6px;flex:none}
 .qte button{padding:0;width:30px;height:30px;line-height:1;font-size:1.1rem}
-.objet .obj-n{flex:1;min-width:0}.don-o{flex:none;padding:0;width:30px;height:30px;line-height:1;font-size:1rem;color:var(--muted)}.don-o.on{color:var(--on-accent)}
-.don-f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 8px}.don-f select{flex:2;min-width:8em;height:40px;padding:0 8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:inherit}.don-f input{flex:1;min-width:6em}.don-f p{flex-basis:100%;margin:0}
+.objet .obj-n{flex:1;min-width:0}
+.don-f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 8px}.don-f select.large{flex-basis:100%}.don-f select{flex:2;min-width:8em;height:40px;padding:0 8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:inherit}.don-f input{flex:1;min-width:6em}.don-f p{flex-basis:100%;margin:0}
 .obj-mj{align-self:center;min-width:0}
 .qte b{min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums lining-nums}
 .obj-ed{display:grid;grid-template-columns:3.4rem 1fr auto;gap:6px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
@@ -961,7 +961,7 @@ function ongSac(p,d,e){
   const tot=totalPc(e),mix=C.filter(([k])=>num(e.pieces[k])).length>1;
   return `<section><h2 class="h2b"><span>Pièces</span>${cl?`<button class="${dn&&dn.t==='pc'?'on':''}" data-a="donPc">Donner</button>`:''}</h2><div class="coins">${coins}</div>
     ${!ed&&mix?`<p class="muted">En tout : ${esc(fmtPc(tot))}</p>`:''}${dn&&dn.t==='pc'?formDon(p,'pc'):''}</section>
-    <section><h2>Équipement</h2>${ed
+    <section><h2 class="h2b"><span>Équipement</span>${cl&&e.objets.some(o=>o.nom)?`<button class="${dn&&dn.t==='obj'?'on':''}" data-a="donObj">Donner</button>`:''}</h2>${dn&&dn.t==='obj'?formDon(p,'obj'):''}${ed
       ?`<button data-a="ajoutObj">+ Ajouter un objet</button><p class="muted">Commence à taper le nom : choisis l’objet dans la liste et le lien se fait tout seul. <a class="ext" href="https://www.aidedd.org/regles-24/equipement/" target="_blank" rel="noopener">Équipement 5.5 ↗</a></p>`+e.objets.map((o,i)=>`<div class="obj-ed">
           <input data-f="objets.${i}.qte" data-num inputmode="numeric" value="${esc(o.qte)}" aria-label="Quantité">
           ${o.mj?`<span class="obj-mj">${esc(o.nom)} <span class="muted">· objet du MJ</span></span>`:`<input data-f="objets.${i}.nom" data-ref="objets" autocomplete="off" value="${esc(o.nom)}" placeholder="Objet" aria-label="Nom de l'objet">`}
@@ -969,7 +969,7 @@ function ongSac(p,d,e){
           ${armeConnue(o.nom)&&!e.armes.some(a=>refN(a.nom)===refN(o.nom))?`<button class="vers-att" data-a="versAttaque" data-i="${i}">+ aux attaques</button>`:''}
           ${o.mj?'':`${o.nom?`<input class="lien-in" data-lien="${esc('objet:'+propre(o.nom))}" value="${esc(lien('objet',o.nom))}" aria-label="Lien pour ${esc(o.nom)}">`:''}
           <input class="lien-in note-in" data-f="objets.${i}.desc" value="${esc(o.desc||'')}" placeholder="Description" aria-label="Description">`}</div>`).join('')
-      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}${cl?`<button class="don-o${dn&&dn.t==='obj'&&dn.i===i?' on':''}" data-a="donObj" data-i="${i}" title="Donner à un autre personnage" aria-label="Donner ${esc(o.nom)}">↗</button>`:''}</div>${dn&&dn.t==='obj'&&dn.i===i?formDon(p,'obj',o):''}`).join('')}</div>`
+      :(e.objets.some(o=>o.nom)?`<div class="objets">${e.objets.map((o,i)=>!o.nom?'':`<div class="objet"><span class="obj-n"${o.nouveau?` data-neuf="${i}"`:''}>${o.recu&&!o.lien&&!e.liens['objet:'+propre(o.nom)]?esc(o.nom):itemLien('objet',o.nom)}${o.harmonise?'<span class="harmo" title="Harmonisé" aria-label="harmonisé">✦</span>':''}${o.nouveau?'<span class="neuf">nouveau</span>':''}${o.desc?`<span class="muted obj-d">${esc(o.desc)}</span>`:''}</span>${o.compte||num(o.qte)!==1?`<span class="qte"><button data-a="qte" data-i="${i}" data-d="-1" aria-label="Retirer un ${esc(o.nom)}">−</button><b>${esc(o.qte)}</b><button data-a="qte" data-i="${i}" data-d="1" aria-label="Ajouter un ${esc(o.nom)}">+</button></span>`:''}</div>`).join('')}</div>`
         :'<p class="muted">Sac vide. Ajoute des objets avec Modifier.</p>')}</section>
     <section><h2>Notes</h2>${ed?`<textarea data-f="notes" rows="8" placeholder="Apparence, histoire, quêtes, PNJ…">${esc(e.notes)}</textarea>`:`<div class="texte">${esc(e.notes)||'<span class="muted">Aucune note. Écris-en avec Modifier.</span>'}</div>`}</section>`;
 }
@@ -1394,11 +1394,11 @@ function formDon(p,t,o){const l=compagnons[p.id];
   if(l===undefined)return '<p class="muted don-f">Chargement des personnages…</p>';
   if(!l||!l.length)return '<p class="muted don-f">Aucun autre personnage relié dans la campagne.</p>';
   const sel=`<select id="donDest" aria-label="À qui ?">${l.map(x=>`<option value="${esc(x.id)}">${esc(x.nom)}</option>`).join('')}</select>`;
-  return `<div class="don-f">${sel}${t==='pc'
+  const objs=p.etat.objets.map((x,i)=>x.nom?`<option value="${i}">${esc(x.nom)}${num(x.qte)>1?' ×'+esc(x.qte):''}${x.harmonise?' ✦':''}</option>`:'').join('');
+  return `<div class="don-f">${t==='obj'?`<select id="donObj" class="large" aria-label="Quel objet ?">${objs}</select>`:''}${sel}${t==='pc'
     ?`<input id="donVal" inputmode="decimal" placeholder="PO (ex. 0,5)" aria-label="Montant en pièces d’or" autocomplete="off">`
-    :num(o.qte)>1?`<input id="donVal" inputmode="numeric" value="1" aria-label="Quantité" style="max-width:4.5em">`:''}
-    <button class="on" data-a="donOk">Donner</button><button data-a="donNon" aria-label="Annuler">✕</button>
-    ${t==='obj'&&o.harmonise?'<p class="muted">L’harmonisation sera rompue.</p>':''}</div>`}
+    :`<input id="donVal" inputmode="numeric" value="1" aria-label="Quantité" title="Quantité" style="width:4.5em;min-width:0;flex:none">`}
+    <button class="on" data-a="donOk">Donner</button><button data-a="donNon" aria-label="Annuler">✕</button></div>`}
 async function donner(p){const d=ui.don,e=p.etat,dest=(document.getElementById('donDest')||{}).value,v=(document.getElementById('donVal')||{}).value;
   const qui=((compagnons[p.id]||[]).find(x=>x.id===dest)||{}).nom||'';if(!dest)return;
   const avant=JSON.stringify({pieces:e.pieces,objets:e.objets,harmo:e.harmo});let contenu,txt;
@@ -1406,10 +1406,10 @@ async function donner(p){const d=ui.don,e=p.etat,dest=(document.getElementById('
     if(!(n>0)){flash={err:1,t:'Indique un montant en pièces d’or (ex. 0,5 ou 2).'};return render()}
     if(!payer(e,n)){flash={err:1,t:'Pas assez dans ta bourse ('+fmtPc(totalPc(e))+').'};return render()}
     contenu={pc:n};txt=fmtPc(n)+' donnés à '+qui+'.'}
-  else{const o=e.objets[d.i];if(!o)return;const n=Math.max(1,Math.min(num(o.qte)||1,Math.round(num(v)||1)));
+  else{const o=e.objets[num((document.getElementById('donObj')||{}).value)];if(!o)return;d.i=e.objets.indexOf(o);const n=Math.max(1,Math.min(num(o.qte)||1,Math.round(num(v)||1)));
     contenu={nom:o.nom,qte:n,description:o.desc||'',lien:o.lien||e.liens['objet:'+propre(o.nom)]||'',type:o.type||'',mystere:!!o.mystere,envoi:o.envoi||''};
     if(n>=(num(o.qte)||1)){e.objets.splice(d.i,1);if(!e.objets.some(x=>x.nom===o.nom))e.harmo=e.harmo.map(h=>h===o.nom?'':h)}else o.qte=num(o.qte)-n;
-    txt='« '+o.nom+' »'+(n>1?' ×'+n:'')+' donné à '+qui+'.'}
+    txt='« '+o.nom+' »'+(n>1?' ×'+n:'')+' donné à '+qui+(o.harmonise?' (harmonisation rompue)':'')+'.'}
   ui.don=null;save();render();
   try{await rpc('j_donner',{p_cle:p.cloud.cle,p_dest:dest,p_contenu:contenu});flash={t:txt}}
   catch(er){Object.assign(e,JSON.parse(avant));save();flash={err:1,t:'Don annulé : '+(/destinataire/.test(er.message)?'ce personnage n’est plus dans la campagne.':/montant|nom_manquant|contenu/.test(er.message)?'don refusé par le serveur.':'pas de connexion, rien n’a été donné.')}}
@@ -1419,8 +1419,8 @@ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.clos
   if(a==='donNon'){ui.don=null;return render()}
   if(a==='donOk')return donner(p);
   if(!navigator.onLine){flash={err:1,t:'Il faut une connexion pour donner.'};return render()}
-  const n=a==='donPc'?{p:p.id,t:'pc'}:{p:p.id,t:'obj',i:num(b.dataset.i)};
-  ui.don=ui.don&&ui.don.t===n.t&&ui.don.i===n.i?null:n;render();if(ui.don){chargerCompagnons(p);setTimeout(()=>{const x=document.getElementById('donVal');if(x&&n.t==='pc')x.focus()},50)}},true);
+  const n={p:p.id,t:a==='donPc'?'pc':'obj'};
+  ui.don=ui.don&&ui.don.t===n.t?null:n;render();if(ui.don){chargerCompagnons(p);setTimeout(()=>{const x=document.getElementById('donVal');if(x&&n.t==='pc')x.focus()},50)}},true);
 /* le MJ révèle un objet mystérieux, ou marque une harmonisation (✦) */
 function appliquerAction(e,c){
   /* pièces données par un autre joueur (ou ajoutées / retirées par le MJ), en pièces de cuivre */
